@@ -3,12 +3,14 @@
     <h4 class="text-muted">Please enter your details</h4>
     <h2 class="mb-4">Welcome back</h2>
 
-    <form>
+    <form (ngSubmit)="onSubmit()">
       <div class="mb-3">
         <input
           type="text"
           class="form-control"
           placeholder="Username"
+          name="username"
+          [(ngModel)]="loginObj.username"
           required
         />
       </div>
@@ -17,6 +19,8 @@
           type="password"
           class="form-control"
           placeholder="Password"
+          name="password"
+          [(ngModel)]="loginObj.password"
           required
         />
       </div>
