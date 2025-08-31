@@ -1,1 +1,41 @@
-<p>register works!</p>
+<div class="d-flex justify-content-center align-items-center vh-100 bg-light">
+  <main class="card shadow p-4" style="width: 100%; max-width: 400px">
+    <h4 class="text-muted">Get started!</h4>
+    <h2 class="mb-4">Your daily task managed in a single application</h2>
+
+    <form (ngSubmit)="onSubmit()">
+      <div class="mb-3">
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Name"
+          required
+          name="name"
+          [(ngModel)]="registerObj.name"
+          required=""
+        />
+      </div>
+      <div class="mb-3">
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Username"
+          name="username"
+          [(ngModel)]="registerObj.username"
+          required
+        />
+      </div>
+      <div class="mb-3">
+        <input
+          type="password"
+          class="form-control"
+          placeholder="Password"
+          name="password"
+          [(ngModel)]="registerObj.password"
+          required
+        />
+      </div>
+      <button type="submit" class="btn btn-primary w-100">Sign up</button>
+    </form>
+  </main>
+</div>

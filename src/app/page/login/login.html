@@ -5,17 +5,27 @@
 
     <form>
       <div class="mb-3">
-        <input type="text" class="form-control" placeholder="Username" />
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Username"
+          required
+        />
       </div>
       <div class="mb-3">
-        <input type="password" class="form-control" placeholder="Password" />
+        <input
+          type="password"
+          class="form-control"
+          placeholder="Password"
+          required
+        />
       </div>
       <button type="submit" class="btn btn-primary w-100">Sign in</button>
     </form>
 
     <p class="text-center mt-3 mb-0">
       Don't have an account?
-      <a href="#" class="text-decoration-none">Sign up</a>
+      <a routerLink="/register" class="text-decoration-none">Sign up</a>
     </p>
   </main>
 </div>
