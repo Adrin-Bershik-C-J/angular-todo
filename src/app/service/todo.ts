@@ -1,8 +1,56 @@
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { TaskResponse, Task } from '../model/todo.model';
+import { Observable } from 'rxjs';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
-export class Todo {
-  
+export class TodoService {
+  constructor(private http: HttpClient) {}
+
+  private apiUrl = 'http://localhost:8080/api/todo';
+
+  private getAuthHeaders(): HttpHeaders {
+    const token = localStorage.getItem('token'); // or use your AuthService
+    return new HttpHeaders({
+      Authorization: `Bearer ${token}`,
+    });
+  }
+
+  createTask(task: Task): Observable<TaskResponse> {
+    const payload = {
+      ...task,
+      dueDate: task.dueDate
+        ? new Date(task.dueDate + 'T00:00:00').toISOString()
+        : null,
+    };
+    return this.http.post<TaskResponse>(`${this.apiUrl}`, payload, {
+      headers: this.getAuthHeaders(),
+    });
+  }
+
+  getTaskById(id: number): Observable<TaskResponse> {
+    return this.http.get<TaskResponse>(`${this.apiUrl}/${id}`, {
+      headers: this.getAuthHeaders(),
+    });
+  }
+
+  deleteTask(id: number) {
+    return this.http.delete(`${this.apiUrl}/${id}`, {
+      headers: this.getAuthHeaders(),
+    });
+  }
+
+  updateTask(id: number, obj: Task): Observable<TaskResponse> {
+    return this.http.put<TaskResponse>(`${this.apiUrl}/${id}`, obj, {
+      headers: this.getAuthHeaders(),
+    });
+  }
+
+  getAllTasks(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}`, {
+      headers: this.getAuthHeaders(),
+    });
+  }
 }

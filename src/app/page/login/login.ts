@@ -19,7 +19,7 @@ export class Login {
   onSubmit() {
     this.authService.login(this.loginObj).subscribe({
       next: (res: any) => {
-        localStorage.setItem('token', JSON.stringify(res.token));
+        localStorage.setItem('token', res.token);
         this.router.navigateByUrl('/todo');
       },
       error: (err) => {
