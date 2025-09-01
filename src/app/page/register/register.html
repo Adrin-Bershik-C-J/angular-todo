@@ -1,7 +1,11 @@
-<div class="d-flex justify-content-center align-items-center vh-100 bg-light">
-  <main class="card shadow p-4" style="width: 100%; max-width: 400px">
-    <h4 class="text-muted">Get started!</h4>
-    <h2 class="mb-4">Your daily task managed in a single application</h2>
+<div
+  class="d-flex justify-content-center align-items-center vh-100 register-bg"
+>
+  <main class="card shadow-lg p-4 register-card">
+    <h4 class="text-muted text-center">Get started!</h4>
+    <h2 class="mb-4 text-center fw-bold">
+      Your daily tasks managed in a single application
+    </h2>
 
     <form (ngSubmit)="onSubmit()">
       <div class="mb-3">
@@ -9,7 +13,6 @@
           type="text"
           class="form-control"
           placeholder="Name"
-          required
           name="name"
           [(ngModel)]="registerObj.name"
           required
