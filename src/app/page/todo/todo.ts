@@ -7,7 +7,7 @@ import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-todo',
-  imports: [CommonModule,FormsModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './todo.html',
   styleUrl: './todo.css',
 })
@@ -18,20 +18,39 @@ export class Todo implements OnInit {
   taskObj: Task = new Task();
   taskList: TaskResponse[] = [];
 
+  // pagination variables
+  page: number = 0;
+  size: number = 5;
+  totalPages: number = 0;
+
   ngOnInit(): void {
     this.loadTasks();
   }
 
-  loadTasks() {
-    this.todoService.getAllTasks().subscribe({
+  loadTasks(page: number = 0) {
+    this.todoService.getAllTasks(page, this.size).subscribe({
       next: (res: any) => {
-        // backend returns Page<ToDoResponseDTO>, so actual list is inside res.content
         this.taskList = res.content || [];
+        this.page = res.number;
+        this.totalPages = res.totalPages;
       },
       error: (err) => {
         console.error('Error loading tasks:', err);
       },
     });
+  }
+
+  // pagination controls
+  nextPage() {
+    if (this.page < this.totalPages - 1) {
+      this.loadTasks(this.page + 1);
+    }
+  }
+
+  prevPage() {
+    if (this.page > 0) {
+      this.loadTasks(this.page - 1);
+    }
   }
 
   onCreateTask() {

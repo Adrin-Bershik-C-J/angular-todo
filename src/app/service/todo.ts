@@ -30,11 +30,11 @@ export class TodoService {
     });
   }
 
-  getTaskById(id: number): Observable<TaskResponse> {
-    return this.http.get<TaskResponse>(`${this.apiUrl}/${id}`, {
-      headers: this.getAuthHeaders(),
-    });
-  }
+  // getTaskById(id: number): Observable<TaskResponse> {
+  //   return this.http.get<TaskResponse>(`${this.apiUrl}/${id}`, {
+  //     headers: this.getAuthHeaders(),
+  //   });
+  // }
 
   deleteTask(id: number) {
     return this.http.delete(`${this.apiUrl}/${id}`, {
@@ -48,9 +48,12 @@ export class TodoService {
     });
   }
 
-  getAllTasks(): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}`, {
-      headers: this.getAuthHeaders(),
-    });
+  getAllTasks(page: number = 0, size: number = 5): Observable<any> {
+    return this.http.get<any>(
+      `${this.apiUrl}?page=${page}&size=${size}&sort=dueDate,asc`,
+      {
+        headers: this.getAuthHeaders(),
+      }
+    );
   }
 }
