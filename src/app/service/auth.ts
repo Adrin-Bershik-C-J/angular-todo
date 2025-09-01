@@ -1,5 +1,12 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import {
+  AuthResponse,
+  LoginModel,
+  RegisterModel,
+  RegisterResponse,
+} from '../model/auth.model';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -7,11 +14,13 @@ import { Injectable } from '@angular/core';
 export class Auth {
   constructor(private http: HttpClient) {}
 
-  login(obj: any) {
-    return this.http.post('http://localhost:8080/api/auth/login', obj);
+  private apiUrl = 'http://localhost:8080/api/auth';
+
+  login(obj: LoginModel): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.apiUrl}/login`, obj);
   }
 
-  register(obj: any) {
-    return this.http.post('http://localhost:8080/api/auth/register', obj);
+  register(obj: RegisterModel): Observable<RegisterResponse> {
+    return this.http.post<RegisterResponse>(`${this.apiUrl}/register`, obj);
   }
 }
