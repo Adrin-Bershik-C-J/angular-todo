@@ -4,6 +4,7 @@ import { TodoService } from '../../service/todo';
 import { Task, TaskResponse } from '../../model/todo.model';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Toast } from 'bootstrap'; // 👈 Import bootstrap toast
 
 @Component({
   selector: 'app-todo',
@@ -17,6 +18,10 @@ export class Todo implements OnInit {
 
   taskObj: Task = new Task();
   taskList: TaskResponse[] = [];
+
+  // edit state
+  editTaskObj: any = {};
+  editingTaskId: number | null = null;
 
   // pagination variables
   page: number = 0;
@@ -35,46 +40,80 @@ export class Todo implements OnInit {
         this.totalPages = res.totalPages;
       },
       error: (err) => {
-        console.error('Error loading tasks:', err);
+        this.showToast('Error loading tasks', true);
       },
     });
   }
 
-  // pagination controls
-  nextPage() {
-    if (this.page < this.totalPages - 1) {
-      this.loadTasks(this.page + 1);
+  // toast function
+  showToast(message: string, isError: boolean = false) {
+    const toastEl = document.getElementById('liveToast');
+    const toastBody = document.getElementById('toastMessage');
+    if (toastEl && toastBody) {
+      toastBody.textContent = message;
+      toastEl.classList.remove('text-bg-success', 'text-bg-danger');
+      toastEl.classList.add(isError ? 'text-bg-danger' : 'text-bg-success');
+      const toast = new Toast(toastEl);
+      toast.show();
     }
   }
 
-  prevPage() {
-    if (this.page > 0) {
-      this.loadTasks(this.page - 1);
-    }
-  }
-
+  // create
   onCreateTask() {
     this.todoService.createTask(this.taskObj).subscribe({
-      next: (res) => {
-        alert('Task created successfully');
-        this.taskObj = new Task(); // reset form
-        this.loadTasks(); // refresh list
+      next: () => {
+        this.showToast('Task created successfully');
+        this.taskObj = new Task();
+        this.loadTasks();
       },
-      error: (err) => {
-        console.error('Error creating task:', err);
+      error: () => {
+        this.showToast('Error creating task', true);
       },
     });
   }
 
+  // delete
   onDeleteTask(id: number) {
     this.todoService.deleteTask(id).subscribe({
       next: () => {
-        alert('Task deleted successfully');
-        this.loadTasks(); // refresh list
+        this.showToast('Task deleted successfully');
+        this.loadTasks();
       },
-      error: (err) => {
-        console.error('Error deleting task:', err);
+      error: () => {
+        this.showToast('Error deleting task', true);
       },
     });
+  }
+
+  // open edit modal
+  openEditModal(task: TaskResponse) {
+    this.editTaskObj = { ...task };
+    this.editingTaskId = task.id;
+  }
+
+  // update (PATCH)
+  onUpdateTask() {
+    if (!this.editingTaskId) return;
+    this.todoService
+      .updateTask(this.editingTaskId, this.editTaskObj)
+      .subscribe({
+        next: () => {
+          this.showToast('Task updated successfully');
+          this.loadTasks();
+          this.editingTaskId = null;
+        },
+        error: () => {
+          this.showToast('Error updating task', true);
+        },
+      });
+  }
+
+  // pagination
+  nextPage() {
+    if (this.page < this.totalPages - 1) this.loadTasks(this.page + 1);
+  }
+
+  prevPage() {
+    if (this.page > 0) this.loadTasks(this.page - 1);
   }
 }

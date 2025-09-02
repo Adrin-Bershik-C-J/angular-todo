@@ -32,7 +32,7 @@ export class TodoService {
   }
 
   updateTask(id: number, obj: Task): Observable<TaskResponse> {
-    return this.http.put<TaskResponse>(`${this.apiUrl}/${id}`, obj);
+    return this.http.patch<TaskResponse>(`${this.apiUrl}/${id}`, obj);
   }
 
   getAllTasks(page: number = 0, size: number = 5): Observable<any> {
