@@ -11,13 +11,6 @@ export class TodoService {
 
   private apiUrl = 'http://localhost:8080/api/todo';
 
-  private getAuthHeaders(): HttpHeaders {
-    const token = localStorage.getItem('token'); // or use your AuthService
-    return new HttpHeaders({
-      Authorization: `Bearer ${token}`,
-    });
-  }
-
   createTask(task: Task): Observable<TaskResponse> {
     const payload = {
       ...task,
@@ -25,9 +18,7 @@ export class TodoService {
         ? new Date(task.dueDate + 'T00:00:00').toISOString()
         : null,
     };
-    return this.http.post<TaskResponse>(`${this.apiUrl}`, payload, {
-      headers: this.getAuthHeaders(),
-    });
+    return this.http.post<TaskResponse>(`${this.apiUrl}`, payload);
   }
 
   // getTaskById(id: number): Observable<TaskResponse> {
@@ -37,23 +28,16 @@ export class TodoService {
   // }
 
   deleteTask(id: number) {
-    return this.http.delete(`${this.apiUrl}/${id}`, {
-      headers: this.getAuthHeaders(),
-    });
+    return this.http.delete(`${this.apiUrl}/${id}`);
   }
 
   updateTask(id: number, obj: Task): Observable<TaskResponse> {
-    return this.http.put<TaskResponse>(`${this.apiUrl}/${id}`, obj, {
-      headers: this.getAuthHeaders(),
-    });
+    return this.http.put<TaskResponse>(`${this.apiUrl}/${id}`, obj);
   }
 
   getAllTasks(page: number = 0, size: number = 5): Observable<any> {
     return this.http.get<any>(
-      `${this.apiUrl}?page=${page}&size=${size}&sort=dueDate,asc`,
-      {
-        headers: this.getAuthHeaders(),
-      }
+      `${this.apiUrl}?page=${page}&size=${size}&sort=dueDate,asc`
     );
   }
 }
