@@ -88,24 +88,37 @@ export class Todo implements OnInit {
   // open edit modal
   openEditModal(task: TaskResponse) {
     this.editTaskObj = { ...task };
+
+    // convert ISO string → yyyy-MM-dd for <input type="date">
+    if (this.editTaskObj.dueDate) {
+      this.editTaskObj.dueDate = this.editTaskObj.dueDate.split('T')[0];
+    }
+
     this.editingTaskId = task.id;
   }
 
   // update (PATCH)
   onUpdateTask() {
     if (!this.editingTaskId) return;
-    this.todoService
-      .updateTask(this.editingTaskId, this.editTaskObj)
-      .subscribe({
-        next: () => {
-          this.showToast('Task updated successfully');
-          this.loadTasks();
-          this.editingTaskId = null;
-        },
-        error: () => {
-          this.showToast('Error updating task', true);
-        },
-      });
+
+    const payload: any = { ...this.editTaskObj };
+
+    if (payload.dueDate) {
+      // ensure it's yyyy-MM-dd before making ISO
+      const dateOnly = payload.dueDate.split('T')[0];
+      payload.dueDate = new Date(dateOnly + 'T00:00:00').toISOString();
+    }
+
+    this.todoService.updateTask(this.editingTaskId, payload).subscribe({
+      next: () => {
+        this.showToast('Task updated successfully');
+        this.loadTasks();
+        this.editingTaskId = null;
+      },
+      error: () => {
+        this.showToast('Error updating task', true);
+      },
+    });
   }
 
   // pagination
