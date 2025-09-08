@@ -74,15 +74,17 @@ export class Todo implements OnInit {
 
   // delete
   onDeleteTask(id: number) {
-    this.todoService.deleteTask(id).subscribe({
-      next: () => {
-        this.showToast('Task deleted successfully');
-        this.loadTasks();
-      },
-      error: () => {
-        this.showToast('Error deleting task', true);
-      },
-    });
+    if (confirm('Do you want to delete the task?')) {
+      this.todoService.deleteTask(id).subscribe({
+        next: () => {
+          this.showToast('Task deleted successfully');
+          this.loadTasks();
+        },
+        error: () => {
+          this.showToast('Error deleting task', true);
+        },
+      });
+    }
   }
 
   // open edit modal
