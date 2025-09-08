@@ -106,7 +106,7 @@ export class Todo implements OnInit {
     if (payload.dueDate) {
       // ensure it's yyyy-MM-dd before making ISO
       const dateOnly = payload.dueDate.split('T')[0];
-      payload.dueDate = new Date(dateOnly + 'T00:00:00').toISOString();
+      payload.dueDate = new Date(dateOnly).toISOString();
     }
 
     this.todoService.updateTask(this.editingTaskId, payload).subscribe({
