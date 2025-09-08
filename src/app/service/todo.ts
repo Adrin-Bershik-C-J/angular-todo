@@ -14,10 +14,9 @@ export class TodoService {
   createTask(task: Task): Observable<TaskResponse> {
     const payload = {
       ...task,
-      dueDate: task.dueDate
-        ? new Date(task.dueDate + 'T00:00:00').toISOString()
-        : null,
+      dueDate: task.dueDate, // keep yyyy-MM-dd as string
     };
+
     return this.http.post<TaskResponse>(`${this.apiUrl}`, payload);
   }
 
