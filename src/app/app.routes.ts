@@ -4,6 +4,7 @@ import { Register } from './page/register/register';
 import { Todo } from './page/todo/todo';
 import { AuthGuard } from './guard/auth.guard';
 import { GuestGuard } from './guard/guest.guard';
+import { UnauthorizedComponent } from './page/unauthorized';
 
 export const routes: Routes = [
   {
@@ -26,6 +27,7 @@ export const routes: Routes = [
     component: Todo,
     canActivate: [AuthGuard],
   },
+  { path: 'unauthorized', component: UnauthorizedComponent },
   {
     path: '**',
     component: Login,
