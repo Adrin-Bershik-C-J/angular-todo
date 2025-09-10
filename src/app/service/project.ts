@@ -17,4 +17,18 @@ export class ProjectService {
   createProject(obj: ProjectRequestModel): Observable<ProjectResponseModel> {
     return this.http.post<ProjectResponseModel>(`${this.apiUrl}`, obj);
   }
+
+  getProjectByLoggedInManager(): Observable<ProjectResponseModel> {
+    return this.http.get<ProjectResponseModel>(`${this.apiUrl}`);
+  }
+
+  addMember(
+    projectId: number,
+    memberUsername: string
+  ): Observable<ProjectResponseModel> {
+    return this.http.post<ProjectResponseModel>(
+      `${this.apiUrl}/add-member?projectId=${projectId}&memberUsername=${memberUsername}`,
+      null
+    );
+  }
 }

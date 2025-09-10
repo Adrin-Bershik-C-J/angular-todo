@@ -11,11 +11,10 @@ export class AdminService {
 
   private apiUrl = 'http://localhost:8080/api/admin/create-user';
 
-  createManager(obj: RegisterModel): Observable<RegisterResponse> {
-    return this.http.post<RegisterResponse>(`${this.apiUrl}?role=MANAGER`, obj);
-  }
-
-  createTL(obj: RegisterModel): Observable<RegisterResponse> {
-    return this.http.post<RegisterResponse>(`${this.apiUrl}?role=TL`, obj);
+  createManagerOrTL(
+    role: string,
+    obj: RegisterModel
+  ): Observable<RegisterResponse> {
+    return this.http.post<RegisterResponse>(`${this.apiUrl}?role=${role}`, obj);
   }
 }
