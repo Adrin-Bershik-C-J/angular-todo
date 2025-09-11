@@ -15,15 +15,53 @@ export class Login {
   authService = inject(Auth);
 
   loginObj: LoginModel = new LoginModel();
+  isLoading = false;
 
   onSubmit() {
+    if (this.isLoading) return;
+    
+    this.isLoading = true;
     this.authService.login(this.loginObj).subscribe({
       next: (res: any) => {
         localStorage.setItem('token', res.token);
-        this.router.navigateByUrl('/todo');
+        
+        // Get user details to determine role-based redirection
+        this.authService.getCurrentUser().subscribe({
+          next: (user: any) => {
+            localStorage.setItem('role', user.role);
+            localStorage.setItem('userId', user.id.toString());
+            localStorage.setItem('name', user.name);
+            
+            // Role-based redirection
+            switch (user.role) {
+              case 'ADMIN':
+                this.router.navigateByUrl('/dashboard/admin');
+                break;
+              case 'MANAGER':
+                this.router.navigateByUrl('/dashboard/manager');
+                break;
+              case 'TL':
+                this.router.navigateByUrl('/dashboard/tl');
+                break;
+              case 'MEMBER':
+                this.router.navigateByUrl('/dashboard/member');
+                break;
+              default:
+                this.router.navigateByUrl('/todo');
+            }
+            this.isLoading = false;
+          },
+          error: (userErr) => {
+            console.error('Error getting user details:', userErr);
+            // Fallback to todo page if user details fetch fails
+            this.router.navigateByUrl('/todo');
+            this.isLoading = false;
+          }
+        });
       },
       error: (err) => {
-        alert(err.error?.error || 'API Error');
+        this.isLoading = false;
+        alert(err.error?.error || 'Login failed. Please check your credentials.');
       },
     });
   }

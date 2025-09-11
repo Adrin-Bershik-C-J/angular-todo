@@ -21,6 +21,10 @@ export class SubTaskService {
     return this.http.get<SubtaskResponse[]>(`${this.apiUrl}/member`);
   }
 
+  getSubTasksByManager(): Observable<SubtaskResponse[]> {
+    return this.http.get<SubtaskResponse[]>(`${this.apiUrl}/manager`);
+  }
+
   updateStatus(taskId: number, status: string): Observable<SubtaskResponse> {
     return this.http.patch<SubtaskResponse>(
       `${this.apiUrl}/${taskId}/status?status=${status}`,

@@ -18,8 +18,8 @@ export class ProjectService {
     return this.http.post<ProjectResponseModel>(`${this.apiUrl}`, obj);
   }
 
-  getProjectByLoggedInManager(): Observable<ProjectResponseModel> {
-    return this.http.get<ProjectResponseModel>(`${this.apiUrl}`);
+  getProjectByLoggedInManager(): Observable<ProjectResponseModel[]> {
+    return this.http.get<ProjectResponseModel[]>(`${this.apiUrl}`);
   }
 
   addMember(
@@ -30,5 +30,21 @@ export class ProjectService {
       `${this.apiUrl}/add-member?projectId=${projectId}&memberUsername=${memberUsername}`,
       null
     );
+  }
+
+  updateProject(projectId: number, project: ProjectRequestModel): Observable<ProjectResponseModel> {
+    return this.http.put<ProjectResponseModel>(`${this.apiUrl}/${projectId}`, project);
+  }
+
+  getAllUsers(): Observable<any[]> {
+    return this.http.get<any[]>('http://localhost:8080/api/users');
+  }
+
+  getProjectMembers(projectId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/${projectId}/members`);
+  }
+
+  getProjectsByTL(): Observable<ProjectResponseModel[]> {
+    return this.http.get<ProjectResponseModel[]>(`${this.apiUrl}/tl`);
   }
 }

@@ -14,7 +14,7 @@ export class AdminService {
   createManagerOrTL(
     role: string,
     obj: RegisterModel
-  ): Observable<RegisterResponse> {
-    return this.http.post<RegisterResponse>(`${this.apiUrl}?role=${role}`, obj);
+  ): Observable<any> {
+    return this.http.post(`${this.apiUrl}?role=${role}`, obj, { responseType: 'text' });
   }
 }

@@ -3,8 +3,7 @@ export class SubTask {
   description: string = '';
   dueDate: string = '';
   projectId: number = 0;
-  tlId: number = 0;
-  memberId: number = 0;
+  assigneeUsername: string = '';
 }
 
 export interface SubtaskResponse {
