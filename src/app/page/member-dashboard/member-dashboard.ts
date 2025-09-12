@@ -10,7 +10,6 @@ import { Task } from '../../model/todo.model';
 @Component({
   selector: 'app-member-dashboard',
   imports: [CommonModule, FormsModule],
-  styleUrl: './member-dashboard.css',
   template: `
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
       <div class="container">
@@ -56,7 +55,7 @@ import { Task } from '../../model/todo.model';
           <div class="col-md-3">
             <div class="card bg-success text-white">
               <div class="card-body text-center">
-                <h5>Completed</h5>
+                <h5>Completed Sub-Tasks</h5>
                 <h3>{{getCompletedSubTasksCount()}}</h3>
               </div>
             </div>
@@ -64,16 +63,16 @@ import { Task } from '../../model/todo.model';
           <div class="col-md-3">
             <div class="card bg-warning text-dark">
               <div class="card-body text-center">
-                <h5>In Progress</h5>
-                <h3>{{getInProgressSubTasksCount()}}</h3>
+                <h5>Personal Tasks</h5>
+                <h3>{{personalTasks.length}}</h3>
               </div>
             </div>
           </div>
           <div class="col-md-3">
             <div class="card bg-info text-white">
               <div class="card-body text-center">
-                <h5>Personal Tasks</h5>
-                <h3>{{personalTasks.length}}</h3>
+                <h5>Completed Personal</h5>
+                <h3>{{getCompletedPersonalTasksCount()}}</h3>
               </div>
             </div>
           </div>
@@ -106,24 +105,23 @@ import { Task } from '../../model/todo.model';
           <div class="col-md-6">
             <div class="card">
               <div class="card-header">
-                <h5>My Progress</h5>
+                <h5>Recent Personal Tasks</h5>
               </div>
               <div class="card-body">
-                <div class="mb-3">
-                  <small>Task Completion Rate</small>
-                  <div class="progress">
-                    <div class="progress-bar bg-success" [style.width.%]="getCompletionPercentage()"></div>
-                  </div>
-                  <small class="text-muted">{{getCompletionPercentage()}}% Complete</small>
-                </div>
-                
-                <div class="mt-4">
-                  <h6>Upcoming Deadlines</h6>
-                  <div *ngFor="let task of getUpcomingDeadlines()" class="small">
-                    <span class="badge bg-warning me-2">{{task.dueDate | date:'short'}}</span>
-                    {{task.name}}
+                <div *ngFor="let task of personalTasks.slice(0, 5)" class="mb-2 p-2 border rounded">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                      <strong>{{task.title}}</strong>
+                      <small class="text-muted d-block">Due: {{task.dueDate | date}}</small>
+                    </div>
+                    <span class="badge" [ngClass]="{
+                      'bg-secondary': task.status === 'NOT_STARTED',
+                      'bg-primary': task.status === 'IN_PROGRESS',
+                      'bg-success': task.status === 'DONE'
+                    }">{{task.status}}</span>
                   </div>
                 </div>
+                <div *ngIf="personalTasks.length === 0" class="text-muted">No personal tasks</div>
               </div>
             </div>
           </div>
@@ -133,11 +131,8 @@ import { Task } from '../../model/todo.model';
       <!-- Assigned Sub-Tasks Tab -->
       <div *ngIf="activeTab === 'assigned-subtasks'" class="tab-content">
         <div class="card shadow-sm">
-          <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+          <div class="card-header bg-primary text-white">
             <h5 class="mb-0">Sub-Tasks Assigned to Me</h5>
-            <button class="btn btn-light btn-sm" (click)="loadAssignedSubTasks()">
-              Refresh
-            </button>
           </div>
           <div class="card-body">
             <div class="table-responsive">
@@ -171,7 +166,7 @@ import { Task } from '../../model/todo.model';
                     </td>
                     <td>{{subtask.dueDate | date}}</td>
                     <td>
-                      <small>Project ID: {{subtask.projectId}}</small>
+                      <small>{{subtask.projectName}}</small>
                     </td>
                     <td>
                       <div class="btn-group btn-group-sm">
@@ -232,7 +227,7 @@ import { Task } from '../../model/todo.model';
                   </div>
                   <div class="mb-3">
                     <label class="form-label">Due Date</label>
-                    <input type="date" class="form-control" [(ngModel)]="personalTaskObj.dueDate" name="dueDate" required>
+                    <input type="date" class="form-control" [(ngModel)]="personalTaskObj.dueDate" name="dueDate" [min]="getTodayDate()" required>
                   </div>
                   <div class="mb-3">
                     <label class="form-label">Status</label>
@@ -301,6 +296,54 @@ import { Task } from '../../model/todo.model';
       </div>
     </div>
 
+    <!-- Edit Task Modal -->
+    <div class="modal fade" [class.show]="editingTask" [style.display]="editingTask ? 'block' : 'none'" 
+         *ngIf="editingTask" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Edit Personal Task</h5>
+            <button type="button" class="btn-close" (click)="cancelTaskEdit()"></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3">
+              <label class="form-label">Title</label>
+              <input type="text" class="form-control" [(ngModel)]="editingTask.title">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Description</label>
+              <textarea class="form-control" rows="3" [(ngModel)]="editingTask.description"></textarea>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Priority</label>
+              <select class="form-select" [(ngModel)]="editingTask.priority">
+                <option>LOW</option>
+                <option>MEDIUM</option>
+                <option>HIGH</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Due Date</label>
+              <input type="date" class="form-control" [(ngModel)]="editingTask.dueDate" [min]="getTodayDate()">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Status</label>
+              <select class="form-select" [(ngModel)]="editingTask.status">
+                <option>NOT_STARTED</option>
+                <option>IN_PROGRESS</option>
+                <option>DONE</option>
+              </select>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="cancelTaskEdit()">Cancel</button>
+            <button type="button" class="btn btn-primary" (click)="updatePersonalTask()">Update Task</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-backdrop fade" [class.show]="editingTask" *ngIf="editingTask"></div>
+
     <!-- Toast Messages -->
     <div class="position-fixed bottom-0 end-0 p-3">
       <div class="toast align-items-center border-0" 
@@ -334,6 +377,12 @@ import { Task } from '../../model/todo.model';
       font-size: 0.75rem;
       padding: 0.25rem 0.5rem;
     }
+    .modal.show {
+      display: block !important;
+    }
+    .modal-backdrop.show {
+      opacity: 0.5;
+    }
   `]
 })
 export class MemberDashboard implements OnInit {
@@ -348,6 +397,7 @@ export class MemberDashboard implements OnInit {
   // Data
   assignedSubTasks: any[] = [];
   personalTasks: any[] = [];
+  editingTask: any = null;
   
   // Form objects
   personalTaskObj: Task = new Task();
@@ -426,11 +476,29 @@ export class MemberDashboard implements OnInit {
   }
 
   editPersonalTask(task: any): void {
-    this.personalTaskObj = { ...task };
-    if (this.personalTaskObj.dueDate) {
-      // Convert to yyyy-MM-dd format for input
-      this.personalTaskObj.dueDate = this.personalTaskObj.dueDate.split('T')[0];
+    this.editingTask = { ...task };
+    if (this.editingTask.dueDate) {
+      this.editingTask.dueDate = this.editingTask.dueDate.split('T')[0];
     }
+  }
+
+  updatePersonalTask(): void {
+    if (!this.editingTask) return;
+    
+    this.todoService.updateTask(this.editingTask.id, this.editingTask).subscribe({
+      next: (updated) => {
+        this.showToastMessage('Task updated successfully!');
+        this.editingTask = null;
+        this.loadPersonalTasks();
+      },
+      error: (error) => {
+        this.showToastMessage('Error updating task', true);
+      }
+    });
+  }
+
+  cancelTaskEdit(): void {
+    this.editingTask = null;
   }
 
   deletePersonalTask(taskId: number): void {
@@ -448,25 +516,12 @@ export class MemberDashboard implements OnInit {
   }
 
   // Helper methods for statistics
+  getCompletedPersonalTasksCount(): number {
+    return this.personalTasks.filter(task => task.status === 'DONE').length;
+  }
+
   getCompletedSubTasksCount(): number {
     return this.assignedSubTasks.filter(task => task.status === 'DONE').length;
-  }
-
-  getInProgressSubTasksCount(): number {
-    return this.assignedSubTasks.filter(task => task.status === 'IN_PROGRESS').length;
-  }
-
-  getCompletionPercentage(): number {
-    if (this.assignedSubTasks.length === 0) return 0;
-    return Math.round((this.getCompletedSubTasksCount() / this.assignedSubTasks.length) * 100);
-  }
-
-  getUpcomingDeadlines(): any[] {
-    const upcoming = this.assignedSubTasks
-      .filter(task => task.status !== 'DONE' && new Date(task.dueDate) > new Date())
-      .sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime())
-      .slice(0, 3);
-    return upcoming;
   }
 
   resetPersonalTaskForm(): void {
@@ -482,6 +537,10 @@ export class MemberDashboard implements OnInit {
 
   hideToast(): void {
     this.showToast = false;
+  }
+
+  getTodayDate(): string {
+    return new Date().toISOString().split('T')[0];
   }
 
   logout(): void {

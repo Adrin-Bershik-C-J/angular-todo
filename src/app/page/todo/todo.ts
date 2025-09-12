@@ -300,11 +300,8 @@ import { FormsModule } from '@angular/forms';
       <!-- Assigned Sub-Tasks Tab -->
       <div *ngIf="activeTab === 'assigned'" class="tab-content">
         <div class="card shadow-sm">
-          <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
+          <div class="card-header bg-warning text-dark">
             <h5 class="mb-0">Sub-Tasks Assigned to Me</h5>
-            <button class="btn btn-dark btn-sm" (click)="loadAssignedSubTasks()">
-              Refresh
-            </button>
           </div>
           <div class="card-body">
             <div class="table-responsive">

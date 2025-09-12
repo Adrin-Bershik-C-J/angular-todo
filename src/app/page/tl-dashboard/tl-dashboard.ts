@@ -46,105 +46,28 @@ import { SubTask } from '../../model/subtask.model';
             Personal Tasks
           </button>
         </li>
-        <li class="nav-item">
-          <button class="nav-link" [class.active]="activeTab === 'team'" (click)="setActiveTab('team')">
-            Team Performance
-          </button>
-        </li>
+
       </ul>
 
       <!-- Overview Tab -->
       <div *ngIf="activeTab === 'overview'" class="tab-content">
-        <!-- Project Filter -->
-        <div class="row mb-3">
-          <div class="col-md-4">
-            <label class="form-label">Filter by Project:</label>
-            <select class="form-select" [(ngModel)]="selectedProjectId" (change)="onProjectFilterChange()">
-              <option [value]="null">All Projects</option>
-              <option *ngFor="let project of tlProjects" [value]="project.id">{{project.name}}</option>
-            </select>
-          </div>
-        </div>
-        
-        <div class="row mb-4">
-          <div class="col-md-3">
-            <div class="card bg-primary text-white">
-              <div class="card-body text-center">
-                <h5>Assigned Sub-Tasks</h5>
-                <h3>{{getFilteredSubTasks().length}}</h3>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-3">
-            <div class="card bg-success text-white">
-              <div class="card-body text-center">
-                <h5>Completed</h5>
-                <h3>{{getCompletedSubTasksCount()}}</h3>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-3">
-            <div class="card bg-warning text-dark">
-              <div class="card-body text-center">
-                <h5>In Progress</h5>
-                <h3>{{getInProgressSubTasksCount()}}</h3>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-3">
-            <div class="card bg-info text-white">
-              <div class="card-body text-center">
-                <h5>Personal Tasks</h5>
-                <h3>{{personalTasks.length}}</h3>
-              </div>
-            </div>
-          </div>
-        </div>
-
         <div class="row">
-          <div class="col-md-6">
+          <div class="col-12">
             <div class="card">
               <div class="card-header">
-                <h5>Recent Sub-Tasks</h5>
+                <h5>My Projects</h5>
               </div>
               <div class="card-body">
-                <div *ngFor="let subtask of assignedSubTasks.slice(0, 5)" class="mb-2 p-2 border rounded">
-                  <div class="d-flex justify-content-between align-items-center">
+                <div *ngFor="let project of tlProjects" class="mb-3 p-3 border rounded">
+                  <div class="d-flex justify-content-between align-items-start">
                     <div>
-                      <strong>{{subtask.name}}</strong>
-                      <small class="text-muted d-block">Assigned to: {{subtask.memberUsername}}</small>
+                      <h6>{{project.name}}</h6>
+                      <p class="text-muted mb-1">{{project.description}}</p>
+                      <small class="text-muted">Due: {{project.dueDate | date}} | Manager: {{project.managerUsername}}</small>
                     </div>
-                    <span class="badge" [ngClass]="{
-                      'bg-secondary': subtask.status === 'NOT_STARTED',
-                      'bg-primary': subtask.status === 'IN_PROGRESS',
-                      'bg-success': subtask.status === 'DONE'
-                    }">{{subtask.status}}</span>
                   </div>
                 </div>
-                <div *ngIf="assignedSubTasks.length === 0" class="text-muted">No sub-tasks assigned</div>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-6">
-            <div class="card">
-              <div class="card-header">
-                <h5>Team Progress</h5>
-              </div>
-              <div class="card-body">
-                <div class="mb-3">
-                  <small>Overall Completion</small>
-                  <div class="progress">
-                    <div class="progress-bar bg-success" [style.width.%]="getTeamCompletionPercentage()"></div>
-                  </div>
-                  <small class="text-muted">{{getTeamCompletionPercentage()}}% Complete</small>
-                </div>
-                <div class="mt-3">
-                  <h6>Upcoming Deadlines</h6>
-                  <div *ngFor="let task of getUpcomingDeadlines()" class="small">
-                    <span class="badge bg-warning me-2">{{task.dueDate | date:'short'}}</span>
-                    {{task.name}}
-                  </div>
-                </div>
+                <div *ngIf="tlProjects.length === 0" class="text-muted">No projects assigned</div>
               </div>
             </div>
           </div>
@@ -158,18 +81,15 @@ import { SubTask } from '../../model/subtask.model';
           <div class="col-md-4">
             <label class="form-label">Filter by Project:</label>
             <select class="form-select" [(ngModel)]="selectedProjectId" (change)="onProjectFilterChange()">
-              <option [value]="null">All Projects</option>
+              <option value="">All Projects</option>
               <option *ngFor="let project of tlProjects" [value]="project.id">{{project.name}}</option>
             </select>
           </div>
         </div>
         
         <div class="card shadow-sm">
-          <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+          <div class="card-header bg-primary text-white">
             <h5 class="mb-0">Project Sub-Tasks</h5>
-            <button class="btn btn-light btn-sm" (click)="loadAssignedSubTasks()">
-              Refresh
-            </button>
           </div>
           <div class="card-body">
             <div class="table-responsive">
@@ -255,7 +175,7 @@ import { SubTask } from '../../model/subtask.model';
                   </div>
                   <div class="mb-3">
                     <label class="form-label">Due Date</label>
-                    <input type="date" class="form-control" [(ngModel)]="subTaskObj.dueDate" name="dueDate" [min]="getTodayDate()" required>
+                    <input type="date" class="form-control" [(ngModel)]="subTaskObj.dueDate" name="dueDate" [min]="getTodayDate()" [max]="getProjectDueDate()" required>
                   </div>
                   <div class="mb-3">
                     <label class="form-label">Project</label>
@@ -399,84 +319,7 @@ import { SubTask } from '../../model/subtask.model';
         </div>
       </div>
 
-      <!-- Team Performance Tab -->
-      <div *ngIf="activeTab === 'team'" class="tab-content">
-        <!-- Project Filter -->
-        <div class="row mb-3">
-          <div class="col-md-4">
-            <label class="form-label">Filter by Project:</label>
-            <select class="form-select" [(ngModel)]="selectedProjectId" (change)="onProjectFilterChange()">
-              <option [value]="null">All Projects</option>
-              <option *ngFor="let project of tlProjects" [value]="project.id">{{project.name}}</option>
-            </select>
-          </div>
-        </div>
-        
-        <div class="row">
-          <div class="col-md-6">
-            <div class="card shadow-sm">
-              <div class="card-header bg-info text-white">
-                <h5 class="mb-0">Team Members Performance</h5>
-              </div>
-              <div class="card-body">
-                <div *ngFor="let member of getTeamMembers()" class="mb-3 p-3 border rounded">
-                  <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                      <h6 class="mb-1">{{member.name}}</h6>
-                      <small class="text-muted">{{member.assignedTasks}} tasks assigned</small>
-                    </div>
-                    <div class="text-end">
-                      <span class="badge bg-success">{{member.completedTasks}} completed</span>
-                    </div>
-                  </div>
-                  <div class="progress mt-2">
-                    <div class="progress-bar" [style.width.%]="member.completionRate"></div>
-                  </div>
-                  <small class="text-muted">{{member.completionRate}}% completion rate</small>
-                </div>
-                <div *ngIf="getTeamMembers().length === 0" class="text-muted">
-                  No team member data available
-                </div>
-              </div>
-            </div>
-          </div>
 
-          <div class="col-md-6">
-            <div class="card shadow-sm">
-              <div class="card-header bg-success text-white">
-                <h5 class="mb-0">Project Status</h5>
-              </div>
-              <div class="card-body">
-                <div class="mb-3">
-                  <h6>Overall Progress</h6>
-                  <div class="progress">
-                    <div class="progress-bar bg-success" [style.width.%]="getTeamCompletionPercentage()"></div>
-                  </div>
-                  <small class="text-muted">{{getTeamCompletionPercentage()}}% of all sub-tasks completed</small>
-                </div>
-                
-                <div class="mt-4">
-                  <h6>Task Status Breakdown</h6>
-                  <div class="row text-center">
-                    <div class="col-4">
-                      <div class="badge bg-secondary fs-6">{{getNotStartedCount()}}</div>
-                      <small class="d-block text-muted">Not Started</small>
-                    </div>
-                    <div class="col-4">
-                      <div class="badge bg-primary fs-6">{{getInProgressSubTasksCount()}}</div>
-                      <small class="d-block text-muted">In Progress</small>
-                    </div>
-                    <div class="col-4">
-                      <div class="badge bg-success fs-6">{{getCompletedSubTasksCount()}}</div>
-                      <small class="d-block text-muted">Completed</small>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
 
     <!-- Toast Messages -->
@@ -578,7 +421,7 @@ export class TlDashboard implements OnInit {
   allUsers: any[] = [];
   projectMembers: any[] = [];
   tlProjects: any[] = [];
-  selectedProjectId: number | null = null;
+  selectedProjectId: string | null = '';
   editingTask: any = null;
   
   // Form objects
@@ -639,6 +482,12 @@ export class TlDashboard implements OnInit {
     if (this.subTaskObj.projectId) {
       this.loadProjectMembers(this.subTaskObj.projectId);
     }
+  }
+
+  getProjectDueDate(): string {
+    if (!this.subTaskObj.projectId) return this.getTodayDate();
+    const project = this.tlProjects.find(p => p.id === this.subTaskObj.projectId);
+    return project ? project.dueDate : this.getTodayDate();
   }
 
   getAvailableProjects(): any[] {
@@ -748,7 +597,7 @@ export class TlDashboard implements OnInit {
   }
 
   onProjectFilterChange(): void {
-    // Refresh stats when project filter changes
+    // Filter is handled by getFilteredSubTasks() method
   }
 
   deletePersonalTask(taskId: number): void {
@@ -767,8 +616,10 @@ export class TlDashboard implements OnInit {
 
   // Helper methods for statistics
   getFilteredSubTasks(): any[] {
-    if (!this.selectedProjectId) return this.assignedSubTasks;
-    return this.assignedSubTasks.filter(task => task.projectId === this.selectedProjectId);
+    if (!this.selectedProjectId || this.selectedProjectId === '' || this.selectedProjectId === null) {
+      return this.assignedSubTasks;
+    }
+    return this.assignedSubTasks.filter(task => task.projectId === Number(this.selectedProjectId));
   }
 
   getCompletedSubTasksCount(): number {

@@ -165,7 +165,7 @@ import { Task } from '../../model/todo.model';
                   </div>
                   <div class="mb-3">
                     <label class="form-label">Due Date</label>
-                    <input type="date" class="form-control" [(ngModel)]="subTaskObj.dueDate" name="dueDate" [min]="getTodayDate()" required>
+                    <input type="date" class="form-control" [(ngModel)]="subTaskObj.dueDate" name="dueDate" [min]="getTodayDate()" [max]="getProjectDueDate()" required>
                   </div>
                   <div class="mb-3">
                     <label class="form-label">Project</label>
@@ -192,11 +192,8 @@ import { Task } from '../../model/todo.model';
 
           <div class="col-md-7">
             <div class="card shadow-sm">
-              <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+              <div class="card-header bg-info text-white">
                 <h5 class="mb-0">Project Sub-Tasks</h5>
-                <button class="btn btn-light btn-sm" (click)="loadManagerSubTasks()">
-                  Refresh
-                </button>
               </div>
               <div class="card-body">
                 <div class="table-responsive">
@@ -634,6 +631,12 @@ export class ManagerDashboard implements OnInit {
     if (this.subTaskObj.projectId) {
       this.loadProjectMembers(this.subTaskObj.projectId);
     }
+  }
+
+  getProjectDueDate(): string {
+    if (!this.subTaskObj.projectId) return this.getTodayDate();
+    const project = this.projects.find(p => p.id === this.subTaskObj.projectId);
+    return project ? project.dueDate : this.getTodayDate();
   }
 
   createPersonalTask(): void {
