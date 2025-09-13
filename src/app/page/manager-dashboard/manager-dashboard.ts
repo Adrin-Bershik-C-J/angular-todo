@@ -57,9 +57,10 @@ import { Task } from '../../model/todo.model';
             >
               Personal Tasks
             </button>
-            <span class="navbar-text me-3 text-dark ms-3"
-              >Welcome, {{ currentUser }}!</span
-            >
+            <span class="navbar-text me-3 text-dark ms-3">
+              Welcome, <span class="fw-bold">{{ currentUser }}!</span>
+            </span>
+
             <button class="btn btn-outline-primary btn-sm" (click)="logout()">
               Logout
             </button>

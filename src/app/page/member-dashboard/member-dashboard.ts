@@ -78,14 +78,14 @@ import { Task } from '../../model/todo.model';
           <div class="col-md-6">
             <div class="card">
               <div class="card-header">
-                <h5>Recent Sub-Tasks</h5>
+                <h5>Upcoming Sub-Task Deadlines</h5>
               </div>
               <div class="card-body">
-                <div *ngFor="let subtask of assignedSubTasks.slice(0, 5)" class="mb-2 p-2 border rounded">
+                <div *ngFor="let subtask of getUpcomingSubTaskDeadlines()" class="mb-2 p-2 border rounded">
                   <div class="d-flex justify-content-between align-items-center">
                     <div>
                       <strong>{{subtask.name}}</strong>
-                      <small class="text-muted d-block">TL: {{subtask.tlUsername}}</small>
+                      <small class="text-muted d-block">Due: {{subtask.dueDate | date}} | TL: {{subtask.tlUsername}}</small>
                     </div>
                     <span class="badge" [ngClass]="{
                       'bg-secondary': subtask.status === 'NOT_STARTED',
@@ -94,17 +94,17 @@ import { Task } from '../../model/todo.model';
                     }">{{subtask.status}}</span>
                   </div>
                 </div>
-                <div *ngIf="assignedSubTasks.length === 0" class="text-muted">No sub-tasks assigned</div>
+                <div *ngIf="getUpcomingSubTaskDeadlines().length === 0" class="text-muted">No upcoming sub-task deadlines</div>
               </div>
             </div>
           </div>
           <div class="col-md-6">
             <div class="card">
               <div class="card-header">
-                <h5>Recent Personal Tasks</h5>
+                <h5>Upcoming Personal Task Deadlines</h5>
               </div>
               <div class="card-body">
-                <div *ngFor="let task of personalTasks.slice(0, 5)" class="mb-2 p-2 border rounded">
+                <div *ngFor="let task of getUpcomingPersonalTaskDeadlines()" class="mb-2 p-2 border rounded">
                   <div class="d-flex justify-content-between align-items-center">
                     <div>
                       <strong>{{task.title}}</strong>
@@ -117,7 +117,7 @@ import { Task } from '../../model/todo.model';
                     }">{{task.status}}</span>
                   </div>
                 </div>
-                <div *ngIf="personalTasks.length === 0" class="text-muted">No personal tasks</div>
+                <div *ngIf="getUpcomingPersonalTaskDeadlines().length === 0" class="text-muted">No upcoming personal task deadlines</div>
               </div>
             </div>
           </div>
@@ -131,6 +131,25 @@ import { Task } from '../../model/todo.model';
             <h5 class="mb-0">Sub-Tasks Assigned to Me</h5>
           </div>
           <div class="card-body">
+            <div class="row mb-3">
+              <div class="col-md-4">
+                <select class="form-select form-select-sm" [(ngModel)]="subTaskStatusFilter">
+                  <option value="">All Status</option>
+                  <option value="NOT_STARTED">Not Started</option>
+                  <option value="IN_PROGRESS">In Progress</option>
+                  <option value="DONE">Done</option>
+                </select>
+              </div>
+              <div class="col-md-4">
+                <input type="date" class="form-control form-control-sm" [(ngModel)]="subTaskDueDateFilter" placeholder="Filter by due date">
+              </div>
+              <div class="col-md-4">
+                <select class="form-select form-select-sm" [(ngModel)]="subTaskProjectFilter">
+                  <option value="">All Projects</option>
+                  <option *ngFor="let project of getUniqueProjects()" [value]="project.id">{{project.name}}</option>
+                </select>
+              </div>
+            </div>
             <div class="table-responsive">
               <table class="table table-hover">
                 <thead class="table-light">
@@ -145,7 +164,7 @@ import { Task } from '../../model/todo.model';
                   </tr>
                 </thead>
                 <tbody>
-                  <tr *ngFor="let subtask of assignedSubTasks">
+                  <tr *ngFor="let subtask of getFilteredSubTasks()">
                     <td>
                       <strong>{{subtask.name}}</strong>
                     </td>
@@ -184,7 +203,7 @@ import { Task } from '../../model/todo.model';
                       </div>
                     </td>
                   </tr>
-                  <tr *ngIf="assignedSubTasks.length === 0">
+                  <tr *ngIf="getFilteredSubTasks().length === 0">
                     <td colspan="7" class="text-center text-muted">No sub-tasks assigned to you</td>
                   </tr>
                 </tbody>
@@ -374,17 +393,29 @@ import { Task } from '../../model/todo.model';
     </div>
   `,
   styles: [`
-    .nav-tabs .nav-link.active {
-      background-color: #0d6efd;
+    .nav-link.active {
+      background-color: #0d6efd !important;
       color: white !important;
-      border-color: #0d6efd;
+      border-radius: 5px;
+    }
+    .nav-link {
+      color: #0d6efd;
+      margin-right: 0.5rem;
+      text-decoration: none;
+      border: none;
+      background: none;
+    }
+    .nav-link:hover {
+      color: #0a58ca;
+      background-color: #e7f1ff;
+      border-radius: 5px;
     }
     .card {
-      border: none;
       border-radius: 10px;
     }
     .table th {
       border-top: none;
+      font-weight: 600;
     }
     .toast.show { display: block; }
     .toast { display: none; }
@@ -410,16 +441,6 @@ import { Task } from '../../model/todo.model';
         margin: 0.2rem 0;
         border-radius: 5px;
       }
-    }
-    .btn-group-sm .btn {
-      font-size: 0.75rem;
-      padding: 0.25rem 0.5rem;
-    }
-    .modal.show {
-      display: block !important;
-    }
-    .modal-backdrop.show {
-      opacity: 0.5;
     }
   `]
 })
@@ -448,6 +469,9 @@ export class MemberDashboard implements OnInit {
   taskPriorityFilter: string = '';
   taskStatusFilter: string = '';
   taskDueDateFilter: string = '';
+  subTaskStatusFilter: string = '';
+  subTaskDueDateFilter: string = '';
+  subTaskProjectFilter: string = '';
 
   ngOnInit(): void {
     this.currentUser = this.auth.getUserName() || 'Member';
@@ -579,6 +603,37 @@ export class MemberDashboard implements OnInit {
 
   getCompletedSubTasksCount(): number {
     return this.assignedSubTasks.filter(task => task.status === 'DONE').length;
+  }
+
+  getFilteredSubTasks(): any[] {
+    return this.assignedSubTasks.filter(subtask => {
+      const statusMatch = !this.subTaskStatusFilter || subtask.status === this.subTaskStatusFilter;
+      const dueDateMatch = !this.subTaskDueDateFilter || subtask.dueDate?.split('T')[0] === this.subTaskDueDateFilter;
+      const projectMatch = !this.subTaskProjectFilter || subtask.projectId === Number(this.subTaskProjectFilter);
+      return statusMatch && dueDateMatch && projectMatch;
+    });
+  }
+
+  getUniqueProjects(): any[] {
+    const projects = new Map();
+    this.assignedSubTasks.forEach(subtask => {
+      if (subtask.projectId && subtask.projectName) {
+        projects.set(subtask.projectId, { id: subtask.projectId, name: subtask.projectName });
+      }
+    });
+    return Array.from(projects.values());
+  }
+
+  getUpcomingSubTaskDeadlines(): any[] {
+    return this.assignedSubTasks
+      .sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime())
+      .slice(0, 5);
+  }
+
+  getUpcomingPersonalTaskDeadlines(): any[] {
+    return this.personalTasks
+      .sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime())
+      .slice(0, 5);
   }
 
   resetPersonalTaskForm(): void {
