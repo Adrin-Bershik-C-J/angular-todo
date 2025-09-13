@@ -33,7 +33,9 @@ import { SubTask } from '../../model/subtask.model';
             <button class="nav-link btn btn-link" [class.active]="activeTab === 'personal'" (click)="setActiveTab('personal')">
               Personal Tasks
             </button>
-            <span class="navbar-text me-3 text-dark ms-3">Welcome, {{currentUser}}!</span>
+            <span class="navbar-text me-3 text-dark ms-3">
+              Welcome, <span class="fw-bold">{{ currentUser }}!</span>
+            </span>
             <button class="btn btn-outline-primary btn-sm" (click)="logout()">Logout</button>
           </div>
         </div>
@@ -46,9 +48,9 @@ import { SubTask } from '../../model/subtask.model';
       <div *ngIf="activeTab === 'overview'" class="tab-content">
         <div class="row">
           <div class="col-12">
-            <div class="card">
-              <div class="card-header">
-                <h5>My Projects</h5>
+            <div class="card border-0 shadow-sm">
+              <div class="card-header bg-light">
+                <h5 class="mb-0 text-dark">My Projects</h5>
               </div>
               <div class="card-body">
                 <div *ngFor="let project of tlProjects" class="mb-3 p-3 border rounded">
@@ -69,9 +71,9 @@ import { SubTask } from '../../model/subtask.model';
 
       <!-- Assigned Sub-Tasks Tab -->
       <div *ngIf="activeTab === 'assigned-subtasks'" class="tab-content">
-        <div class="card shadow-sm">
-          <div class="card-header bg-primary text-white">
-            <h5 class="mb-0">Project Sub-Tasks</h5>
+        <div class="card border-0 shadow-sm">
+          <div class="card-header bg-light">
+            <h5 class="mb-0 text-dark">Project Sub-Tasks</h5>
           </div>
           <div class="card-body">
             <div class="row mb-3">
@@ -160,8 +162,8 @@ import { SubTask } from '../../model/subtask.model';
       <div *ngIf="activeTab === 'create-subtask'" class="tab-content">
         <div class="row">
           <div class="col-md-6">
-            <div class="card shadow-sm">
-              <div class="card-header bg-success text-white">
+            <div class="card border-0 shadow-sm">
+              <div class="card-header bg-info text-white">
                 <h5 class="mb-0">Create Sub-Task</h5>
               </div>
               <div class="card-body">
@@ -197,15 +199,15 @@ import { SubTask } from '../../model/subtask.model';
                     </select>
                     <small class="text-muted">Choose from project team members</small>
                   </div>
-                  <button type="submit" class="btn btn-success w-100">Create Sub-Task</button>
+                  <button type="submit" class="btn btn-info w-100">Create Sub-Task</button>
                 </form>
               </div>
             </div>
           </div>
           <div class="col-md-6">
-            <div class="card shadow-sm">
-              <div class="card-header bg-info text-white">
-                <h5 class="mb-0">Instructions</h5>
+            <div class="card border-0 shadow-sm">
+              <div class="card-header bg-light">
+                <h5 class="mb-0 text-dark">Instructions</h5>
               </div>
               <div class="card-body">
                 <div class="alert alert-info">
@@ -227,8 +229,8 @@ import { SubTask } from '../../model/subtask.model';
       <div *ngIf="activeTab === 'personal'" class="tab-content">
         <div class="row">
           <div class="col-md-5">
-            <div class="card shadow-sm">
-              <div class="card-header bg-warning text-dark">
+            <div class="card border-0 shadow-sm">
+              <div class="card-header bg-success text-white">
                 <h5 class="mb-0">Create Personal Task</h5>
               </div>
               <div class="card-body">
@@ -261,16 +263,16 @@ import { SubTask } from '../../model/subtask.model';
                       <option>IN_PROGRESS</option>
                     </select>
                   </div>
-                  <button type="submit" class="btn btn-warning w-100">Add Personal Task</button>
+                  <button type="submit" class="btn btn-success w-100">Add Personal Task</button>
                 </form>
               </div>
             </div>
           </div>
 
           <div class="col-md-7">
-            <div class="card shadow-sm">
-              <div class="card-header bg-dark text-white">
-                <h5 class="mb-0">My Personal Tasks</h5>
+            <div class="card border-0 shadow-sm">
+              <div class="card-header bg-light">
+                <h5 class="mb-0 text-dark">My Personal Tasks</h5>
               </div>
               <div class="card-body">
                 <div class="row mb-3">
@@ -405,17 +407,29 @@ import { SubTask } from '../../model/subtask.model';
     <div class="modal-backdrop fade" [class.show]="editingTask" *ngIf="editingTask"></div>
   `,
   styles: [`
-    .nav-tabs .nav-link.active {
-      background-color: #0d6efd;
+    .nav-link.active {
+      background-color: #0d6efd !important;
       color: white !important;
-      border-color: #0d6efd;
+      border-radius: 5px;
+    }
+    .nav-link {
+      color: #0d6efd;
+      margin-right: 0.5rem;
+      text-decoration: none;
+      border: none;
+      background: none;
+    }
+    .nav-link:hover {
+      color: #0a58ca;
+      background-color: #e7f1ff;
+      border-radius: 5px;
     }
     .card {
-      border: none;
       border-radius: 10px;
     }
     .table th {
       border-top: none;
+      font-weight: 600;
     }
     .toast.show { display: block; }
     .toast { display: none; }

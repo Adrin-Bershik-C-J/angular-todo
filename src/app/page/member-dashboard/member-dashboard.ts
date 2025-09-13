@@ -28,7 +28,9 @@ import { Task } from '../../model/todo.model';
             <button class="nav-link btn btn-link" [class.active]="activeTab === 'personal'" (click)="setActiveTab('personal')">
               Personal Tasks
             </button>
-            <span class="navbar-text me-3 text-dark ms-3">Welcome, {{currentUser}}!</span>
+            <span class="navbar-text me-3 text-dark ms-3">
+              Welcome, <span class="fw-bold">{{ currentUser }}!</span>
+            </span>
             <button class="btn btn-outline-primary btn-sm" (click)="logout()">Logout</button>
           </div>
         </div>
@@ -41,34 +43,38 @@ import { Task } from '../../model/todo.model';
       <div *ngIf="activeTab === 'overview'" class="tab-content">
         <div class="row mb-4">
           <div class="col-md-3">
-            <div class="card bg-primary text-white">
+            <div class="card border-primary">
               <div class="card-body text-center">
-                <h5>Assigned Sub-Tasks</h5>
-                <h3>{{assignedSubTasks.length}}</h3>
+                <i class="fas fa-tasks text-primary fs-1 mb-2"></i>
+                <h5 class="text-primary">Assigned Sub-Tasks</h5>
+                <h2 class="text-dark">{{assignedSubTasks.length}}</h2>
               </div>
             </div>
           </div>
           <div class="col-md-3">
-            <div class="card bg-success text-white">
+            <div class="card border-success">
               <div class="card-body text-center">
-                <h5>Completed Sub-Tasks</h5>
-                <h3>{{getCompletedSubTasksCount()}}</h3>
+                <i class="fas fa-check-circle text-success fs-1 mb-2"></i>
+                <h5 class="text-success">Completed Sub-Tasks</h5>
+                <h2 class="text-dark">{{getCompletedSubTasksCount()}}</h2>
               </div>
             </div>
           </div>
           <div class="col-md-3">
-            <div class="card bg-warning text-dark">
+            <div class="card border-secondary">
               <div class="card-body text-center">
-                <h5>Personal Tasks</h5>
-                <h3>{{personalTasks.length}}</h3>
+                <i class="fas fa-user-tasks text-secondary fs-1 mb-2"></i>
+                <h5 class="text-secondary">Personal Tasks</h5>
+                <h2 class="text-dark">{{personalTasks.length}}</h2>
               </div>
             </div>
           </div>
           <div class="col-md-3">
-            <div class="card bg-info text-white">
+            <div class="card border-info">
               <div class="card-body text-center">
-                <h5>Completed Personal</h5>
-                <h3>{{getCompletedPersonalTasksCount()}}</h3>
+                <i class="fas fa-trophy text-info fs-1 mb-2"></i>
+                <h5 class="text-info">Completed Personal</h5>
+                <h2 class="text-dark">{{getCompletedPersonalTasksCount()}}</h2>
               </div>
             </div>
           </div>
@@ -76,9 +82,9 @@ import { Task } from '../../model/todo.model';
 
         <div class="row">
           <div class="col-md-6">
-            <div class="card">
-              <div class="card-header">
-                <h5>Upcoming Sub-Task Deadlines</h5>
+            <div class="card border-0 shadow-sm">
+              <div class="card-header bg-light">
+                <h5 class="mb-0 text-dark">Upcoming Sub-Task Deadlines</h5>
               </div>
               <div class="card-body">
                 <div *ngFor="let subtask of getUpcomingSubTaskDeadlines()" class="mb-2 p-2 border rounded">
@@ -99,9 +105,9 @@ import { Task } from '../../model/todo.model';
             </div>
           </div>
           <div class="col-md-6">
-            <div class="card">
-              <div class="card-header">
-                <h5>Upcoming Personal Task Deadlines</h5>
+            <div class="card border-0 shadow-sm">
+              <div class="card-header bg-light">
+                <h5 class="mb-0 text-dark">Upcoming Personal Task Deadlines</h5>
               </div>
               <div class="card-body">
                 <div *ngFor="let task of getUpcomingPersonalTaskDeadlines()" class="mb-2 p-2 border rounded">
@@ -126,9 +132,9 @@ import { Task } from '../../model/todo.model';
 
       <!-- Assigned Sub-Tasks Tab -->
       <div *ngIf="activeTab === 'assigned-subtasks'" class="tab-content">
-        <div class="card shadow-sm">
-          <div class="card-header bg-primary text-white">
-            <h5 class="mb-0">Sub-Tasks Assigned to Me</h5>
+        <div class="card border-0 shadow-sm">
+          <div class="card-header bg-light">
+            <h5 class="mb-0 text-dark">Sub-Tasks Assigned to Me</h5>
           </div>
           <div class="card-body">
             <div class="row mb-3">
@@ -217,8 +223,8 @@ import { Task } from '../../model/todo.model';
       <div *ngIf="activeTab === 'personal'" class="tab-content">
         <div class="row">
           <div class="col-md-5">
-            <div class="card shadow-sm">
-              <div class="card-header bg-warning text-dark">
+            <div class="card border-0 shadow-sm">
+              <div class="card-header bg-success text-white">
                 <h5 class="mb-0">Create Personal Task</h5>
               </div>
               <div class="card-body">
@@ -251,16 +257,16 @@ import { Task } from '../../model/todo.model';
                       <option>IN_PROGRESS</option>
                     </select>
                   </div>
-                  <button type="submit" class="btn btn-warning w-100">Add Personal Task</button>
+                  <button type="submit" class="btn btn-success w-100">Add Personal Task</button>
                 </form>
               </div>
             </div>
           </div>
 
           <div class="col-md-7">
-            <div class="card shadow-sm">
-              <div class="card-header bg-dark text-white">
-                <h5 class="mb-0">My Personal Tasks</h5>
+            <div class="card border-0 shadow-sm">
+              <div class="card-header bg-light">
+                <h5 class="mb-0 text-dark">My Personal Tasks</h5>
               </div>
               <div class="card-body">
                 <div class="row mb-3">
@@ -420,6 +426,13 @@ import { Task } from '../../model/todo.model';
     .toast.show { display: block; }
     .toast { display: none; }
     .tab-content { min-height: 400px; }
+    .btn-group-sm .btn {
+      font-size: 0.75rem;
+      padding: 0.25rem 0.5rem;
+    }
+    .fs-1 {
+      font-size: 2.5rem;
+    }
     @media (max-width: 991.98px) {
       .navbar-collapse {
         position: absolute;

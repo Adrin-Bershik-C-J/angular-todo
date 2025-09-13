@@ -72,6 +72,46 @@ import { Task } from '../../model/todo.model';
     <div class="container mt-4">
       <!-- Overview Tab -->
       <div *ngIf="activeTab === 'overview'" class="tab-content">
+        <!-- Key Metrics -->
+        <div class="row mb-4">
+          <div class="col-md-3">
+            <div class="card border-primary">
+              <div class="card-body text-center">
+                <i class="fas fa-project-diagram text-primary fs-1 mb-2"></i>
+                <h5 class="text-primary">My Projects</h5>
+                <h2 class="text-dark">{{ projects.length }}</h2>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="card border-success">
+              <div class="card-body text-center">
+                <i class="fas fa-users text-success fs-1 mb-2"></i>
+                <h5 class="text-success">Team Members</h5>
+                <h2 class="text-dark">{{ getTotalTeamMembers() }}</h2>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="card border-info">
+              <div class="card-body text-center">
+                <i class="fas fa-tasks text-info fs-1 mb-2"></i>
+                <h5 class="text-info">Active Sub-Tasks</h5>
+                <h2 class="text-dark">{{ getActiveSubTasksCount() }}</h2>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="card border-secondary">
+              <div class="card-body text-center">
+                <i class="fas fa-user-tasks text-secondary fs-1 mb-2"></i>
+                <h5 class="text-secondary">Personal Tasks</h5>
+                <h2 class="text-dark">{{ personalTasks.length }}</h2>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div class="row">
           <div class="col-12">
             <div class="card border-0 shadow-sm">
@@ -279,7 +319,7 @@ import { Task } from '../../model/todo.model';
         <div class="row">
           <div class="col-md-5">
             <div class="card border-0 shadow-sm">
-              <div class="card-header bg-primary text-white">
+              <div class="card-header bg-info text-white">
                 <h5 class="mb-0">Create Sub-Task</h5>
               </div>
               <div class="card-body">
@@ -351,7 +391,7 @@ import { Task } from '../../model/todo.model';
                       </option>
                     </select>
                   </div>
-                  <button type="submit" class="btn btn-warning w-100">
+                  <button type="submit" class="btn btn-info w-100">
                     Create Sub-Task
                   </button>
                 </form>
@@ -459,7 +499,7 @@ import { Task } from '../../model/todo.model';
                           </div>
                           <div class="btn-group btn-group-sm">
                             <button
-                              class="btn btn-outline-warning"
+                              class="btn btn-outline-info"
                               (click)="editSubTask(subtask)"
                             >
                               Edit
@@ -553,7 +593,7 @@ import { Task } from '../../model/todo.model';
                       <option>IN_PROGRESS</option>
                     </select>
                   </div>
-                  <button type="submit" class="btn btn-warning w-100">
+                  <button type="submit" class="btn btn-success w-100">
                     Add Personal Task
                   </button>
                 </form>
@@ -985,6 +1025,13 @@ import { Task } from '../../model/todo.model';
           margin: 0.2rem 0;
           border-radius: 5px;
         }
+      }
+      .fs-1 {
+        font-size: 2.5rem;
+      }
+      .btn-group-sm .btn {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
       }
     `,
   ],

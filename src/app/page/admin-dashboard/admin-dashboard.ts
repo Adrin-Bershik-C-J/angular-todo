@@ -48,9 +48,9 @@ import { RegisterModel } from '../../model/auth.model';
             >
               Analytics
             </button>
-            <span class="navbar-text me-3 text-dark ms-3"
-              >Welcome, {{ currentUser }}!</span
-            >
+            <span class="navbar-text me-3 text-dark ms-3">
+              Welcome, <span class="fw-bold">{{ currentUser }}!</span>
+            </span>
             <button class="btn btn-outline-primary btn-sm" (click)="logout()">
               Logout
             </button>
@@ -85,19 +85,19 @@ import { RegisterModel } from '../../model/auth.model';
             </div>
           </div>
           <div class="col-md-3">
-            <div class="card border-warning">
+            <div class="card border-info">
               <div class="card-body text-center">
-                <i class="fas fa-tasks text-warning fs-1 mb-2"></i>
-                <h5 class="text-warning">Total Sub-Tasks</h5>
+                <i class="fas fa-tasks text-info fs-1 mb-2"></i>
+                <h5 class="text-info">Total Sub-Tasks</h5>
                 <h2 class="text-dark">{{ allSubTasks.length }}</h2>
               </div>
             </div>
           </div>
           <div class="col-md-3">
-            <div class="card border-info">
+            <div class="card border-secondary">
               <div class="card-body text-center">
-                <i class="fas fa-chart-line text-info fs-1 mb-2"></i>
-                <h5 class="text-info">Completion Rate</h5>
+                <i class="fas fa-chart-line text-secondary fs-1 mb-2"></i>
+                <h5 class="text-secondary">Completion Rate</h5>
                 <h2 class="text-dark">{{ getOverallCompletionRate() }}%</h2>
               </div>
             </div>
@@ -177,7 +177,7 @@ import { RegisterModel } from '../../model/auth.model';
                 <div class="mb-3">
                   <div class="d-flex justify-content-between">
                     <span class="text-dark">Members</span>
-                    <span class="badge bg-warning">{{
+                    <span class="badge bg-secondary">{{
                       getMembersCount()
                     }}</span>
                   </div>
@@ -379,8 +379,8 @@ import { RegisterModel } from '../../model/auth.model';
                           <span
                             class="badge"
                             [ngClass]="{
-                              'bg-danger': user.role === 'MANAGER',
-                              'bg-warning': user.role === 'TL',
+                              'bg-primary': user.role === 'MANAGER',
+                              'bg-success': user.role === 'TL',
                               'bg-info': user.role === 'MEMBER',
                               'bg-dark': user.role === 'ADMIN'
                             }"
@@ -482,7 +482,7 @@ import { RegisterModel } from '../../model/auth.model';
                 <div class="mb-3">
                   <div class="d-flex justify-content-between">
                     <span class="text-dark">Pending sub-tasks</span>
-                    <span class="badge bg-warning">{{
+                    <span class="badge bg-danger">{{
                       getFilteredPendingSubTasks()
                     }}</span>
                   </div>
@@ -576,6 +576,10 @@ import { RegisterModel } from '../../model/auth.model';
       }
       .fs-1 {
         font-size: 2.5rem;
+      }
+      .btn-group-sm .btn {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
       }
     `,
   ],
