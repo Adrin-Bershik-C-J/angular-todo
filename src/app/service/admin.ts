@@ -9,12 +9,20 @@ import { Observable } from 'rxjs';
 export class AdminService {
   constructor(private http: HttpClient) {}
 
-  private apiUrl = 'http://localhost:8080/api/admin/create-user';
+  private apiUrl = 'http://localhost:8080/api/admin';
 
   createManagerOrTL(
     role: string,
     obj: RegisterModel
   ): Observable<any> {
-    return this.http.post(`${this.apiUrl}?role=${role}`, obj, { responseType: 'text' });
+    return this.http.post(`${this.apiUrl}/create-user?role=${role}`, obj, { responseType: 'text' });
+  }
+
+  getAllProjects(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/projects`);
+  }
+
+  getAllSubTasks(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/subtasks`);
   }
 }

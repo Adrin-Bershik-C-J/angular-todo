@@ -37,7 +37,7 @@ export class ProjectService {
   }
 
   getAllUsers(): Observable<any[]> {
-    return this.http.get<any[]>('http://localhost:8080/api/users');
+    return this.http.get<any[]>(`${this.apiUrl}/users`);
   }
 
   getProjectMembers(projectId: number): Observable<any[]> {

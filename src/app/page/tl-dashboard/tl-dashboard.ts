@@ -13,41 +13,34 @@ import { SubTask } from '../../model/subtask.model';
   selector: 'app-tl-dashboard',
   imports: [CommonModule, FormsModule],
   template: `
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
       <div class="container">
-        <span class="navbar-brand">Team Lead Dashboard</span>
-        <div class="navbar-nav ms-auto">
-          <span class="navbar-text me-3">Welcome, {{currentUser}}!</span>
-          <button class="btn btn-outline-light btn-sm" (click)="logout()">Logout</button>
+        <span class="navbar-brand text-primary fw-bold">Team Lead Dashboard</span>
+        <button class="navbar-toggler" type="button" (click)="toggleNavbar()">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" [class.show]="isNavbarCollapsed" id="navbarNav">
+          <div class="navbar-nav ms-auto d-flex align-items-center">
+            <button class="nav-link btn btn-link" [class.active]="activeTab === 'overview'" (click)="setActiveTab('overview')">
+              Overview
+            </button>
+            <button class="nav-link btn btn-link" [class.active]="activeTab === 'assigned-subtasks'" (click)="setActiveTab('assigned-subtasks')">
+              Assigned Sub-Tasks
+            </button>
+            <button class="nav-link btn btn-link" [class.active]="activeTab === 'create-subtask'" (click)="setActiveTab('create-subtask')">
+              Create Sub-Task
+            </button>
+            <button class="nav-link btn btn-link" [class.active]="activeTab === 'personal'" (click)="setActiveTab('personal')">
+              Personal Tasks
+            </button>
+            <span class="navbar-text me-3 text-dark ms-3">Welcome, {{currentUser}}!</span>
+            <button class="btn btn-outline-primary btn-sm" (click)="logout()">Logout</button>
+          </div>
         </div>
       </div>
     </nav>
 
     <div class="container mt-4">
-      <!-- Tab Navigation -->
-      <ul class="nav nav-tabs mb-4">
-        <li class="nav-item">
-          <button class="nav-link" [class.active]="activeTab === 'overview'" (click)="setActiveTab('overview')">
-            Overview
-          </button>
-        </li>
-        <li class="nav-item">
-          <button class="nav-link" [class.active]="activeTab === 'assigned-subtasks'" (click)="setActiveTab('assigned-subtasks')">
-            Assigned Sub-Tasks
-          </button>
-        </li>
-        <li class="nav-item">
-          <button class="nav-link" [class.active]="activeTab === 'create-subtask'" (click)="setActiveTab('create-subtask')">
-            Create Sub-Task
-          </button>
-        </li>
-        <li class="nav-item">
-          <button class="nav-link" [class.active]="activeTab === 'personal'" (click)="setActiveTab('personal')">
-            Personal Tasks
-          </button>
-        </li>
-
-      </ul>
 
       <!-- Overview Tab -->
       <div *ngIf="activeTab === 'overview'" class="tab-content">
@@ -76,22 +69,30 @@ import { SubTask } from '../../model/subtask.model';
 
       <!-- Assigned Sub-Tasks Tab -->
       <div *ngIf="activeTab === 'assigned-subtasks'" class="tab-content">
-        <!-- Project Filter -->
-        <div class="row mb-3">
-          <div class="col-md-4">
-            <label class="form-label">Filter by Project:</label>
-            <select class="form-select" [(ngModel)]="selectedProjectId" (change)="onProjectFilterChange()">
-              <option value="">All Projects</option>
-              <option *ngFor="let project of tlProjects" [value]="project.id">{{project.name}}</option>
-            </select>
-          </div>
-        </div>
-        
         <div class="card shadow-sm">
           <div class="card-header bg-primary text-white">
             <h5 class="mb-0">Project Sub-Tasks</h5>
           </div>
           <div class="card-body">
+            <div class="row mb-3">
+              <div class="col-md-4">
+                <select class="form-select form-select-sm" [(ngModel)]="subTaskStatusFilter">
+                  <option value="">All Status</option>
+                  <option value="NOT_STARTED">Not Started</option>
+                  <option value="IN_PROGRESS">In Progress</option>
+                  <option value="DONE">Done</option>
+                </select>
+              </div>
+              <div class="col-md-4">
+                <input type="date" class="form-control form-control-sm" [(ngModel)]="subTaskDueDateFilter" placeholder="Filter by due date">
+              </div>
+              <div class="col-md-4">
+                <select class="form-select form-select-sm" [(ngModel)]="subTaskProjectFilter">
+                  <option value="">All Projects</option>
+                  <option *ngFor="let project of tlProjects" [value]="project.id">{{project.name}}</option>
+                </select>
+              </div>
+            </div>
             <div class="table-responsive">
               <table class="table table-hover">
                 <thead class="table-light">
@@ -106,7 +107,7 @@ import { SubTask } from '../../model/subtask.model';
                   </tr>
                 </thead>
                 <tbody>
-                  <tr *ngFor="let subtask of getFilteredSubTasks()">
+                  <tr *ngFor="let subtask of getFilteredTLSubTasks()">
                     <td>
                       <strong>{{subtask.name}}</strong>
                     </td>
@@ -145,7 +146,7 @@ import { SubTask } from '../../model/subtask.model';
                       </div>
                     </td>
                   </tr>
-                  <tr *ngIf="getFilteredSubTasks().length === 0">
+                  <tr *ngIf="getFilteredTLSubTasks().length === 0">
                     <td colspan="7" class="text-center text-muted">No sub-tasks found for selected project</td>
                   </tr>
                 </tbody>
@@ -175,7 +176,7 @@ import { SubTask } from '../../model/subtask.model';
                   </div>
                   <div class="mb-3">
                     <label class="form-label">Due Date</label>
-                    <input type="date" class="form-control" [(ngModel)]="subTaskObj.dueDate" name="dueDate" [min]="getTodayDate()" [max]="getProjectDueDate()" required>
+                    <input type="date" class="form-control" [(ngModel)]="subTaskObj.dueDate" name="dueDate" [min]="getTomorrowDate()" [max]="getProjectDueDate()" required>
                   </div>
                   <div class="mb-3">
                     <label class="form-label">Project</label>
@@ -258,7 +259,6 @@ import { SubTask } from '../../model/subtask.model';
                     <select class="form-select" [(ngModel)]="personalTaskObj.status" name="status" required>
                       <option>NOT_STARTED</option>
                       <option>IN_PROGRESS</option>
-                      <option>DONE</option>
                     </select>
                   </div>
                   <button type="submit" class="btn btn-warning w-100">Add Personal Task</button>
@@ -273,6 +273,27 @@ import { SubTask } from '../../model/subtask.model';
                 <h5 class="mb-0">My Personal Tasks</h5>
               </div>
               <div class="card-body">
+                <div class="row mb-3">
+                  <div class="col-md-4">
+                    <select class="form-select form-select-sm" [(ngModel)]="taskPriorityFilter">
+                      <option value="">All Priorities</option>
+                      <option value="LOW">Low</option>
+                      <option value="MEDIUM">Medium</option>
+                      <option value="HIGH">High</option>
+                    </select>
+                  </div>
+                  <div class="col-md-4">
+                    <select class="form-select form-select-sm" [(ngModel)]="taskStatusFilter">
+                      <option value="">All Status</option>
+                      <option value="NOT_STARTED">Not Started</option>
+                      <option value="IN_PROGRESS">In Progress</option>
+                      <option value="DONE">Done</option>
+                    </select>
+                  </div>
+                  <div class="col-md-4">
+                    <input type="date" class="form-control form-control-sm" [(ngModel)]="taskDueDateFilter" placeholder="Filter by due date">
+                  </div>
+                </div>
                 <div class="table-responsive">
                   <table class="table table-hover">
                     <thead class="table-light">
@@ -285,7 +306,7 @@ import { SubTask } from '../../model/subtask.model';
                       </tr>
                     </thead>
                     <tbody>
-                      <tr *ngFor="let task of personalTasks">
+                      <tr *ngFor="let task of getFilteredPersonalTasks()">
                         <td>{{task.title}}</td>
                         <td>
                           <span class="badge" [ngClass]="{
@@ -307,7 +328,7 @@ import { SubTask } from '../../model/subtask.model';
                           <button class="btn btn-sm btn-danger" (click)="deletePersonalTask(task.id)">Delete</button>
                         </td>
                       </tr>
-                      <tr *ngIf="personalTasks.length === 0">
+                      <tr *ngIf="getFilteredPersonalTasks().length === 0">
                         <td colspan="5" class="text-center text-muted">No personal tasks found</td>
                       </tr>
                     </tbody>
@@ -337,8 +358,8 @@ import { SubTask } from '../../model/subtask.model';
 
     <!-- Edit Task Modal -->
     <div class="modal fade" [class.show]="editingTask" [style.display]="editingTask ? 'block' : 'none'" 
-         *ngIf="editingTask" tabindex="-1">
-      <div class="modal-dialog">
+         *ngIf="editingTask" tabindex="-1" (keydown.escape)="cancelTaskEdit()" (click)="onTaskModalBackdropClick($event)">
+      <div class="modal-dialog" (click)="$event.stopPropagation()">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title">Edit Personal Task</h5>
@@ -399,6 +420,28 @@ import { SubTask } from '../../model/subtask.model';
     .toast.show { display: block; }
     .toast { display: none; }
     .tab-content { min-height: 400px; }
+    @media (max-width: 991.98px) {
+      .navbar-collapse {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        background: white;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        width: 250px;
+        z-index: 1000;
+      }
+      .navbar-nav {
+        flex-direction: column;
+        padding: 1rem;
+      }
+      .nav-link {
+        padding: 0.5rem 1rem;
+        margin: 0.2rem 0;
+        border-radius: 5px;
+      }
+    }
     .btn-group-sm .btn {
       font-size: 0.75rem;
       padding: 0.25rem 0.5rem;
@@ -432,6 +475,13 @@ export class TlDashboard implements OnInit {
   showToast = false;
   toastMessage = '';
   toastError = false;
+  isNavbarCollapsed = false;
+  subTaskStatusFilter: string = '';
+  subTaskDueDateFilter: string = '';
+  subTaskProjectFilter: string = '';
+  taskPriorityFilter: string = '';
+  taskStatusFilter: string = '';
+  taskDueDateFilter: string = '';
 
   ngOnInit(): void {
     this.currentUser = this.auth.getUserName() || 'Team Lead';
@@ -485,9 +535,9 @@ export class TlDashboard implements OnInit {
   }
 
   getProjectDueDate(): string {
-    if (!this.subTaskObj.projectId) return this.getTodayDate();
+    if (!this.subTaskObj.projectId) return '';
     const project = this.tlProjects.find(p => p.id === this.subTaskObj.projectId);
-    return project ? project.dueDate : this.getTodayDate();
+    return project ? project.dueDate : '';
   }
 
   getAvailableProjects(): any[] {
@@ -589,6 +639,30 @@ export class TlDashboard implements OnInit {
       error: (error) => {
         this.showToastMessage('Error updating task', true);
       }
+    });
+  }
+
+  onTaskModalBackdropClick(event: Event): void {
+    if (event.target === event.currentTarget) {
+      this.cancelTaskEdit();
+    }
+  }
+
+  getFilteredPersonalTasks(): any[] {
+    return this.personalTasks.filter(task => {
+      const priorityMatch = !this.taskPriorityFilter || task.priority === this.taskPriorityFilter;
+      const statusMatch = !this.taskStatusFilter || task.status === this.taskStatusFilter;
+      const dueDateMatch = !this.taskDueDateFilter || task.dueDate?.split('T')[0] === this.taskDueDateFilter;
+      return priorityMatch && statusMatch && dueDateMatch;
+    });
+  }
+
+  getFilteredTLSubTasks(): any[] {
+    return this.assignedSubTasks.filter(subtask => {
+      const statusMatch = !this.subTaskStatusFilter || subtask.status === this.subTaskStatusFilter;
+      const dueDateMatch = !this.subTaskDueDateFilter || subtask.dueDate?.split('T')[0] === this.subTaskDueDateFilter;
+      const projectMatch = !this.subTaskProjectFilter || subtask.projectId === Number(this.subTaskProjectFilter);
+      return statusMatch && dueDateMatch && projectMatch;
     });
   }
 
@@ -696,6 +770,16 @@ export class TlDashboard implements OnInit {
 
   getTodayDate(): string {
     return new Date().toISOString().split('T')[0];
+  }
+
+  getTomorrowDate(): string {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    return tomorrow.toISOString().split('T')[0];
+  }
+
+  toggleNavbar(): void {
+    this.isNavbarCollapsed = !this.isNavbarCollapsed;
   }
 
   logout(): void {

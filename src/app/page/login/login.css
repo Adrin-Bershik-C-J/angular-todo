@@ -1,6 +1,6 @@
 /* Background gradient */
 .login-bg {
-  background: linear-gradient(135deg, #e0eafc, #cfdef3);
+  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
   padding: 1rem;
 }
 
@@ -9,9 +9,8 @@
   width: 100%;
   max-width: 420px;
   border-radius: 16px;
-  backdrop-filter: blur(12px);
-  background: rgba(255, 255, 255, 0.85);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: #ffffff;
+  border: 1px solid #dee2e6;
 }
 
 

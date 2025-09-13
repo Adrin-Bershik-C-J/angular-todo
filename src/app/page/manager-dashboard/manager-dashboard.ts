@@ -6,7 +6,10 @@ import { Auth } from '../../service/auth';
 import { ProjectService } from '../../service/project';
 import { SubTaskService } from '../../service/subtask';
 import { TodoService } from '../../service/todo';
-import { ProjectRequestModel, ProjectResponseModel } from '../../model/project.model';
+import {
+  ProjectRequestModel,
+  ProjectResponseModel,
+} from '../../model/project.model';
 import { SubTask } from '../../model/subtask.model';
 import { Task } from '../../model/todo.model';
 
@@ -14,61 +17,91 @@ import { Task } from '../../model/todo.model';
   selector: 'app-manager-dashboard',
   imports: [CommonModule, FormsModule],
   template: `
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
       <div class="container">
-        <span class="navbar-brand">Manager Dashboard</span>
-        <div class="navbar-nav ms-auto">
-          <span class="navbar-text me-3">Welcome, {{currentUser}}!</span>
-          <button class="btn btn-outline-light btn-sm" (click)="logout()">Logout</button>
+        <span class="navbar-brand text-primary fw-bold">Manager Dashboard</span>
+        <button class="navbar-toggler" type="button" (click)="toggleNavbar()">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div
+          class="collapse navbar-collapse"
+          [class.show]="isNavbarCollapsed"
+          id="navbarNav"
+        >
+          <div class="navbar-nav ms-auto d-flex align-items-center">
+            <button
+              class="nav-link btn btn-link"
+              [class.active]="activeTab === 'overview'"
+              (click)="setActiveTab('overview')"
+            >
+              Overview
+            </button>
+            <button
+              class="nav-link btn btn-link"
+              [class.active]="activeTab === 'projects'"
+              (click)="setActiveTab('projects')"
+            >
+              Create Project
+            </button>
+            <button
+              class="nav-link btn btn-link"
+              [class.active]="activeTab === 'subtasks'"
+              (click)="setActiveTab('subtasks')"
+            >
+              Sub-Tasks
+            </button>
+            <button
+              class="nav-link btn btn-link"
+              [class.active]="activeTab === 'personal'"
+              (click)="setActiveTab('personal')"
+            >
+              Personal Tasks
+            </button>
+            <span class="navbar-text me-3 text-dark ms-3"
+              >Welcome, {{ currentUser }}!</span
+            >
+            <button class="btn btn-outline-primary btn-sm" (click)="logout()">
+              Logout
+            </button>
+          </div>
         </div>
       </div>
     </nav>
 
     <div class="container mt-4">
-      <!-- Tab Navigation -->
-      <ul class="nav nav-tabs mb-4">
-        <li class="nav-item">
-          <button class="nav-link" [class.active]="activeTab === 'overview'" (click)="setActiveTab('overview')">
-            Overview
-          </button>
-        </li>
-        <li class="nav-item">
-          <button class="nav-link" [class.active]="activeTab === 'projects'" (click)="setActiveTab('projects')">
-            Create Project
-          </button>
-        </li>
-        <li class="nav-item">
-          <button class="nav-link" [class.active]="activeTab === 'subtasks'" (click)="setActiveTab('subtasks')">
-            Sub-Tasks
-          </button>
-        </li>
-        <li class="nav-item">
-          <button class="nav-link" [class.active]="activeTab === 'personal'" (click)="setActiveTab('personal')">
-            Personal Tasks
-          </button>
-        </li>
-      </ul>
-
       <!-- Overview Tab -->
       <div *ngIf="activeTab === 'overview'" class="tab-content">
         <div class="row">
           <div class="col-12">
-            <div class="card">
-              <div class="card-header">
-                <h5>My Projects</h5>
+            <div class="card border-0 shadow-sm">
+              <div class="card-header bg-light">
+                <h5 class="mb-0 text-dark">My Projects</h5>
               </div>
               <div class="card-body">
-                <div *ngFor="let project of projects" class="mb-3 p-3 border rounded">
+                <div
+                  *ngFor="let project of projects"
+                  class="mb-3 p-3 border rounded"
+                >
                   <div class="d-flex justify-content-between align-items-start">
                     <div>
-                      <h6>{{project.name}}</h6>
-                      <p class="text-muted mb-1">{{project.description}}</p>
-                      <small class="text-muted">Due: {{project.dueDate | date}} | TL: {{project.tlUsername}}</small>
+                      <h6>{{ project.name }}</h6>
+                      <p class="text-muted mb-1">{{ project.description }}</p>
+                      <small class="text-muted"
+                        >Due: {{ project.dueDate | date }} | TL:
+                        {{ project.tlUsername }}</small
+                      >
                     </div>
-                    <button class="btn btn-sm btn-outline-primary" (click)="editProject(project)">Edit</button>
+                    <button
+                      class="btn btn-sm btn-outline-primary"
+                      (click)="editProject(project)"
+                    >
+                      Edit
+                    </button>
                   </div>
                 </div>
-                <div *ngIf="projects.length === 0" class="text-muted">No projects yet</div>
+                <div *ngIf="projects.length === 0" class="text-muted">
+                  No projects yet
+                </div>
               </div>
             </div>
           </div>
@@ -87,47 +120,132 @@ import { Task } from '../../model/todo.model';
                 <form (ngSubmit)="createProject()">
                   <div class="mb-3">
                     <label class="form-label">Project Name</label>
-                    <input type="text" class="form-control" [(ngModel)]="projectObj.name" name="name" required>
+                    <input
+                      type="text"
+                      class="form-control"
+                      [(ngModel)]="projectObj.name"
+                      name="name"
+                      required
+                    />
                   </div>
                   <div class="mb-3">
                     <label class="form-label">Description</label>
-                    <textarea class="form-control" rows="3" [(ngModel)]="projectObj.description" name="description"></textarea>
+                    <textarea
+                      class="form-control"
+                      rows="3"
+                      [(ngModel)]="projectObj.description"
+                      name="description"
+                    ></textarea>
                   </div>
                   <div class="mb-3">
                     <label class="form-label">Due Date</label>
-                    <input type="date" class="form-control" [(ngModel)]="projectObj.dueDate" name="dueDate" [min]="getTodayDate()" required>
+                    <input
+                      type="date"
+                      class="form-control"
+                      [(ngModel)]="projectObj.dueDate"
+                      name="dueDate"
+                      [min]="getTodayDate()"
+                      required
+                    />
                   </div>
                   <div class="mb-3">
                     <label class="form-label">Team Lead</label>
-                    <select class="form-select" [(ngModel)]="selectedTlUsername" name="tlUsername" required>
+                    <select
+                      class="form-select"
+                      [(ngModel)]="selectedTlUsername"
+                      name="tlUsername"
+                      required
+                    >
                       <option value="">Select Team Lead</option>
-                      <option *ngFor="let tl of getTLUsers()" [value]="tl.username">{{tl.name}} ({{tl.username}})</option>
+                      <option
+                        *ngFor="let tl of getTLUsers()"
+                        [value]="tl.username"
+                      >
+                        {{ tl.name }} ({{ tl.username }})
+                      </option>
                     </select>
                   </div>
                   <div class="mb-3">
                     <label class="form-label">Team Members</label>
-                    <div class="border rounded p-2" style="max-height: 150px; overflow-y: auto;">
-                      <div *ngFor="let member of getMemberUsers()" class="form-check">
-                        <input class="form-check-input" type="checkbox" 
-                               (change)="onMemberSelect(member.username, $event)"
-                               [checked]="selectedMemberUsernames.includes(member.username)"
-                               [id]="'member-' + member.id">
-                        <label class="form-check-label" [for]="'member-' + member.id">
-                          {{member.name}} ({{member.username}})
-                        </label>
+                    <div
+                      class="border rounded p-2"
+                      style="max-height: 200px; overflow-y: auto;"
+                    >
+                      <div class="row g-2">
+                        <div
+                          *ngFor="let member of getMemberUsers()"
+                          class="col-12"
+                        >
+                          <div
+                            class="card"
+                            [class.border-primary]="
+                              selectedMemberUsernames.includes(member.username)
+                            "
+                            [class.bg-primary]="
+                              selectedMemberUsernames.includes(member.username)
+                            "
+                            [class.text-white]="
+                              selectedMemberUsernames.includes(member.username)
+                            "
+                            style="cursor: pointer; transition: all 0.2s;"
+                            (click)="toggleMemberSelection(member.username)"
+                          >
+                            <div
+                              class="card-body p-2 d-flex align-items-center"
+                            >
+                              <div class="flex-grow-1">
+                                <div class="fw-semibold">{{ member.name }}</div>
+                                <small
+                                  [class.text-white-50]="
+                                    selectedMemberUsernames.includes(
+                                      member.username
+                                    )
+                                  "
+                                  [class.text-muted]="
+                                    !selectedMemberUsernames.includes(
+                                      member.username
+                                    )
+                                  "
+                                  >@{{ member.username }}</small
+                                >
+                              </div>
+                              <i
+                                class="fas fa-user-circle fs-5"
+                                [class.text-white]="
+                                  selectedMemberUsernames.includes(
+                                    member.username
+                                  )
+                                "
+                                [class.text-primary]="
+                                  !selectedMemberUsernames.includes(
+                                    member.username
+                                  )
+                                "
+                              ></i>
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </div>
+                    <div
+                      *ngIf="getMemberUsers().length === 0"
+                      class="text-muted text-center p-3"
+                    >
+                      No team members available
+                    </div>
                   </div>
-                  <button type="submit" class="btn btn-success w-100">Create Project</button>
+                  <button type="submit" class="btn btn-success w-100">
+                    Create Project
+                  </button>
                 </form>
               </div>
             </div>
           </div>
 
           <div class="col-md-7">
-            <div class="card shadow-sm">
-              <div class="card-header bg-info text-white">
-                <h5 class="mb-0">Project Creation Guide</h5>
+            <div class="card border-0 shadow-sm">
+              <div class="card-header bg-light">
+                <h5 class="mb-0 text-dark">Project Creation Guide</h5>
               </div>
               <div class="card-body">
                 <div class="alert alert-info">
@@ -136,7 +254,9 @@ import { Task } from '../../model/todo.model';
                     <li>Select a Team Lead from available TLs</li>
                     <li>Choose multiple team members for the project</li>
                     <li>Set realistic due dates for project completion</li>
-                    <li>Projects can be edited later (except Team Lead assignment)</li>
+                    <li>
+                      Projects can be edited later (except Team Lead assignment)
+                    </li>
                   </ul>
                 </div>
               </div>
@@ -149,53 +269,128 @@ import { Task } from '../../model/todo.model';
       <div *ngIf="activeTab === 'subtasks'" class="tab-content">
         <div class="row">
           <div class="col-md-5">
-            <div class="card shadow-sm">
-              <div class="card-header bg-warning text-dark">
+            <div class="card border-0 shadow-sm">
+              <div class="card-header bg-primary text-white">
                 <h5 class="mb-0">Create Sub-Task</h5>
               </div>
               <div class="card-body">
                 <form (ngSubmit)="createSubTask()">
                   <div class="mb-3">
                     <label class="form-label">Sub-Task Name</label>
-                    <input type="text" class="form-control" [(ngModel)]="subTaskObj.name" name="name" required>
+                    <input
+                      type="text"
+                      class="form-control"
+                      [(ngModel)]="subTaskObj.name"
+                      name="name"
+                      required
+                    />
                   </div>
                   <div class="mb-3">
                     <label class="form-label">Description</label>
-                    <textarea class="form-control" rows="3" [(ngModel)]="subTaskObj.description" name="description"></textarea>
+                    <textarea
+                      class="form-control"
+                      rows="3"
+                      [(ngModel)]="subTaskObj.description"
+                      name="description"
+                    ></textarea>
                   </div>
                   <div class="mb-3">
                     <label class="form-label">Due Date</label>
-                    <input type="date" class="form-control" [(ngModel)]="subTaskObj.dueDate" name="dueDate" [min]="getTodayDate()" [max]="getProjectDueDate()" required>
+                    <input
+                      type="date"
+                      class="form-control"
+                      [(ngModel)]="subTaskObj.dueDate"
+                      name="dueDate"
+                      [min]="getTomorrowDate()"
+                      [max]="getProjectDueDate()"
+                      required
+                    />
                   </div>
                   <div class="mb-3">
                     <label class="form-label">Project</label>
-                    <select class="form-select" [(ngModel)]="subTaskObj.projectId" name="projectId" 
-                            (change)="onProjectSelect()" required>
+                    <select
+                      class="form-select"
+                      [(ngModel)]="subTaskObj.projectId"
+                      name="projectId"
+                      (change)="onProjectSelect()"
+                      required
+                    >
                       <option value="">Select Project</option>
-                      <option *ngFor="let project of projects" [value]="project.id">{{project.name}}</option>
+                      <option
+                        *ngFor="let project of projects"
+                        [value]="project.id"
+                      >
+                        {{ project.name }}
+                      </option>
                     </select>
                   </div>
                   <div class="mb-3">
                     <label class="form-label">Assign To</label>
-                    <select class="form-select" [(ngModel)]="subTaskObj.assigneeUsername" name="assigneeUsername" required>
+                    <select
+                      class="form-select"
+                      [(ngModel)]="subTaskObj.assigneeUsername"
+                      name="assigneeUsername"
+                      required
+                    >
                       <option value="">Select Assignee</option>
-                      <option *ngFor="let member of projectMembers" [value]="member.username">
-                        {{member.name}} ({{member.username}}) - {{member.role}}
+                      <option
+                        *ngFor="let member of projectMembers"
+                        [value]="member.username"
+                      >
+                        {{ member.name }} ({{ member.username }}) -
+                        {{ member.role }}
                       </option>
                     </select>
                   </div>
-                  <button type="submit" class="btn btn-warning w-100">Create Sub-Task</button>
+                  <button type="submit" class="btn btn-warning w-100">
+                    Create Sub-Task
+                  </button>
                 </form>
               </div>
             </div>
           </div>
 
           <div class="col-md-7">
-            <div class="card shadow-sm">
-              <div class="card-header bg-info text-white">
-                <h5 class="mb-0">Project Sub-Tasks</h5>
+            <div class="card border-0 shadow-sm">
+              <div class="card-header bg-light">
+                <h5 class="mb-0 text-dark">Project Sub-Tasks</h5>
               </div>
               <div class="card-body">
+                <div class="row mb-3">
+                  <div class="col-md-4">
+                    <select
+                      class="form-select form-select-sm"
+                      [(ngModel)]="subTaskStatusFilter"
+                    >
+                      <option value="">All Status</option>
+                      <option value="NOT_STARTED">Not Started</option>
+                      <option value="IN_PROGRESS">In Progress</option>
+                      <option value="DONE">Done</option>
+                    </select>
+                  </div>
+                  <div class="col-md-4">
+                    <input
+                      type="date"
+                      class="form-control form-control-sm"
+                      [(ngModel)]="subTaskDueDateFilter"
+                      placeholder="Filter by due date"
+                    />
+                  </div>
+                  <div class="col-md-4">
+                    <select
+                      class="form-select form-select-sm"
+                      [(ngModel)]="subTaskProjectFilter"
+                    >
+                      <option value="">All Projects</option>
+                      <option
+                        *ngFor="let project of projects"
+                        [value]="project.id"
+                      >
+                        {{ project.name }}
+                      </option>
+                    </select>
+                  </div>
+                </div>
                 <div class="table-responsive">
                   <table class="table table-hover">
                     <thead class="table-light">
@@ -209,40 +404,56 @@ import { Task } from '../../model/todo.model';
                       </tr>
                     </thead>
                     <tbody>
-                      <tr *ngFor="let subtask of managerSubTasks">
-                        <td>{{subtask.name}}</td>
-                        <td>{{subtask.memberUsername}}</td>
+                      <tr *ngFor="let subtask of getFilteredSubTasks()">
+                        <td>{{ subtask.name }}</td>
+                        <td>{{ subtask.memberUsername }}</td>
                         <td>
-                          <span class="badge" [ngClass]="{
-                            'bg-secondary': subtask.status === 'NOT_STARTED',
-                            'bg-primary': subtask.status === 'IN_PROGRESS',
-                            'bg-success': subtask.status === 'DONE'
-                          }">{{subtask.status}}</span>
+                          <span
+                            class="badge"
+                            [ngClass]="{
+                              'bg-secondary': subtask.status === 'NOT_STARTED',
+                              'bg-primary': subtask.status === 'IN_PROGRESS',
+                              'bg-success': subtask.status === 'DONE'
+                            }"
+                            >{{ subtask.status }}</span
+                          >
                         </td>
-                        <td>{{subtask.dueDate | date}}</td>
-                        <td>Project {{subtask.projectId}}</td>
+                        <td>{{ subtask.dueDate | date }}</td>
+                        <td>{{ subtask.projectName }}</td>
                         <td>
                           <div class="btn-group btn-group-sm">
-                            <button class="btn btn-outline-secondary" 
-                                    (click)="updateSubTaskStatus(subtask.id, 'NOT_STARTED')"
-                                    [disabled]="subtask.status === 'NOT_STARTED'">
+                            <button
+                              class="btn btn-outline-secondary"
+                              (click)="
+                                updateSubTaskStatus(subtask.id, 'NOT_STARTED')
+                              "
+                              [disabled]="subtask.status === 'NOT_STARTED'"
+                            >
                               Not Started
                             </button>
-                            <button class="btn btn-outline-primary" 
-                                    (click)="updateSubTaskStatus(subtask.id, 'IN_PROGRESS')"
-                                    [disabled]="subtask.status === 'IN_PROGRESS'">
+                            <button
+                              class="btn btn-outline-primary"
+                              (click)="
+                                updateSubTaskStatus(subtask.id, 'IN_PROGRESS')
+                              "
+                              [disabled]="subtask.status === 'IN_PROGRESS'"
+                            >
                               In Progress
                             </button>
-                            <button class="btn btn-outline-success" 
-                                    (click)="updateSubTaskStatus(subtask.id, 'DONE')"
-                                    [disabled]="subtask.status === 'DONE'">
+                            <button
+                              class="btn btn-outline-success"
+                              (click)="updateSubTaskStatus(subtask.id, 'DONE')"
+                              [disabled]="subtask.status === 'DONE'"
+                            >
                               Done
                             </button>
                           </div>
                         </td>
                       </tr>
-                      <tr *ngIf="managerSubTasks.length === 0">
-                        <td colspan="6" class="text-center text-muted">No sub-tasks found</td>
+                      <tr *ngIf="getFilteredSubTasks().length === 0">
+                        <td colspan="6" class="text-center text-muted">
+                          No sub-tasks found
+                        </td>
                       </tr>
                     </tbody>
                   </table>
@@ -257,23 +468,39 @@ import { Task } from '../../model/todo.model';
       <div *ngIf="activeTab === 'personal'" class="tab-content">
         <div class="row">
           <div class="col-md-5">
-            <div class="card shadow-sm">
-              <div class="card-header bg-warning text-dark">
+            <div class="card border-0 shadow-sm">
+              <div class="card-header bg-primary text-white">
                 <h5 class="mb-0">Create Personal Task</h5>
               </div>
               <div class="card-body">
                 <form (ngSubmit)="createPersonalTask()">
                   <div class="mb-3">
                     <label class="form-label">Title</label>
-                    <input type="text" class="form-control" [(ngModel)]="personalTaskObj.title" name="title" required>
+                    <input
+                      type="text"
+                      class="form-control"
+                      [(ngModel)]="personalTaskObj.title"
+                      name="title"
+                      required
+                    />
                   </div>
                   <div class="mb-3">
                     <label class="form-label">Description</label>
-                    <textarea class="form-control" rows="3" [(ngModel)]="personalTaskObj.description" name="description"></textarea>
+                    <textarea
+                      class="form-control"
+                      rows="3"
+                      [(ngModel)]="personalTaskObj.description"
+                      name="description"
+                    ></textarea>
                   </div>
                   <div class="mb-3">
                     <label class="form-label">Priority</label>
-                    <select class="form-select" [(ngModel)]="personalTaskObj.priority" name="priority" required>
+                    <select
+                      class="form-select"
+                      [(ngModel)]="personalTaskObj.priority"
+                      name="priority"
+                      required
+                    >
                       <option value="">Select Priority</option>
                       <option>LOW</option>
                       <option>MEDIUM</option>
@@ -282,28 +509,73 @@ import { Task } from '../../model/todo.model';
                   </div>
                   <div class="mb-3">
                     <label class="form-label">Due Date</label>
-                    <input type="date" class="form-control" [(ngModel)]="personalTaskObj.dueDate" name="dueDate" [min]="getTodayDate()" required>
+                    <input
+                      type="date"
+                      class="form-control"
+                      [(ngModel)]="personalTaskObj.dueDate"
+                      name="dueDate"
+                      [min]="getTodayDate()"
+                      required
+                    />
                   </div>
                   <div class="mb-3">
                     <label class="form-label">Status</label>
-                    <select class="form-select" [(ngModel)]="personalTaskObj.status" name="status" required>
+                    <select
+                      class="form-select"
+                      [(ngModel)]="personalTaskObj.status"
+                      name="status"
+                      required
+                    >
                       <option>NOT_STARTED</option>
                       <option>IN_PROGRESS</option>
-                      <option>DONE</option>
                     </select>
                   </div>
-                  <button type="submit" class="btn btn-warning w-100">Add Personal Task</button>
+                  <button type="submit" class="btn btn-warning w-100">
+                    Add Personal Task
+                  </button>
                 </form>
               </div>
             </div>
           </div>
-          
+
           <div class="col-md-7">
-            <div class="card shadow-sm">
-              <div class="card-header bg-dark text-white">
-                <h5 class="mb-0">My Personal Tasks</h5>
+            <div class="card border-0 shadow-sm">
+              <div class="card-header bg-light">
+                <h5 class="mb-0 text-dark">My Personal Tasks</h5>
               </div>
               <div class="card-body">
+                <div class="row mb-3">
+                  <div class="col-md-4">
+                    <select
+                      class="form-select form-select-sm"
+                      [(ngModel)]="taskPriorityFilter"
+                    >
+                      <option value="">All Priorities</option>
+                      <option value="LOW">Low</option>
+                      <option value="MEDIUM">Medium</option>
+                      <option value="HIGH">High</option>
+                    </select>
+                  </div>
+                  <div class="col-md-4">
+                    <select
+                      class="form-select form-select-sm"
+                      [(ngModel)]="taskStatusFilter"
+                    >
+                      <option value="">All Status</option>
+                      <option value="NOT_STARTED">Not Started</option>
+                      <option value="IN_PROGRESS">In Progress</option>
+                      <option value="DONE">Done</option>
+                    </select>
+                  </div>
+                  <div class="col-md-4">
+                    <input
+                      type="date"
+                      class="form-control form-control-sm"
+                      [(ngModel)]="taskDueDateFilter"
+                      placeholder="Filter by due date"
+                    />
+                  </div>
+                </div>
                 <div class="table-responsive">
                   <table class="table table-hover">
                     <thead class="table-light">
@@ -316,30 +588,50 @@ import { Task } from '../../model/todo.model';
                       </tr>
                     </thead>
                     <tbody>
-                      <tr *ngFor="let task of personalTasks">
-                        <td>{{task.title}}</td>
+                      <tr *ngFor="let task of getFilteredPersonalTasks()">
+                        <td>{{ task.title }}</td>
                         <td>
-                          <span class="badge" [ngClass]="{
-                            'bg-success': task.priority === 'LOW',
-                            'bg-warning': task.priority === 'MEDIUM',
-                            'bg-danger': task.priority === 'HIGH'
-                          }">{{task.priority}}</span>
+                          <span
+                            class="badge"
+                            [ngClass]="{
+                              'bg-success': task.priority === 'LOW',
+                              'bg-warning': task.priority === 'MEDIUM',
+                              'bg-danger': task.priority === 'HIGH'
+                            }"
+                            >{{ task.priority }}</span
+                          >
                         </td>
                         <td>
-                          <span class="badge" [ngClass]="{
-                            'bg-secondary': task.status === 'NOT_STARTED',
-                            'bg-primary': task.status === 'IN_PROGRESS',
-                            'bg-success': task.status === 'DONE'
-                          }">{{task.status}}</span>
+                          <span
+                            class="badge"
+                            [ngClass]="{
+                              'bg-secondary': task.status === 'NOT_STARTED',
+                              'bg-primary': task.status === 'IN_PROGRESS',
+                              'bg-success': task.status === 'DONE'
+                            }"
+                            >{{ task.status }}</span
+                          >
                         </td>
-                        <td>{{task.dueDate | date}}</td>
+                        <td>{{ task.dueDate | date }}</td>
                         <td>
-                          <button class="btn btn-sm btn-primary me-1" (click)="editPersonalTask(task)">Edit</button>
-                          <button class="btn btn-sm btn-danger" (click)="deletePersonalTask(task.id)">Delete</button>
+                          <button
+                            class="btn btn-sm btn-primary me-1"
+                            (click)="editPersonalTask(task)"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            class="btn btn-sm btn-danger"
+                            (click)="deletePersonalTask(task.id)"
+                          >
+                            Delete
+                          </button>
                         </td>
                       </tr>
-                      <tr *ngIf="personalTasks.length === 0">
-                        <td colspan="5" class="text-center text-muted">No personal tasks found</td>
+                      <tr *ngIf="getFilteredPersonalTasks().length === 0">
+                        <td colspan="5" class="text-center text-muted">
+                          No personal tasks found
+                        </td>
                       </tr>
                     </tbody>
                   </table>
@@ -352,54 +644,112 @@ import { Task } from '../../model/todo.model';
     </div>
 
     <!-- Edit Project Modal -->
-    <div class="modal fade" [class.show]="editingProject" [style.display]="editingProject ? 'block' : 'none'" 
-         *ngIf="editingProject" tabindex="-1">
-      <div class="modal-dialog">
+    <div
+      class="modal fade"
+      [class.show]="editingProject"
+      [style.display]="editingProject ? 'block' : 'none'"
+      *ngIf="editingProject"
+      tabindex="-1"
+      (keydown.escape)="cancelEdit()"
+      (click)="onModalBackdropClick($event)"
+    >
+      <div class="modal-dialog" (click)="$event.stopPropagation()">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title">Edit Project</h5>
-            <button type="button" class="btn-close" (click)="cancelEdit()"></button>
+            <button
+              type="button"
+              class="btn-close"
+              (click)="cancelEdit()"
+            ></button>
           </div>
           <div class="modal-body">
             <div class="mb-3">
               <label class="form-label">Project Name</label>
-              <input type="text" class="form-control" [(ngModel)]="editingProject.name">
+              <input
+                type="text"
+                class="form-control"
+                [(ngModel)]="editingProject.name"
+              />
             </div>
             <div class="mb-3">
               <label class="form-label">Description</label>
-              <textarea class="form-control" rows="3" [(ngModel)]="editingProject.description"></textarea>
+              <textarea
+                class="form-control"
+                rows="3"
+                [(ngModel)]="editingProject.description"
+              ></textarea>
             </div>
             <div class="mb-3">
               <label class="form-label">Due Date</label>
-              <input type="date" class="form-control" [(ngModel)]="editingProject.dueDate">
+              <input
+                type="date"
+                class="form-control"
+                [(ngModel)]="editingProject.dueDate"
+              />
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" (click)="cancelEdit()">Cancel</button>
-            <button type="button" class="btn btn-primary" (click)="updateProject()">Update Project</button>
+            <button
+              type="button"
+              class="btn btn-secondary"
+              (click)="cancelEdit()"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              (click)="updateProject()"
+            >
+              Update Project
+            </button>
           </div>
         </div>
       </div>
     </div>
-    <div class="modal-backdrop fade" [class.show]="editingProject" *ngIf="editingProject"></div>
+    <div
+      class="modal-backdrop fade"
+      [class.show]="editingProject"
+      *ngIf="editingProject"
+    ></div>
 
     <!-- Edit Task Modal -->
-    <div class="modal fade" [class.show]="editingTask" [style.display]="editingTask ? 'block' : 'none'" 
-         *ngIf="editingTask" tabindex="-1">
-      <div class="modal-dialog">
+    <div
+      class="modal fade"
+      [class.show]="editingTask"
+      [style.display]="editingTask ? 'block' : 'none'"
+      *ngIf="editingTask"
+      tabindex="-1"
+      (keydown.escape)="cancelTaskEdit()"
+      (click)="onTaskModalBackdropClick($event)"
+    >
+      <div class="modal-dialog" (click)="$event.stopPropagation()">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title">Edit Personal Task</h5>
-            <button type="button" class="btn-close" (click)="cancelTaskEdit()"></button>
+            <button
+              type="button"
+              class="btn-close"
+              (click)="cancelTaskEdit()"
+            ></button>
           </div>
           <div class="modal-body">
             <div class="mb-3">
               <label class="form-label">Title</label>
-              <input type="text" class="form-control" [(ngModel)]="editingTask.title">
+              <input
+                type="text"
+                class="form-control"
+                [(ngModel)]="editingTask.title"
+              />
             </div>
             <div class="mb-3">
               <label class="form-label">Description</label>
-              <textarea class="form-control" rows="3" [(ngModel)]="editingTask.description"></textarea>
+              <textarea
+                class="form-control"
+                rows="3"
+                [(ngModel)]="editingTask.description"
+              ></textarea>
             </div>
             <div class="mb-3">
               <label class="form-label">Priority</label>
@@ -411,7 +761,11 @@ import { Task } from '../../model/todo.model';
             </div>
             <div class="mb-3">
               <label class="form-label">Due Date</label>
-              <input type="date" class="form-control" [(ngModel)]="editingTask.dueDate">
+              <input
+                type="date"
+                class="form-control"
+                [(ngModel)]="editingTask.dueDate"
+              />
             </div>
             <div class="mb-3">
               <label class="form-label">Status</label>
@@ -423,44 +777,109 @@ import { Task } from '../../model/todo.model';
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" (click)="cancelTaskEdit()">Cancel</button>
-            <button type="button" class="btn btn-primary" (click)="updatePersonalTask()">Update Task</button>
+            <button
+              type="button"
+              class="btn btn-secondary"
+              (click)="cancelTaskEdit()"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              (click)="updatePersonalTask()"
+            >
+              Update Task
+            </button>
           </div>
         </div>
       </div>
     </div>
-    <div class="modal-backdrop fade" [class.show]="editingTask" *ngIf="editingTask"></div>
+    <div
+      class="modal-backdrop fade"
+      [class.show]="editingTask"
+      *ngIf="editingTask"
+    ></div>
 
     <!-- Toast Messages -->
     <div class="position-fixed bottom-0 end-0 p-3">
-      <div class="toast align-items-center border-0" 
-           [class.text-bg-success]="!toastError"
-           [class.text-bg-danger]="toastError"
-           [class.show]="showToast" role="alert">
+      <div
+        class="toast align-items-center border-0"
+        [class.text-bg-success]="!toastError"
+        [class.text-bg-danger]="toastError"
+        [class.show]="showToast"
+        role="alert"
+      >
         <div class="d-flex">
-          <div class="toast-body">{{toastMessage}}</div>
-          <button type="button" class="btn-close me-2 m-auto" (click)="hideToast()"></button>
+          <div class="toast-body">{{ toastMessage }}</div>
+          <button
+            type="button"
+            class="btn-close me-2 m-auto"
+            (click)="hideToast()"
+          ></button>
         </div>
       </div>
     </div>
   `,
-  styles: [`
-    .nav-tabs .nav-link.active {
-      background-color: #0d6efd;
-      color: white !important;
-      border-color: #0d6efd;
-    }
-    .card {
-      border: none;
-      border-radius: 10px;
-    }
-    .table th {
-      border-top: none;
-    }
-    .toast.show { display: block; }
-    .toast { display: none; }
-    .tab-content { min-height: 400px; }
-  `]
+  styles: [
+    `
+      .nav-link.active {
+        background-color: #0d6efd !important;
+        color: white !important;
+        border-radius: 5px;
+      }
+      .nav-link {
+        color: #0d6efd;
+        margin-right: 0.5rem;
+        text-decoration: none;
+        border: none;
+        background: none;
+      }
+      .nav-link:hover {
+        color: #0a58ca;
+        background-color: #e7f1ff;
+        border-radius: 5px;
+      }
+      .card {
+        border-radius: 10px;
+      }
+      .table th {
+        border-top: none;
+        font-weight: 600;
+      }
+      .toast.show {
+        display: block;
+      }
+      .toast {
+        display: none;
+      }
+      .tab-content {
+        min-height: 400px;
+      }
+      @media (max-width: 991.98px) {
+        .navbar-collapse {
+          position: absolute;
+          top: 100%;
+          right: 0;
+          background: white;
+          border: 1px solid #dee2e6;
+          border-radius: 8px;
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+          width: 250px;
+          z-index: 1000;
+        }
+        .navbar-nav {
+          flex-direction: column;
+          padding: 1rem;
+        }
+        .nav-link {
+          padding: 0.5rem 1rem;
+          margin: 0.2rem 0;
+          border-radius: 5px;
+        }
+      }
+    `,
+  ],
 })
 export class ManagerDashboard implements OnInit {
   auth = inject(Auth);
@@ -471,7 +890,7 @@ export class ManagerDashboard implements OnInit {
 
   currentUser: string = '';
   activeTab: string = 'overview';
-  
+
   // Data
   projects: ProjectResponseModel[] = [];
   personalTasks: any[] = [];
@@ -480,12 +899,12 @@ export class ManagerDashboard implements OnInit {
   projectMembers: any[] = [];
   editingProject: ProjectResponseModel | null = null;
   editingTask: any = null;
-  
+
   // Form objects
   projectObj: ProjectRequestModel = new ProjectRequestModel();
   subTaskObj: SubTask = new SubTask();
   personalTaskObj: Task = new Task();
-  
+
   // UI state
   newMemberUsername: string = '';
   selectedProject: ProjectResponseModel | null = null;
@@ -494,6 +913,13 @@ export class ManagerDashboard implements OnInit {
   toastError = false;
   selectedTlUsername: string = '';
   selectedMemberUsernames: string[] = [];
+  isNavbarCollapsed = false;
+  taskPriorityFilter: string = '';
+  taskStatusFilter: string = '';
+  taskDueDateFilter: string = '';
+  subTaskStatusFilter: string = '';
+  subTaskDueDateFilter: string = '';
+  subTaskProjectFilter: string = '';
 
   ngOnInit(): void {
     this.currentUser = this.auth.getUserName() || 'Manager';
@@ -515,7 +941,7 @@ export class ManagerDashboard implements OnInit {
       error: (error) => {
         console.error('Error loading projects:', error);
         this.projects = [];
-      }
+      },
     });
   }
 
@@ -527,7 +953,7 @@ export class ManagerDashboard implements OnInit {
       error: (error) => {
         console.error('Error loading personal tasks:', error);
         this.personalTasks = [];
-      }
+      },
     });
   }
 
@@ -536,14 +962,19 @@ export class ManagerDashboard implements OnInit {
   }
 
   createProject(): void {
-    if (!this.projectObj.name || !this.projectObj.dueDate || !this.selectedTlUsername || this.selectedMemberUsernames.length === 0) {
+    if (
+      !this.projectObj.name ||
+      !this.projectObj.dueDate ||
+      !this.selectedTlUsername ||
+      this.selectedMemberUsernames.length === 0
+    ) {
       this.showToastMessage('Please fill all required fields', true);
       return;
     }
 
     this.projectObj.tlUsername = this.selectedTlUsername;
     this.projectObj.memberUsernames = this.selectedMemberUsernames;
-    
+
     this.projectService.createProject(this.projectObj).subscribe({
       next: (project) => {
         this.showToastMessage('Project created successfully!');
@@ -551,8 +982,11 @@ export class ManagerDashboard implements OnInit {
         this.loadProjects();
       },
       error: (error) => {
-        this.showToastMessage('Error creating project: ' + (error.error?.error || 'Unknown error'), true);
-      }
+        this.showToastMessage(
+          'Error creating project: ' + (error.error?.error || 'Unknown error'),
+          true
+        );
+      },
     });
   }
 
@@ -563,7 +997,7 @@ export class ManagerDashboard implements OnInit {
       },
       error: (error) => {
         console.error('Error loading users:', error);
-      }
+      },
     });
   }
 
@@ -574,7 +1008,7 @@ export class ManagerDashboard implements OnInit {
       },
       error: (error) => {
         console.error('Error loading project members:', error);
-      }
+      },
     });
   }
 
@@ -584,33 +1018,80 @@ export class ManagerDashboard implements OnInit {
 
   updateProject(): void {
     if (!this.editingProject) return;
-    
+
     const updateData = {
       name: this.editingProject.name,
       description: this.editingProject.description,
       dueDate: this.editingProject.dueDate,
       tlUsername: this.editingProject.tlUsername,
-      memberUsernames: this.editingProject.memberUsernames
+      memberUsernames: this.editingProject.memberUsernames,
     };
-    
-    this.projectService.updateProject(this.editingProject.id, updateData as any).subscribe({
-      next: (updated) => {
-        this.showToastMessage('Project updated successfully!');
-        this.editingProject = null;
-        this.loadProjects();
-      },
-      error: (error) => {
-        this.showToastMessage('Error updating project', true);
-      }
-    });
+
+    this.projectService
+      .updateProject(this.editingProject.id, updateData as any)
+      .subscribe({
+        next: (updated) => {
+          this.showToastMessage('Project updated successfully!');
+          this.editingProject = null;
+          this.loadProjects();
+        },
+        error: (error) => {
+          this.showToastMessage('Error updating project', true);
+        },
+      });
   }
 
   cancelEdit(): void {
     this.editingProject = null;
   }
 
+  onModalBackdropClick(event: Event): void {
+    if (event.target === event.currentTarget) {
+      this.cancelEdit();
+    }
+  }
+
+  onTaskModalBackdropClick(event: Event): void {
+    if (event.target === event.currentTarget) {
+      this.cancelTaskEdit();
+    }
+  }
+
+  getFilteredPersonalTasks(): any[] {
+    return this.personalTasks.filter((task) => {
+      const priorityMatch =
+        !this.taskPriorityFilter || task.priority === this.taskPriorityFilter;
+      const statusMatch =
+        !this.taskStatusFilter || task.status === this.taskStatusFilter;
+      const dueDateMatch =
+        !this.taskDueDateFilter ||
+        task.dueDate?.split('T')[0] === this.taskDueDateFilter;
+      return priorityMatch && statusMatch && dueDateMatch;
+    });
+  }
+
+  getFilteredSubTasks(): any[] {
+    return this.managerSubTasks.filter((subtask) => {
+      const statusMatch =
+        !this.subTaskStatusFilter ||
+        subtask.status === this.subTaskStatusFilter;
+      const dueDateMatch =
+        !this.subTaskDueDateFilter ||
+        subtask.dueDate?.split('T')[0] === this.subTaskDueDateFilter;
+      const projectMatch =
+        !this.subTaskProjectFilter ||
+        subtask.projectId === Number(this.subTaskProjectFilter);
+      return statusMatch && dueDateMatch && projectMatch;
+    });
+  }
+
   createSubTask(): void {
-    if (!this.subTaskObj.name || !this.subTaskObj.dueDate || !this.subTaskObj.projectId || !this.subTaskObj.assigneeUsername) {
+    if (
+      !this.subTaskObj.name ||
+      !this.subTaskObj.dueDate ||
+      !this.subTaskObj.projectId ||
+      !this.subTaskObj.assigneeUsername
+    ) {
       this.showToastMessage('Please fill all required fields', true);
       return;
     }
@@ -622,8 +1103,11 @@ export class ManagerDashboard implements OnInit {
         this.loadManagerSubTasks();
       },
       error: (error) => {
-        this.showToastMessage('Error creating sub-task: ' + (error.error?.error || 'Unknown error'), true);
-      }
+        this.showToastMessage(
+          'Error creating sub-task: ' + (error.error?.error || 'Unknown error'),
+          true
+        );
+      },
     });
   }
 
@@ -634,13 +1118,19 @@ export class ManagerDashboard implements OnInit {
   }
 
   getProjectDueDate(): string {
-    if (!this.subTaskObj.projectId) return this.getTodayDate();
-    const project = this.projects.find(p => p.id === this.subTaskObj.projectId);
-    return project ? project.dueDate : this.getTodayDate();
+    if (!this.subTaskObj.projectId) return '';
+    const project = this.projects.find(
+      (p) => p.id === this.subTaskObj.projectId
+    );
+    return project ? project.dueDate : '';
   }
 
   createPersonalTask(): void {
-    if (!this.personalTaskObj.title || !this.personalTaskObj.priority || !this.personalTaskObj.status) {
+    if (
+      !this.personalTaskObj.title ||
+      !this.personalTaskObj.priority ||
+      !this.personalTaskObj.status
+    ) {
       this.showToastMessage('Please fill all required fields', true);
       return;
     }
@@ -652,8 +1142,11 @@ export class ManagerDashboard implements OnInit {
         this.loadPersonalTasks();
       },
       error: (error) => {
-        this.showToastMessage('Error creating task: ' + (error.error?.error || 'Unknown error'), true);
-      }
+        this.showToastMessage(
+          'Error creating task: ' + (error.error?.error || 'Unknown error'),
+          true
+        );
+      },
     });
   }
 
@@ -668,16 +1161,21 @@ export class ManagerDashboard implements OnInit {
       return;
     }
 
-    this.projectService.addMember(this.selectedProject.id, this.newMemberUsername).subscribe({
-      next: (updatedProject) => {
-        this.showToastMessage('Member added successfully!');
-        this.loadProjects();
-        this.newMemberUsername = '';
-      },
-      error: (error) => {
-        this.showToastMessage('Error adding member: ' + (error.error?.error || 'Unknown error'), true);
-      }
-    });
+    this.projectService
+      .addMember(this.selectedProject.id, this.newMemberUsername)
+      .subscribe({
+        next: (updatedProject) => {
+          this.showToastMessage('Member added successfully!');
+          this.loadProjects();
+          this.newMemberUsername = '';
+        },
+        error: (error) => {
+          this.showToastMessage(
+            'Error adding member: ' + (error.error?.error || 'Unknown error'),
+            true
+          );
+        },
+      });
   }
 
   editPersonalTask(task: any): void {
@@ -689,17 +1187,19 @@ export class ManagerDashboard implements OnInit {
 
   updatePersonalTask(): void {
     if (!this.editingTask) return;
-    
-    this.todoService.updateTask(this.editingTask.id, this.editingTask).subscribe({
-      next: (updated) => {
-        this.showToastMessage('Task updated successfully!');
-        this.editingTask = null;
-        this.loadPersonalTasks();
-      },
-      error: (error) => {
-        this.showToastMessage('Error updating task', true);
-      }
-    });
+
+    this.todoService
+      .updateTask(this.editingTask.id, this.editingTask)
+      .subscribe({
+        next: (updated) => {
+          this.showToastMessage('Task updated successfully!');
+          this.editingTask = null;
+          this.loadPersonalTasks();
+        },
+        error: (error) => {
+          this.showToastMessage('Error updating task', true);
+        },
+      });
   }
 
   cancelTaskEdit(): void {
@@ -715,7 +1215,7 @@ export class ManagerDashboard implements OnInit {
         },
         error: (error) => {
           this.showToastMessage('Error deleting task', true);
-        }
+        },
       });
     }
   }
@@ -728,7 +1228,7 @@ export class ManagerDashboard implements OnInit {
       error: (error) => {
         console.error('Error loading manager sub-tasks:', error);
         this.managerSubTasks = [];
-      }
+      },
     });
   }
 
@@ -740,17 +1240,20 @@ export class ManagerDashboard implements OnInit {
       },
       error: (error) => {
         this.showToastMessage('Error updating sub-task status', true);
-      }
+      },
     });
   }
 
   // Helper methods
   getActiveSubTasksCount(): number {
-    return this.managerSubTasks.filter(task => task.status !== 'DONE').length;
+    return this.managerSubTasks.filter((task) => task.status !== 'DONE').length;
   }
 
   getTotalTeamMembers(): number {
-    return this.projects.reduce((total, project) => total + project.memberUsernames.length, 0);
+    return this.projects.reduce(
+      (total, project) => total + project.memberUsernames.length,
+      0
+    );
   }
 
   getCompletionPercentage(): number {
@@ -765,18 +1268,30 @@ export class ManagerDashboard implements OnInit {
   }
 
   getTLUsers(): any[] {
-    return this.allUsers.filter(user => user.role === 'TL');
+    return this.allUsers.filter((user) => user.role === 'TL');
   }
 
   getMemberUsers(): any[] {
-    return this.allUsers.filter(user => user.role === 'MEMBER');
+    return this.allUsers.filter((user) => user.role === 'MEMBER');
   }
 
   onMemberSelect(username: string, event: any): void {
     if (event.target.checked) {
       this.selectedMemberUsernames.push(username);
     } else {
-      this.selectedMemberUsernames = this.selectedMemberUsernames.filter(u => u !== username);
+      this.selectedMemberUsernames = this.selectedMemberUsernames.filter(
+        (u) => u !== username
+      );
+    }
+  }
+
+  toggleMemberSelection(username: string): void {
+    if (this.selectedMemberUsernames.includes(username)) {
+      this.selectedMemberUsernames = this.selectedMemberUsernames.filter(
+        (u) => u !== username
+      );
+    } else {
+      this.selectedMemberUsernames.push(username);
     }
   }
 
@@ -801,6 +1316,16 @@ export class ManagerDashboard implements OnInit {
 
   getTodayDate(): string {
     return new Date().toISOString().split('T')[0];
+  }
+
+  getTomorrowDate(): string {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    return tomorrow.toISOString().split('T')[0];
+  }
+
+  toggleNavbar(): void {
+    this.isNavbarCollapsed = !this.isNavbarCollapsed;
   }
 
   logout(): void {
