@@ -31,4 +31,12 @@ export class SubTaskService {
       null
     );
   }
+
+  updateSubTask(taskId: number, obj: SubTask): Observable<SubtaskResponse> {
+    return this.http.put<SubtaskResponse>(`${this.apiUrl}/${taskId}`, obj);
+  }
+
+  deleteSubTask(taskId: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${taskId}`);
+  }
 }

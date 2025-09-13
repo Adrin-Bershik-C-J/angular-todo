@@ -47,4 +47,8 @@ export class ProjectService {
   getProjectsByTL(): Observable<ProjectResponseModel[]> {
     return this.http.get<ProjectResponseModel[]>(`${this.apiUrl}/tl`);
   }
+
+  deleteProject(projectId: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${projectId}`);
+  }
 }

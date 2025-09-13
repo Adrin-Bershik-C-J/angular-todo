@@ -92,12 +92,20 @@ import { Task } from '../../model/todo.model';
                         {{ project.tlUsername }}</small
                       >
                     </div>
-                    <button
-                      class="btn btn-sm btn-outline-primary"
-                      (click)="editProject(project)"
-                    >
-                      Edit
-                    </button>
+                    <div class="btn-group btn-group-sm">
+                      <button
+                        class="btn btn-outline-primary"
+                        (click)="editProject(project)"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        class="btn btn-outline-danger"
+                        (click)="deleteProject(project.id)"
+                      >
+                        Delete
+                      </button>
+                    </div>
                   </div>
                 </div>
                 <div *ngIf="projects.length === 0" class="text-muted">
@@ -422,7 +430,7 @@ import { Task } from '../../model/todo.model';
                         <td>{{ subtask.dueDate | date }}</td>
                         <td>{{ subtask.projectName }}</td>
                         <td>
-                          <div class="btn-group btn-group-sm">
+                          <div class="btn-group btn-group-sm mb-1">
                             <button
                               class="btn btn-outline-secondary"
                               (click)="
@@ -447,6 +455,20 @@ import { Task } from '../../model/todo.model';
                               [disabled]="subtask.status === 'DONE'"
                             >
                               Done
+                            </button>
+                          </div>
+                          <div class="btn-group btn-group-sm">
+                            <button
+                              class="btn btn-outline-warning"
+                              (click)="editSubTask(subtask)"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              class="btn btn-outline-danger"
+                              (click)="deleteSubTask(subtask.id)"
+                            >
+                              Delete
                             </button>
                           </div>
                         </td>
@@ -802,6 +824,91 @@ import { Task } from '../../model/todo.model';
       *ngIf="editingTask"
     ></div>
 
+    <!-- Edit Sub-Task Modal -->
+    <div
+      class="modal fade"
+      [class.show]="editingSubTask"
+      [style.display]="editingSubTask ? 'block' : 'none'"
+      *ngIf="editingSubTask"
+      tabindex="-1"
+      (keydown.escape)="cancelSubTaskEdit()"
+      (click)="onSubTaskModalBackdropClick($event)"
+    >
+      <div class="modal-dialog" (click)="$event.stopPropagation()">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Edit Sub-Task</h5>
+            <button
+              type="button"
+              class="btn-close"
+              (click)="cancelSubTaskEdit()"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3">
+              <label class="form-label">Name</label>
+              <input
+                type="text"
+                class="form-control"
+                [(ngModel)]="editingSubTask.name"
+              />
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Description</label>
+              <textarea
+                class="form-control"
+                rows="3"
+                [(ngModel)]="editingSubTask.description"
+              ></textarea>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Due Date</label>
+              <input
+                type="date"
+                class="form-control"
+                [(ngModel)]="editingSubTask.dueDate"
+              />
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Assign To</label>
+              <select
+                class="form-select"
+                [(ngModel)]="editingSubTask.assigneeUsername"
+              >
+                <option
+                  *ngFor="let member of editingSubTaskMembers"
+                  [value]="member.username"
+                >
+                  {{ member.name }} ({{ member.username }}) - {{ member.role }}
+                </option>
+              </select>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              (click)="cancelSubTaskEdit()"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              (click)="updateSubTask()"
+            >
+              Update Sub-Task
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="modal-backdrop fade"
+      [class.show]="editingSubTask"
+      *ngIf="editingSubTask"
+    ></div>
+
     <!-- Toast Messages -->
     <div class="position-fixed bottom-0 end-0 p-3">
       <div
@@ -900,6 +1007,8 @@ export class ManagerDashboard implements OnInit {
   projectMembers: any[] = [];
   editingProject: ProjectResponseModel | null = null;
   editingTask: any = null;
+  editingSubTask: any = null;
+  editingSubTaskMembers: any[] = [];
 
   // Form objects
   projectObj: ProjectRequestModel = new ProjectRequestModel();
@@ -1327,6 +1436,85 @@ export class ManagerDashboard implements OnInit {
 
   toggleNavbar(): void {
     this.isNavbarCollapsed = !this.isNavbarCollapsed;
+  }
+
+  deleteProject(projectId: number): void {
+    if (confirm('Are you sure you want to delete this project? This will also delete all associated sub-tasks.')) {
+      this.projectService.deleteProject(projectId).subscribe({
+        next: () => {
+          this.showToastMessage('Project deleted successfully!');
+          this.loadProjects();
+          this.loadManagerSubTasks();
+        },
+        error: (error) => {
+          this.showToastMessage('Error deleting project', true);
+        },
+      });
+    }
+  }
+
+  editSubTask(subtask: any): void {
+    this.editingSubTask = { ...subtask };
+    this.editingSubTask.assigneeUsername = subtask.memberUsername;
+    if (this.editingSubTask.dueDate) {
+      this.editingSubTask.dueDate = this.editingSubTask.dueDate.split('T')[0];
+    }
+    this.projectService.getProjectMembers(subtask.projectId).subscribe({
+      next: (members) => {
+        this.editingSubTaskMembers = members;
+      },
+      error: (error) => {
+        console.error('Error loading project members:', error);
+      },
+    });
+  }
+
+  updateSubTask(): void {
+    if (!this.editingSubTask) return;
+
+    const updateData = {
+      name: this.editingSubTask.name,
+      description: this.editingSubTask.description,
+      dueDate: this.editingSubTask.dueDate,
+      projectId: this.editingSubTask.projectId,
+      assigneeUsername: this.editingSubTask.assigneeUsername,
+    };
+
+    this.subTaskService.updateSubTask(this.editingSubTask.id, updateData).subscribe({
+      next: (updated: any) => {
+        this.showToastMessage('Sub-task updated successfully!');
+        this.editingSubTask = null;
+        this.loadManagerSubTasks();
+      },
+      error: (error: any) => {
+        this.showToastMessage('Error updating sub-task', true);
+      },
+    });
+  }
+
+  cancelSubTaskEdit(): void {
+    this.editingSubTask = null;
+    this.editingSubTaskMembers = [];
+  }
+
+  onSubTaskModalBackdropClick(event: Event): void {
+    if (event.target === event.currentTarget) {
+      this.cancelSubTaskEdit();
+    }
+  }
+
+  deleteSubTask(subtaskId: number): void {
+    if (confirm('Are you sure you want to delete this sub-task?')) {
+      this.subTaskService.deleteSubTask(subtaskId).subscribe({
+        next: () => {
+          this.showToastMessage('Sub-task deleted successfully!');
+          this.loadManagerSubTasks();
+        },
+        error: (error: any) => {
+          this.showToastMessage('Error deleting sub-task', true);
+        },
+      });
+    }
   }
 
   logout(): void {
