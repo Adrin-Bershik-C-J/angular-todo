@@ -9,15 +9,12 @@
     <div class="card">
       <div class="card-body text-center">
         <div class="mb-4">
-          <i class="feather icon-user-plus auth-icon"></i>
+          <div class="auth-icon">👥</div>
         </div>
-        <h3 class="mb-2">Sign Up</h3>
-        <p class="text-muted mb-4">Create your account to get started</p>
+        <h3 class="mb-4">Sign Up</h3>
         <form (ngSubmit)="onSubmit()">
           <div class="input-group mb-3">
-            <span class="input-group-text">
-              <i class="feather icon-user"></i>
-            </span>
+            <span class="input-group-text"> 👤 </span>
             <input
               type="text"
               class="form-control"
@@ -29,9 +26,7 @@
             />
           </div>
           <div class="input-group mb-3">
-            <span class="input-group-text">
-              <i class="feather icon-at-sign"></i>
-            </span>
+            <span class="input-group-text"> @ </span>
             <input
               type="text"
               class="form-control"
@@ -43,9 +38,7 @@
             />
           </div>
           <div class="input-group mb-4">
-            <span class="input-group-text">
-              <i class="feather icon-lock"></i>
-            </span>
+            <span class="input-group-text"> 🔒 </span>
             <input
               type="password"
               class="form-control"
@@ -56,18 +49,21 @@
               [disabled]="isLoading"
             />
           </div>
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             class="btn btn-primary btn-block mb-4"
             [disabled]="isLoading"
           >
-            <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2"></span>
-            <i *ngIf="!isLoading" class="feather icon-user-plus me-2"></i>
-            {{isLoading ? 'Creating Account...' : 'Sign Up'}}
+            <span
+              *ngIf="isLoading"
+              class="spinner-border spinner-border-sm me-2"
+            ></span>
+            <span *ngIf="!isLoading" class="me-2"></span>
+            {{ isLoading ? "Creating Account..." : "Sign Up" }}
           </button>
         </form>
         <p class="mb-0 text-muted">
-          Already have an account? 
+          Already have an account?
           <a routerLink="/login" class="f-w-400">Sign in</a>
         </p>
       </div>

@@ -9,13 +9,13 @@
     <div class="card">
       <div class="card-body text-center">
         <div class="mb-4">
-          <i class="feather icon-unlock auth-icon"></i>
+          <div class="auth-icon">🔓</div>
         </div>
         <h3 class="mb-4">Login</h3>
         <form (ngSubmit)="onSubmit()">
           <div class="input-group mb-3">
             <span class="input-group-text">
-              <i class="feather icon-user"></i>
+              👤
             </span>
             <input
               type="text"
@@ -29,7 +29,7 @@
           </div>
           <div class="input-group mb-4">
             <span class="input-group-text">
-              <i class="feather icon-lock"></i>
+              🔒
             </span>
             <input
               type="password"
@@ -47,7 +47,7 @@
             [disabled]="isLoading"
           >
             <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2"></span>
-            <i *ngIf="!isLoading" class="feather icon-log-in me-2"></i>
+            <span *ngIf="!isLoading" class="me-2"></span>
             {{isLoading ? 'Signing in...' : 'Sign in'}}
           </button>
         </form>

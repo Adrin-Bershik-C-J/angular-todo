@@ -5,7 +5,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #f8f9fa;
   position: relative;
   overflow: hidden;
 }
@@ -50,11 +50,10 @@
 }
 
 .card {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 15px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  background: white;
+  border: 1px solid #dee2e6;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
 }
 
@@ -69,7 +68,7 @@
 
 .auth-icon {
   font-size: 4rem;
-  color: var(--primary-color);
+  color: #2563eb;
   margin-bottom: 1rem;
   display: inline-block;
   animation: pulse 2s infinite;
@@ -98,9 +97,9 @@ h3 {
 }
 
 .input-group-text {
-  background: var(--primary-color);
-  border: 1px solid var(--primary-color);
-  color: white;
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  color: #6c757d;
   border-radius: 8px 0 0 8px;
   width: 45px;
   justify-content: center;
@@ -116,18 +115,16 @@ h3 {
 }
 
 .input-group .form-control:focus {
-  border-color: var(--primary-color);
+  border-color: #dee2e6;
   box-shadow: none;
+  outline: none;
 }
 
-.input-group:focus-within .input-group-text {
-  background: #3182ce;
-  border-color: #3182ce;
-}
+
 
 .btn-primary {
-  background: linear-gradient(45deg, var(--primary-color), #73b4ff);
-  border: none;
+  background: #2563eb;
+  border: 1px solid #2563eb;
   border-radius: 8px;
   padding: 0.75rem 2rem;
   font-weight: 600;
@@ -174,7 +171,7 @@ h3 {
 
 .f-w-400 {
   font-weight: 400;
-  color: var(--primary-color);
+  color: #2563eb;
   text-decoration: none;
   transition: all 0.3s ease;
 }
