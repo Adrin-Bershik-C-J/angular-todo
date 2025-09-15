@@ -68,7 +68,7 @@
               </select>
             </div>
 
-            <button class="btn btn-success w-100" type="submit">
+            <button class="btn btn-primary w-100" type="submit">
               Add Task
             </button>
           </form>
@@ -103,9 +103,9 @@
                   <span
                     class="badge"
                     [ngClass]="{
-                      'bg-warning text-dark': task.status === 'NOT_STARTED',
-                      'bg-primary': task.status === 'IN_PROGRESS',
-                      'bg-success': task.status === 'DONE'
+                      'bg-secondary': task.status === 'NOT_STARTED',
+                      'bg-warning': task.status === 'IN_PROGRESS',
+                      'bg-primary': task.status === 'DONE'
                     }"
                   >
                     {{ task.status }}

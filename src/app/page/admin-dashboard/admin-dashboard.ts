@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -7,6 +7,7 @@ import { AdminService } from '../../service/admin';
 import { ProjectService } from '../../service/project';
 import { SubTaskService } from '../../service/subtask';
 import { RegisterModel } from '../../model/auth.model';
+import Chart from 'chart.js/auto';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -66,10 +67,19 @@ import { RegisterModel } from '../../model/auth.model';
         <li>
           <button
             class="sidebar-link"
-            [class.active]="activeTab === 'users'"
-            (click)="setActiveTab('users')"
+            [class.active]="activeTab === 'create-user'"
+            (click)="setActiveTab('create-user')"
           >
-            <i class="fas fa-users me-2"></i>User Management
+            <i class="fas fa-user-plus me-2"></i>Create User
+          </button>
+        </li>
+        <li>
+          <button
+            class="sidebar-link"
+            [class.active]="activeTab === 'all-users'"
+            (click)="setActiveTab('all-users')"
+          >
+            <i class="fas fa-users me-2"></i>All Users
           </button>
         </li>
         <li>
@@ -324,10 +334,10 @@ import { RegisterModel } from '../../model/auth.model';
         </div>
       </div>
 
-      <!-- User Management Tab -->
-      <div *ngIf="activeTab === 'users'" class="tab-content">
+      <!-- Create User Tab -->
+      <div *ngIf="activeTab === 'create-user'" class="tab-content">
         <div class="row">
-          <div class="col-md-4">
+          <div class="col-md-6">
             <div class="card border-0 shadow-sm">
               <div class="card-header bg-primary text-white">
                 <h5 class="mb-0">Create New User</h5>
@@ -385,104 +395,131 @@ import { RegisterModel } from '../../model/auth.model';
               </div>
             </div>
           </div>
-
-          <div class="col-md-8">
+          <div class="col-md-6">
             <div class="card border-0 shadow-sm">
-              <div
-                class="card-header bg-light d-flex justify-content-between align-items-center"
-              >
-                <h5 class="mb-0 text-dark">All Users</h5>
-                <div>
-                  <label class="form-label text-dark me-2"
-                    >Filter by Role:</label
-                  >
-                  <select
-                    class="form-select form-select-sm"
-                    [(ngModel)]="selectedUserRole"
-                    style="width: auto; display: inline-block;"
-                  >
-                    <option value="">All Roles</option>
-                    <option value="MANAGER">Manager</option>
-                    <option value="TL">Team Lead</option>
-                    <option value="MEMBER">Member</option>
-                    <option value="ADMIN">Admin</option>
-                  </select>
-                </div>
+              <div class="card-header bg-light">
+                <h5 class="mb-0 text-dark">User Creation Guide</h5>
               </div>
               <div class="card-body">
-                <div class="table-responsive">
-                  <table class="table table-hover">
-                    <thead class="table-light">
-                      <tr>
-                        <th class="text-dark">Name</th>
-                        <th class="text-dark">Username</th>
-                        <th class="text-dark">Role</th>
-                        <th class="text-dark">Projects Involved</th>
-                        <th class="text-dark">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr *ngFor="let user of getFilteredUsers()">
-                        <td class="text-dark">{{ user.name }}</td>
-                        <td class="text-dark">{{ user.username }}</td>
-                        <td>
-                          <span
-                            class="badge"
-                            [ngClass]="{
-                              'bg-primary': user.role === 'MANAGER',
-                              'bg-success': user.role === 'TL',
-                              'bg-info': user.role === 'MEMBER',
-                              'bg-dark': user.role === 'ADMIN'
-                            }"
-                            >{{ user.role }}</span
-                          >
-                        </td>
-                        <td>
-                          <span class="badge bg-secondary"
-                            >{{
-                              getUserProjectsCount(user.username)
-                            }}
-                            projects</span
-                          >
-                        </td>
-                        <td>
-                          <button
-                            class="btn btn-danger btn-sm"
-                            (click)="deleteUser(user.username)"
-                            [disabled]="user.role === 'ADMIN'"
-                          >
-                            Delete
-                          </button>
-                        </td>
-                      </tr>
-                      <tr *ngIf="getFilteredUsers().length === 0">
-                        <td colspan="5" class="text-center text-muted">
-                          No users found
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-                <!-- Pagination Info -->
-                <div class="d-flex justify-content-between align-items-center mt-3" *ngIf="allUsers.length > 0">
-                  <small class="text-muted">Page {{usersPage + 1}} of {{usersTotalPages}} ({{allUsers.length}} items)</small>
-                </div>
-                <!-- Pagination for Users -->
-                <nav *ngIf="allUsers.length > 0">
-                  <ul class="pagination justify-content-center">
-                    <li class="page-item" [class.disabled]="usersPage === 0">
-                      <button class="page-link" (click)="changeUsersPage(usersPage - 1)">Previous</button>
-                    </li>
-                    <li class="page-item" *ngFor="let page of getPageNumbers(usersTotalPages)" [class.active]="page === usersPage">
-                      <button class="page-link" (click)="changeUsersPage(page)">{{page + 1}}</button>
-                    </li>
-                    <li class="page-item" [class.disabled]="usersPage >= usersTotalPages - 1">
-                      <button class="page-link" (click)="changeUsersPage(usersPage + 1)">Next</button>
-                    </li>
+                <div class="alert alert-info">
+                  <h6>Role Descriptions</h6>
+                  <ul class="mb-0">
+                    <li><strong>Manager:</strong> Can create projects, assign team leads, and manage sub-tasks</li>
+                    <li><strong>Team Lead:</strong> Can create sub-tasks and manage team members within projects</li>
+                    <li><strong>Member:</strong> Can work on assigned sub-tasks and manage personal tasks</li>
                   </ul>
-                </nav>
+                </div>
+                <div class="alert alert-warning">
+                  <h6>Important Notes</h6>
+                  <ul class="mb-0">
+                    <li>Username must be unique across the system</li>
+                    <li>Password should be secure and memorable</li>
+                    <li>Role cannot be changed after user creation</li>
+                    <li>Users will receive login credentials via email</li>
+                  </ul>
+                </div>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- All Users Tab -->
+      <div *ngIf="activeTab === 'all-users'" class="tab-content">
+        <div class="card border-0 shadow-sm">
+          <div
+            class="card-header bg-light d-flex justify-content-between align-items-center"
+          >
+            <h5 class="mb-0 text-dark">All Users</h5>
+            <div>
+              <label class="form-label text-dark me-2"
+                >Filter by Role:</label
+              >
+              <select
+                class="form-select form-select-sm"
+                [(ngModel)]="selectedUserRole"
+                style="width: auto; display: inline-block;"
+              >
+                <option value="">All Roles</option>
+                <option value="MANAGER">Manager</option>
+                <option value="TL">Team Lead</option>
+                <option value="MEMBER">Member</option>
+                <option value="ADMIN">Admin</option>
+              </select>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-hover">
+                <thead class="table-light">
+                  <tr>
+                    <th class="text-dark">Name</th>
+                    <th class="text-dark">Username</th>
+                    <th class="text-dark">Role</th>
+                    <th class="text-dark">Projects Involved</th>
+                    <th class="text-dark">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let user of getFilteredUsers()">
+                    <td class="text-dark">{{ user.name }}</td>
+                    <td class="text-dark">{{ user.username }}</td>
+                    <td>
+                      <span
+                        class="badge"
+                        [ngClass]="{
+                          'bg-primary': user.role === 'MANAGER',
+                          'bg-success': user.role === 'TL',
+                          'bg-info': user.role === 'MEMBER',
+                          'bg-dark': user.role === 'ADMIN'
+                        }"
+                        >{{ user.role }}</span
+                      >
+                    </td>
+                    <td>
+                      <span class="badge bg-secondary"
+                        >{{
+                          getUserProjectsCount(user.username)
+                        }}
+                        projects</span
+                      >
+                    </td>
+                    <td>
+                      <button
+                        class="btn btn-danger btn-sm"
+                        (click)="deleteUser(user.username)"
+                        [disabled]="user.role === 'ADMIN'"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                  <tr *ngIf="getFilteredUsers().length === 0">
+                    <td colspan="5" class="text-center text-muted">
+                      No users found
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <!-- Pagination Info -->
+            <div class="d-flex justify-content-between align-items-center mt-3" *ngIf="allUsers.length > 0">
+              <small class="text-muted">Page {{usersPage + 1}} of {{usersTotalPages}} ({{allUsers.length}} items)</small>
+            </div>
+            <!-- Pagination for Users -->
+            <nav *ngIf="allUsers.length > 0">
+              <ul class="pagination justify-content-center">
+                <li class="page-item" [class.disabled]="usersPage === 0">
+                  <button class="page-link" (click)="changeUsersPage(usersPage - 1)">Previous</button>
+                </li>
+                <li class="page-item" *ngFor="let page of getPageNumbers(usersTotalPages)" [class.active]="page === usersPage">
+                  <button class="page-link" (click)="changeUsersPage(page)">{{page + 1}}</button>
+                </li>
+                <li class="page-item" [class.disabled]="usersPage >= usersTotalPages - 1">
+                  <button class="page-link" (click)="changeUsersPage(usersPage + 1)">Next</button>
+                </li>
+              </ul>
+            </nav>
           </div>
         </div>
       </div>
@@ -564,81 +601,36 @@ import { RegisterModel } from '../../model/auth.model';
 
       <!-- Analytics Tab -->
       <div *ngIf="activeTab === 'analytics'" class="tab-content">
-        <!-- Project Filter -->
-        <div class="row mb-3">
-          <div class="col-md-4">
-            <label class="form-label text-dark">Filter by Project:</label>
-            <select class="form-select" [(ngModel)]="selectedProjectId">
-              <option value="">All Projects</option>
-              <option *ngFor="let project of allProjects" [value]="project.id">
-                {{ project.name }}
-              </option>
-            </select>
-          </div>
-        </div>
-
-        <div class="row">
+        <div class="row mb-4">
           <div class="col-md-6">
             <div class="card border-0 shadow-sm">
               <div class="card-header bg-light">
-                <h5 class="mb-0 text-dark">Project Performance</h5>
+                <h5 class="mb-0 text-dark">Task Status Distribution</h5>
               </div>
               <div class="card-body">
-                <div *ngFor="let project of getFilteredProjects()" class="mb-3">
-                  <div
-                    class="d-flex justify-content-between align-items-center mb-1"
-                  >
-                    <span class="text-dark fw-bold">{{ project.name }}</span>
-                    <span class="text-muted"
-                      >{{ getProjectCompletionRate(project.id) }}%</span
-                    >
-                  </div>
-                  <div class="progress">
-                    <div
-                      class="progress-bar bg-success"
-                      [style.width.%]="getProjectCompletionRate(project.id)"
-                    ></div>
-                  </div>
-                </div>
-                <div
-                  *ngIf="getFilteredProjects().length === 0"
-                  class="text-muted"
-                >
-                  No projects to analyze
-                </div>
+                <canvas #taskStatusChart width="400" height="200"></canvas>
               </div>
             </div>
           </div>
           <div class="col-md-6">
             <div class="card border-0 shadow-sm">
               <div class="card-header bg-light">
-                <h5 class="mb-0 text-dark">Task Distribution</h5>
+                <h5 class="mb-0 text-dark">User Roles Distribution</h5>
               </div>
               <div class="card-body">
-                <div class="mb-3">
-                  <div class="d-flex justify-content-between">
-                    <span class="text-dark">Total sub-tasks</span>
-                    <span class="badge bg-info">{{
-                      getFilteredSubTasks().length
-                    }}</span>
-                  </div>
-                </div>
-                <div class="mb-3">
-                  <div class="d-flex justify-content-between">
-                    <span class="text-dark">Completed sub-tasks</span>
-                    <span class="badge bg-success">{{
-                      getFilteredCompletedSubTasks()
-                    }}</span>
-                  </div>
-                </div>
-                <div class="mb-3">
-                  <div class="d-flex justify-content-between">
-                    <span class="text-dark">Pending sub-tasks</span>
-                    <span class="badge bg-danger">{{
-                      getFilteredPendingSubTasks()
-                    }}</span>
-                  </div>
-                </div>
+                <canvas #userRolesChart width="400" height="200"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <div class="card border-0 shadow-sm">
+              <div class="card-header bg-light">
+                <h5 class="mb-0 text-dark">Project Completion Progress</h5>
+              </div>
+              <div class="card-body">
+                <canvas #projectProgressChart width="800" height="300"></canvas>
               </div>
             </div>
           </div>
@@ -870,7 +862,14 @@ import { RegisterModel } from '../../model/auth.model';
     `,
   ],
 })
-export class AdminDashboard implements OnInit {
+export class AdminDashboard implements OnInit, AfterViewInit {
+  @ViewChild('taskStatusChart') taskStatusChart!: ElementRef<HTMLCanvasElement>;
+  @ViewChild('userRolesChart') userRolesChart!: ElementRef<HTMLCanvasElement>;
+  @ViewChild('projectProgressChart') projectProgressChart!: ElementRef<HTMLCanvasElement>;
+
+  private taskChart: any;
+  private userChart: any;
+  private projectChart: any;
   auth = inject(Auth);
   adminService = inject(AdminService);
   projectService = inject(ProjectService);
@@ -913,10 +912,113 @@ export class AdminDashboard implements OnInit {
     this.loadDashboardData();
   }
 
+  ngAfterViewInit(): void {
+    setTimeout(() => {
+      this.initializeCharts();
+    }, 100);
+  }
+
+  initializeCharts(): void {
+    this.createTaskStatusChart();
+    this.createUserRolesChart();
+    this.createProjectProgressChart();
+  }
+
+  createTaskStatusChart(): void {
+    if (!this.taskStatusChart?.nativeElement) return;
+    
+    const notStarted = this.allSubTasks.filter(t => t.status === 'NOT_STARTED').length;
+    const inProgress = this.allSubTasks.filter(t => t.status === 'IN_PROGRESS').length;
+    const done = this.allSubTasks.filter(t => t.status === 'DONE').length;
+
+    this.taskChart = new Chart(this.taskStatusChart.nativeElement, {
+      type: 'doughnut',
+      data: {
+        labels: ['Not Started', 'In Progress', 'Done'],
+        datasets: [{
+          data: [notStarted, inProgress, done],
+          backgroundColor: ['#6c757d', '#2563eb', '#198754']
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false
+      }
+    });
+  }
+
+  createUserRolesChart(): void {
+    if (!this.userRolesChart?.nativeElement) return;
+    
+    const managers = this.allUsers.filter(u => u.role === 'MANAGER').length;
+    const tls = this.allUsers.filter(u => u.role === 'TL').length;
+    const members = this.allUsers.filter(u => u.role === 'MEMBER').length;
+    const admins = this.allUsers.filter(u => u.role === 'ADMIN').length;
+
+    this.userChart = new Chart(this.userRolesChart.nativeElement, {
+      type: 'pie',
+      data: {
+        labels: ['Managers', 'Team Leads', 'Members', 'Admins'],
+        datasets: [{
+          data: [managers, tls, members, admins],
+          backgroundColor: ['#2563eb', '#198754', '#17a2b8', '#343a40']
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false
+      }
+    });
+  }
+
+  createProjectProgressChart(): void {
+    if (!this.projectProgressChart?.nativeElement) return;
+    
+    const projectNames = this.allProjects.map(p => p.name);
+    const completionRates = this.allProjects.map(p => this.getProjectCompletionRate(p.id));
+
+    this.projectChart = new Chart(this.projectProgressChart.nativeElement, {
+      type: 'bar',
+      data: {
+        labels: projectNames,
+        datasets: [{
+          label: 'Completion %',
+          data: completionRates,
+          backgroundColor: '#2563eb'
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: {
+            beginAtZero: true,
+            max: 100
+          }
+        }
+      }
+    });
+  }
+
   loadDashboardData(): void {
     this.loadAllProjects();
     this.loadAllUsers();
     this.loadAllSubTasks();
+  }
+
+  updateCharts(): void {
+    if (this.taskChart) {
+      this.taskChart.destroy();
+      this.createTaskStatusChart();
+    }
+    if (this.userChart) {
+      this.userChart.destroy();
+      this.createUserRolesChart();
+    }
+    if (this.projectChart) {
+      this.projectChart.destroy();
+      this.createProjectProgressChart();
+    }
   }
 
   loadAllProjects(): void {
@@ -924,6 +1026,7 @@ export class AdminDashboard implements OnInit {
       next: (response) => {
         this.allProjects = response.content || response || [];
         this.projectsTotalPages = Math.max(1, response.totalPages || 0);
+        this.updateCharts();
       },
       error: (error) => {
         console.error('Error loading projects:', error);
@@ -937,6 +1040,7 @@ export class AdminDashboard implements OnInit {
       next: (response) => {
         this.allUsers = response.content || response || [];
         this.usersTotalPages = Math.max(1, response.totalPages || 0);
+        this.updateCharts();
       },
       error: (error) => {
         console.error('Error loading users:', error);
@@ -950,6 +1054,7 @@ export class AdminDashboard implements OnInit {
       next: (response) => {
         this.allSubTasks = response.content || response || [];
         this.subTasksTotalPages = Math.max(1, response.totalPages || 0);
+        this.updateCharts();
       },
       error: (error) => {
         console.error('Error loading subtasks:', error);
@@ -962,6 +1067,9 @@ export class AdminDashboard implements OnInit {
     this.activeTab = tab;
     if (typeof window !== 'undefined' && window.innerWidth < 992) {
       this.sidebarOpen = false;
+    }
+    if (tab === 'analytics') {
+      setTimeout(() => this.initializeCharts(), 100);
     }
   }
 

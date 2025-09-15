@@ -189,8 +189,8 @@ import { FormsModule } from '@angular/forms';
                     </div>
                     <span class="badge" [ngClass]="{
                       'bg-secondary': subtask.status === 'NOT_STARTED',
-                      'bg-primary': subtask.status === 'IN_PROGRESS',
-                      'bg-success': subtask.status === 'DONE'
+                      'bg-warning': subtask.status === 'IN_PROGRESS',
+                      'bg-primary': subtask.status === 'DONE'
                     }">{{subtask.status}}</span>
                   </div>
                 </div>
@@ -210,7 +210,7 @@ import { FormsModule } from '@angular/forms';
           <!-- Create Task Form -->
           <div class="col-lg-5">
             <div class="card shadow-sm">
-              <div class="card-header">
+              <div class="card-header bg-primary text-white">
                 <h5 class="mb-0">
                   <i class="feather icon-plus-circle me-2"></i>
                   Create Personal Task
@@ -296,9 +296,9 @@ import { FormsModule } from '@angular/forms';
                     </select>
                   </div>
 
-                  <button class="btn btn-success w-100" type="submit">
+                  <button class="btn btn-primary w-100" type="submit">
                     <i class="feather icon-plus me-2"></i>
-                    Add Task
+                    Add Personal Task
                   </button>
                 </form>
               </div>
@@ -349,8 +349,8 @@ import { FormsModule } from '@angular/forms';
                           class="badge"
                           [ngClass]="{
                             'bg-secondary': task.status === 'NOT_STARTED',
-                            'bg-primary': task.status === 'IN_PROGRESS',
-                            'bg-success': task.status === 'DONE'
+                            'bg-warning': task.status === 'IN_PROGRESS',
+                            'bg-primary': task.status === 'DONE'
                           }"
                         >
                           <i class="feather" [ngClass]="{

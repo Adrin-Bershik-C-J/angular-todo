@@ -107,8 +107,59 @@ import { SubTask } from '../../model/subtask.model';
 
       <!-- Overview Tab -->
       <div *ngIf="activeTab === 'overview'" class="tab-content">
+        <!-- Project Filter -->
+        <div class="row mb-3">
+          <div class="col-md-4">
+            <select class="form-select" [(ngModel)]="selectedProjectId" (change)="onProjectFilterChange()">
+              <option value="">All Projects</option>
+              <option *ngFor="let project of tlProjects" [value]="project.id">{{project.name}}</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Key Metrics -->
+        <div class="row mb-4">
+          <div class="col-md-3">
+            <div class="card border-primary">
+              <div class="card-body text-center">
+                <i class="fas fa-project-diagram text-primary fs-1 mb-2"></i>
+                <h5 class="text-primary">{{ selectedProjectId ? 'Current Project' : 'My Projects' }}</h5>
+                <h2 class="text-dark">{{ selectedProjectId ? '1' : tlProjects.length }}</h2>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="card border-info">
+              <div class="card-body text-center">
+                <i class="fas fa-tasks text-info fs-1 mb-2"></i>
+                <h5 class="text-info">Sub-Tasks</h5>
+                <h2 class="text-dark">{{ getFilteredSubTasks().length }}</h2>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="card border-success">
+              <div class="card-body text-center">
+                <i class="fas fa-check-circle text-success fs-1 mb-2"></i>
+                <h5 class="text-success">Completed</h5>
+                <h2 class="text-dark">{{ getCompletedSubTasksCount() }}</h2>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="card border-warning">
+              <div class="card-body text-center">
+                <i class="fas fa-clock text-warning fs-1 mb-2"></i>
+                <h5 class="text-warning">Completion Rate</h5>
+                <h2 class="text-dark">{{ getTeamCompletionPercentage() }}%</h2>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dashboard Content -->
         <div class="row">
-          <div class="col-12">
+          <div class="col-md-6">
             <div class="card border-0 shadow-sm">
               <div class="card-header bg-light">
                 <h5 class="mb-0 text-dark">My Projects</h5>
@@ -117,13 +168,99 @@ import { SubTask } from '../../model/subtask.model';
                 <div *ngFor="let project of tlProjects" class="mb-3 p-3 border rounded">
                   <div class="d-flex justify-content-between align-items-start">
                     <div>
-                      <h6>{{project.name}}</h6>
-                      <p class="text-muted mb-1">{{project.description}}</p>
-                      <small class="text-muted">Due: {{project.dueDate | date}} | Manager: {{project.managerUsername}}</small>
+                      <h6 class="text-primary">{{project.name}}</h6>
+                      <p class="text-muted mb-1 small">{{project.description}}</p>
+                      <small class="text-secondary">Due: {{project.dueDate | date}} | Manager: {{project.managerUsername}}</small>
+                    </div>
+                    <div class="text-end">
+                      <span class="badge bg-info">{{ getProjectSubTasksCount(project.id) }} tasks</span>
                     </div>
                   </div>
                 </div>
-                <div *ngIf="tlProjects.length === 0" class="text-muted">No projects assigned</div>
+                <div *ngIf="tlProjects.length === 0" class="text-muted text-center py-3">
+                  <i class="fas fa-folder-open fs-1 text-muted mb-2"></i>
+                  <p>No projects assigned</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="card border-0 shadow-sm">
+              <div class="card-header bg-light">
+                <h5 class="mb-0 text-dark">{{ selectedProjectId ? 'Project Team Performance' : 'Overall Performance' }}</h5>
+              </div>
+              <div class="card-body">
+                <div class="mb-3">
+                  <div class="d-flex justify-content-between">
+                    <span class="text-dark">Not Started</span>
+                    <span class="badge bg-secondary">{{ getNotStartedCount() }}</span>
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <div class="d-flex justify-content-between">
+                    <span class="text-dark">In Progress</span>
+                    <span class="badge bg-primary">{{ getInProgressSubTasksCount() }}</span>
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <div class="d-flex justify-content-between">
+                    <span class="text-dark">Completed</span>
+                    <span class="badge bg-success">{{ getCompletedSubTasksCount() }}</span>
+                  </div>
+                </div>
+                <div class="mb-3" *ngIf="!selectedProjectId">
+                  <div class="d-flex justify-content-between">
+                    <span class="text-dark">Personal Tasks</span>
+                    <span class="badge bg-info">{{ personalTasks.length }}</span>
+                  </div>
+                </div>
+                <div class="mb-3" *ngIf="!selectedProjectId">
+                  <div class="d-flex justify-content-between">
+                    <span class="text-dark">Created Sub-Tasks</span>
+                    <span class="badge bg-warning">{{ createdSubTasks.length }}</span>
+                  </div>
+                </div>
+                <div *ngIf="selectedProjectId && getTeamMembers().length > 0">
+                  <h6 class="text-muted mb-2">Team Members:</h6>
+                  <div *ngFor="let member of getTeamMembers()" class="mb-2">
+                    <div class="d-flex justify-content-between align-items-center">
+                      <small class="text-dark">{{ member.name }}</small>
+                      <div>
+                        <span class="badge bg-light text-dark me-1">{{ member.assignedTasks }} tasks</span>
+                        <span class="badge" [ngClass]="{
+                          'bg-success': member.completionRate >= 80,
+                          'bg-warning': member.completionRate >= 50 && member.completionRate < 80,
+                          'bg-danger': member.completionRate < 50
+                        }">{{ member.completionRate }}%</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Upcoming Deadlines -->
+        <div class="row mt-4" *ngIf="getUpcomingDeadlines().length > 0">
+          <div class="col-12">
+            <div class="card border-0 shadow-sm">
+              <div class="card-header bg-light">
+                <h5 class="mb-0 text-dark">Upcoming Deadlines</h5>
+              </div>
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-md-4" *ngFor="let task of getUpcomingDeadlines()">
+                    <div class="card border-warning mb-3">
+                      <div class="card-body">
+                        <h6 class="text-warning">{{ task.name }}</h6>
+                        <p class="text-muted small mb-1">{{ task.projectName }}</p>
+                        <p class="text-muted small mb-1">Assigned to: {{ task.memberUsername }}</p>
+                        <small class="text-danger">Due: {{ task.dueDate | date }}</small>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -311,7 +448,7 @@ import { SubTask } from '../../model/subtask.model';
         <div class="row">
           <div class="col-md-6">
             <div class="card border-0 shadow-sm">
-              <div class="card-header bg-info text-white">
+              <div class="card-header bg-primary text-white">
                 <h5 class="mb-0">Create Sub-Task</h5>
               </div>
               <div class="card-body">
@@ -347,7 +484,7 @@ import { SubTask } from '../../model/subtask.model';
                     </select>
                     <small class="text-muted">Choose from project team members</small>
                   </div>
-                  <button type="submit" class="btn btn-info w-100">Create Sub-Task</button>
+                  <button type="submit" class="btn btn-primary w-100">Create Sub-Task</button>
                 </form>
               </div>
             </div>
@@ -378,7 +515,7 @@ import { SubTask } from '../../model/subtask.model';
         <div class="row">
           <div class="col-md-5">
             <div class="card border-0 shadow-sm">
-              <div class="card-header bg-success text-white">
+              <div class="card-header bg-primary text-white">
                 <h5 class="mb-0">Create Personal Task</h5>
               </div>
               <div class="card-body">
@@ -411,7 +548,7 @@ import { SubTask } from '../../model/subtask.model';
                       <option>IN_PROGRESS</option>
                     </select>
                   </div>
-                  <button type="submit" class="btn btn-success w-100">Add Personal Task</button>
+                  <button type="submit" class="btn btn-primary w-100">Add Personal Task</button>
                 </form>
               </div>
             </div>
@@ -809,6 +946,10 @@ import { SubTask } from '../../model/subtask.model';
       margin: 3px 0;
       transition: 0.3s;
     }
+    
+    .fs-1 {
+      font-size: 2.5rem;
+    }
   `]
 })
 export class TlDashboard implements OnInit {
@@ -1145,6 +1286,22 @@ export class TlDashboard implements OnInit {
     });
 
     return Array.from(memberStats.values());
+  }
+
+  getProjectSubTasksCount(projectId: number): number {
+    return this.assignedSubTasks.filter(task => task.projectId === projectId).length;
+  }
+
+  getSelectedProjectName(): string {
+    if (!this.selectedProjectId) return '';
+    const project = this.tlProjects.find(p => p.id === Number(this.selectedProjectId));
+    return project ? project.name : '';
+  }
+
+  getSelectedProjectManager(): string {
+    if (!this.selectedProjectId) return '';
+    const project = this.tlProjects.find(p => p.id === Number(this.selectedProjectId));
+    return project ? project.managerUsername : '';
   }
 
   resetSubTaskForm(): void {

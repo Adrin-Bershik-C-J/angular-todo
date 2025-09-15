@@ -288,7 +288,7 @@ import { Task } from '../../model/todo.model';
         <div class="row">
           <div class="col-md-5">
             <div class="card border-0 shadow-sm">
-              <div class="card-header bg-success text-white">
+              <div class="card-header bg-primary text-white">
                 <h5 class="mb-0">Create Personal Task</h5>
               </div>
               <div class="card-body">
@@ -321,7 +321,7 @@ import { Task } from '../../model/todo.model';
                       <option>IN_PROGRESS</option>
                     </select>
                   </div>
-                  <button type="submit" class="btn btn-success w-100">Add Personal Task</button>
+                  <button type="submit" class="btn btn-primary w-100">Add Personal Task</button>
                 </form>
               </div>
             </div>
@@ -378,8 +378,8 @@ import { Task } from '../../model/todo.model';
                         <td>
                           <span class="badge" [ngClass]="{
                             'bg-secondary': task.status === 'NOT_STARTED',
-                            'bg-primary': task.status === 'IN_PROGRESS',
-                            'bg-success': task.status === 'DONE'
+                            'bg-warning': task.status === 'IN_PROGRESS',
+                            'bg-primary': task.status === 'DONE'
                           }">{{task.status}}</span>
                         </td>
                         <td>{{task.dueDate | date}}</td>

@@ -110,14 +110,24 @@ import { Task } from '../../model/todo.model';
     <div class="main-content">
       <!-- Overview Tab -->
       <div *ngIf="activeTab === 'overview'" class="tab-content">
+        <!-- Project Filter -->
+        <div class="row mb-3">
+          <div class="col-md-4">
+            <select class="form-select" [(ngModel)]="selectedProjectId" (change)="onProjectFilterChange()">
+              <option value="">All Projects</option>
+              <option *ngFor="let project of projects" [value]="project.id">{{project.name}}</option>
+            </select>
+          </div>
+        </div>
+
         <!-- Key Metrics -->
         <div class="row mb-4">
           <div class="col-md-3">
             <div class="card border-primary">
               <div class="card-body text-center">
                 <i class="fas fa-project-diagram text-primary fs-1 mb-2"></i>
-                <h5 class="text-primary">My Projects</h5>
-                <h2 class="text-dark">{{ projects.length }}</h2>
+                <h5 class="text-primary">{{ selectedProjectId ? 'Current Project' : 'My Projects' }}</h5>
+                <h2 class="text-dark">{{ selectedProjectId ? '1' : projects.length }}</h2>
               </div>
             </div>
           </div>
@@ -126,7 +136,7 @@ import { Task } from '../../model/todo.model';
               <div class="card-body text-center">
                 <i class="fas fa-users text-success fs-1 mb-2"></i>
                 <h5 class="text-success">Team Members</h5>
-                <h2 class="text-dark">{{ getTotalTeamMembers() }}</h2>
+                <h2 class="text-dark">{{ getFilteredTeamMembers() }}</h2>
               </div>
             </div>
           </div>
@@ -134,41 +144,43 @@ import { Task } from '../../model/todo.model';
             <div class="card border-info">
               <div class="card-body text-center">
                 <i class="fas fa-tasks text-info fs-1 mb-2"></i>
-                <h5 class="text-info">Active Sub-Tasks</h5>
-                <h2 class="text-dark">{{ getActiveSubTasksCount() }}</h2>
+                <h5 class="text-info">Sub-Tasks</h5>
+                <h2 class="text-dark">{{ getFilteredSubTasksCount() }}</h2>
               </div>
             </div>
           </div>
           <div class="col-md-3">
-            <div class="card border-secondary">
+            <div class="card border-warning">
               <div class="card-body text-center">
-                <i class="fas fa-user-tasks text-secondary fs-1 mb-2"></i>
-                <h5 class="text-secondary">Personal Tasks</h5>
-                <h2 class="text-dark">{{ personalTasks.length }}</h2>
+                <i class="fas fa-chart-line text-warning fs-1 mb-2"></i>
+                <h5 class="text-warning">Completion Rate</h5>
+                <h2 class="text-dark">{{ getProjectCompletionRate() }}%</h2>
               </div>
             </div>
           </div>
         </div>
 
+        <!-- Dashboard Content -->
         <div class="row">
-          <div class="col-12">
+          <div class="col-md-6">
             <div class="card border-0 shadow-sm">
               <div class="card-header bg-light">
-                <h5 class="mb-0 text-dark">My Projects</h5>
+                <h5 class="mb-0 text-dark">{{ selectedProjectId ? 'Project Details' : 'My Projects' }}</h5>
               </div>
               <div class="card-body">
                 <div
-                  *ngFor="let project of projects"
+                  *ngFor="let project of getFilteredProjects()"
                   class="mb-3 p-3 border rounded"
                 >
                   <div class="d-flex justify-content-between align-items-start">
-                    <div>
-                      <h6>{{ project.name }}</h6>
-                      <p class="text-muted mb-1">{{ project.description }}</p>
-                      <small class="text-muted"
-                        >Due: {{ project.dueDate | date }} | TL:
-                        {{ project.tlUsername }}</small
-                      >
+                    <div class="flex-grow-1">
+                      <h6 class="text-primary">{{ project.name }}</h6>
+                      <p class="text-muted mb-1 small">{{ project.description }}</p>
+                      <small class="text-secondary">Due: {{ project.dueDate | date }} | TL: {{ project.tlUsername }}</small>
+                      <div class="mt-2">
+                        <span class="badge bg-info me-1">{{ getProjectSubTasksCount(project.id) }} tasks</span>
+                        <span class="badge bg-secondary">{{ project.memberUsernames.length }} members</span>
+                      </div>
                     </div>
                     <div class="btn-group btn-group-sm">
                       <button
@@ -186,8 +198,83 @@ import { Task } from '../../model/todo.model';
                     </div>
                   </div>
                 </div>
-                <div *ngIf="projects.length === 0" class="text-muted">
-                  No projects yet
+                <div *ngIf="getFilteredProjects().length === 0" class="text-muted text-center py-3">
+                  <i class="fas fa-folder-open fs-1 text-muted mb-2"></i>
+                  <p>No projects found</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="card border-0 shadow-sm">
+              <div class="card-header bg-light">
+                <h5 class="mb-0 text-dark">{{ selectedProjectId ? 'Project Performance' : 'Overall Performance' }}</h5>
+              </div>
+              <div class="card-body">
+                <div class="mb-3">
+                  <div class="d-flex justify-content-between">
+                    <span class="text-dark">Not Started</span>
+                    <span class="badge bg-secondary">{{ getNotStartedSubTasksCount() }}</span>
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <div class="d-flex justify-content-between">
+                    <span class="text-dark">In Progress</span>
+                    <span class="badge bg-primary">{{ getInProgressSubTasksCount() }}</span>
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <div class="d-flex justify-content-between">
+                    <span class="text-dark">Completed</span>
+                    <span class="badge bg-success">{{ getCompletedSubTasksCount() }}</span>
+                  </div>
+                </div>
+                <div class="mb-3" *ngIf="!selectedProjectId">
+                  <div class="d-flex justify-content-between">
+                    <span class="text-dark">Personal Tasks</span>
+                    <span class="badge bg-info">{{ personalTasks.length }}</span>
+                  </div>
+                </div>
+                <div *ngIf="selectedProjectId && getProjectTeamMembers().length > 0">
+                  <h6 class="text-muted mb-2">Team Members:</h6>
+                  <div *ngFor="let member of getProjectTeamMembers()" class="mb-2">
+                    <div class="d-flex justify-content-between align-items-center">
+                      <small class="text-dark">{{ member.name }}</small>
+                      <div>
+                        <span class="badge bg-light text-dark me-1">{{ member.assignedTasks }} tasks</span>
+                        <span class="badge" [ngClass]="{
+                          'bg-success': member.completionRate >= 80,
+                          'bg-warning': member.completionRate >= 50 && member.completionRate < 80,
+                          'bg-danger': member.completionRate < 50
+                        }">{{ member.completionRate }}%</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Upcoming Deadlines -->
+        <div class="row mt-4" *ngIf="getUpcomingDeadlines().length > 0">
+          <div class="col-12">
+            <div class="card border-0 shadow-sm">
+              <div class="card-header bg-light">
+                <h5 class="mb-0 text-dark">Upcoming Deadlines</h5>
+              </div>
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-md-4" *ngFor="let task of getUpcomingDeadlines()">
+                    <div class="card border-warning mb-3">
+                      <div class="card-body">
+                        <h6 class="text-warning">{{ task.name }}</h6>
+                        <p class="text-muted small mb-1">{{ task.projectName }}</p>
+                        <p class="text-muted small mb-1">Assigned to: {{ task.memberUsername }}</p>
+                        <small class="text-danger">Due: {{ task.dueDate | date }}</small>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -321,7 +408,7 @@ import { Task } from '../../model/todo.model';
                       No team members available
                     </div>
                   </div>
-                  <button type="submit" class="btn btn-success w-100">
+                  <button type="submit" class="btn btn-primary w-100">
                     Create Project
                   </button>
                 </form>
@@ -357,7 +444,7 @@ import { Task } from '../../model/todo.model';
         <div class="row">
           <div class="col-md-6">
             <div class="card border-0 shadow-sm">
-              <div class="card-header bg-info text-white">
+              <div class="card-header bg-primary text-white">
                 <h5 class="mb-0">Create Sub-Task</h5>
               </div>
               <div class="card-body">
@@ -429,7 +516,7 @@ import { Task } from '../../model/todo.model';
                       </option>
                     </select>
                   </div>
-                  <button type="submit" class="btn btn-info w-100">
+                  <button type="submit" class="btn btn-primary w-100">
                     Create Sub-Task
                   </button>
                 </form>
@@ -532,8 +619,8 @@ import { Task } from '../../model/todo.model';
                         class="badge"
                         [ngClass]="{
                           'bg-secondary': subtask.status === 'NOT_STARTED',
-                          'bg-primary': subtask.status === 'IN_PROGRESS',
-                          'bg-success': subtask.status === 'DONE'
+                          'bg-warning': subtask.status === 'IN_PROGRESS',
+                          'bg-primary': subtask.status === 'DONE'
                         }"
                         >{{ subtask.status }}</span
                       >
@@ -672,7 +759,7 @@ import { Task } from '../../model/todo.model';
                       <option>IN_PROGRESS</option>
                     </select>
                   </div>
-                  <button type="submit" class="btn btn-success w-100">
+                  <button type="submit" class="btn btn-primary w-100">
                     Add Personal Task
                   </button>
                 </form>
@@ -748,8 +835,8 @@ import { Task } from '../../model/todo.model';
                             class="badge"
                             [ngClass]="{
                               'bg-secondary': task.status === 'NOT_STARTED',
-                              'bg-primary': task.status === 'IN_PROGRESS',
-                              'bg-success': task.status === 'DONE'
+                              'bg-warning': task.status === 'IN_PROGRESS',
+                              'bg-primary': task.status === 'DONE'
                             }"
                             >{{ task.status }}</span
                           >
@@ -1318,6 +1405,7 @@ export class ManagerDashboard implements OnInit {
   subTaskStatusFilter: string = '';
   subTaskDueDateFilter: string = '';
   subTaskProjectFilter: string = '';
+  selectedProjectId: string | null = '';
   
   // Pagination
   managerSubTasksPage = 0;
@@ -1672,6 +1760,117 @@ export class ManagerDashboard implements OnInit {
   getCompletionPercentage(): number {
     // Mock calculation - in real app, fetch actual sub-task completion data
     return 68;
+  }
+
+  // Project filtering methods
+  getFilteredProjects(): ProjectResponseModel[] {
+    if (!this.selectedProjectId || this.selectedProjectId === '') {
+      return this.projects;
+    }
+    return this.projects.filter(project => project.id === Number(this.selectedProjectId));
+  }
+
+  getSelectedProjectName(): string {
+    if (!this.selectedProjectId) return '';
+    const project = this.projects.find(p => p.id === Number(this.selectedProjectId));
+    return project ? project.name : '';
+  }
+
+  getSelectedProjectTL(): string {
+    if (!this.selectedProjectId) return '';
+    const project = this.projects.find(p => p.id === Number(this.selectedProjectId));
+    return project ? project.tlUsername : '';
+  }
+
+  getSelectedProjectMemberCount(): number {
+    if (!this.selectedProjectId) return 0;
+    const project = this.projects.find(p => p.id === Number(this.selectedProjectId));
+    return project ? project.memberUsernames.length : 0;
+  }
+
+  getFilteredTeamMembers(): number {
+    if (!this.selectedProjectId || this.selectedProjectId === '') {
+      return this.getTotalTeamMembers();
+    }
+    return this.getSelectedProjectMemberCount();
+  }
+
+  getFilteredSubTasksCount(): number {
+    if (!this.selectedProjectId || this.selectedProjectId === '') {
+      return this.managerSubTasks.length;
+    }
+    return this.managerSubTasks.filter(task => task.projectId === Number(this.selectedProjectId)).length;
+  }
+
+  getProjectCompletionRate(): number {
+    const filteredTasks = this.getFilteredManagerSubTasks();
+    if (filteredTasks.length === 0) return 0;
+    const completed = filteredTasks.filter(task => task.status === 'DONE').length;
+    return Math.round((completed / filteredTasks.length) * 100);
+  }
+
+  getFilteredManagerSubTasks(): any[] {
+    if (!this.selectedProjectId || this.selectedProjectId === '') {
+      return this.managerSubTasks;
+    }
+    return this.managerSubTasks.filter(task => task.projectId === Number(this.selectedProjectId));
+  }
+
+  getNotStartedSubTasksCount(): number {
+    return this.getFilteredManagerSubTasks().filter(task => task.status === 'NOT_STARTED').length;
+  }
+
+  getInProgressSubTasksCount(): number {
+    return this.getFilteredManagerSubTasks().filter(task => task.status === 'IN_PROGRESS').length;
+  }
+
+  getCompletedSubTasksCount(): number {
+    return this.getFilteredManagerSubTasks().filter(task => task.status === 'DONE').length;
+  }
+
+  getProjectSubTasksCount(projectId: number): number {
+    return this.managerSubTasks.filter(task => task.projectId === projectId).length;
+  }
+
+  getProjectTeamMembers(): any[] {
+    if (!this.selectedProjectId) return [];
+    
+    const memberStats = new Map();
+    const filteredTasks = this.getFilteredManagerSubTasks();
+    
+    filteredTasks.forEach(subtask => {
+      const memberName = subtask.memberUsername;
+      if (!memberStats.has(memberName)) {
+        memberStats.set(memberName, {
+          name: memberName,
+          assignedTasks: 0,
+          completedTasks: 0,
+          completionRate: 0
+        });
+      }
+      
+      const stats = memberStats.get(memberName);
+      stats.assignedTasks++;
+      if (subtask.status === 'DONE') {
+        stats.completedTasks++;
+      }
+      stats.completionRate = stats.assignedTasks > 0 ? 
+        Math.round((stats.completedTasks / stats.assignedTasks) * 100) : 0;
+    });
+
+    return Array.from(memberStats.values());
+  }
+
+  getUpcomingDeadlines(): any[] {
+    const upcoming = this.getFilteredManagerSubTasks()
+      .filter(task => task.status !== 'DONE' && new Date(task.dueDate) > new Date())
+      .sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime())
+      .slice(0, 3);
+    return upcoming;
+  }
+
+  onProjectFilterChange(): void {
+    // Filter is handled by the getter methods
   }
 
   resetProjectForm(): void {
