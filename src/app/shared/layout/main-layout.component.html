@@ -1,0 +1,12 @@
+<app-navbar 
+  [pageTitle]="pageTitle" 
+  [welcomeMessage]="welcomeMessage">
+</app-navbar>
+
+<app-sidebar [menuItems]="menuItems"></app-sidebar>
+
+<main class="main-content" [class.sidebar-open]="!sidebarCollapsed">
+  <div class="content-wrapper">
+    <ng-content></ng-content>
+  </div>
+</main>

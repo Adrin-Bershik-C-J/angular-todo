@@ -12,62 +12,97 @@ import { RegisterModel } from '../../model/auth.model';
   selector: 'app-admin-dashboard',
   imports: [CommonModule, FormsModule],
   template: `
-    <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
-      <div class="container">
-        <span class="navbar-brand text-primary fw-bold">Admin Dashboard</span>
-        <button class="navbar-toggler" type="button" (click)="toggleNavbar()">
-          <span class="navbar-toggler-icon"></span>
+    <!-- Top Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom fixed-top">
+      <div class="container-fluid">
+        <button class="btn btn-outline-primary d-lg-none me-2" (click)="toggleSidebar()">
+          <span class="hamburger-icon">
+            <span></span>
+            <span></span>
+            <span></span>
+          </span>
         </button>
-        <div class="collapse navbar-collapse" [class.show]="isNavbarCollapsed" id="navbarNav">
-          <div class="navbar-nav ms-auto d-flex align-items-center">
-            <button
-              class="nav-link btn btn-link"
-              [class.active]="activeTab === 'overview'"
-              (click)="setActiveTab('overview')"
-            >
-              System Overview
-            </button>
-            <button
-              class="nav-link btn btn-link"
-              [class.active]="activeTab === 'projects'"
-              (click)="setActiveTab('projects')"
-            >
-              All Projects
-            </button>
-            <button
-              class="nav-link btn btn-link"
-              [class.active]="activeTab === 'users'"
-              (click)="setActiveTab('users')"
-            >
-              User Management
-            </button>
-            <button
-              class="nav-link btn btn-link"
-              [class.active]="activeTab === 'subtasks'"
-              (click)="setActiveTab('subtasks')"
-            >
-              Sub-Tasks
-            </button>
-            <button
-              class="nav-link btn btn-link"
-              [class.active]="activeTab === 'analytics'"
-              (click)="setActiveTab('analytics')"
-            >
-              Analytics
-            </button>
-            <span class="navbar-text me-3 text-dark ms-3">
-              Welcome, <span class="fw-bold">{{ currentUser }}!</span>
-            </span>
-            <button class="btn btn-outline-primary btn-sm" (click)="logout()">
-              Logout
-            </button>
-          </div>
+        <span class="navbar-brand text-primary fw-bold mb-0">Admin Dashboard</span>
+        <div class="ms-auto d-flex align-items-center">
+          <span class="navbar-text me-3 text-dark d-none d-lg-block">
+            Welcome, <span class="fw-bold">System Admin!</span>
+          </span>
+          <button class="btn btn-outline-primary btn-sm d-none d-lg-block" (click)="logout()">
+            <i class="fas fa-sign-out-alt me-1"></i>Logout
+          </button>
         </div>
       </div>
     </nav>
 
-    <div class="container mt-4">
+    <!-- Sidebar -->
+    <div class="sidebar" [class.show]="sidebarOpen">
+      <div class="sidebar-header d-lg-none">
+        <div class="d-flex justify-content-between align-items-center w-100">
+          <span class="text-dark fw-bold">Welcome, System Admin!</span>
+          <button class="btn btn-link text-muted" (click)="toggleSidebar()">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+      </div>
+      <ul class="sidebar-nav">
+        <li>
+          <button
+            class="sidebar-link"
+            [class.active]="activeTab === 'overview'"
+            (click)="setActiveTab('overview')"
+          >
+            <i class="fas fa-tachometer-alt me-2"></i>System Overview
+          </button>
+        </li>
+        <li>
+          <button
+            class="sidebar-link"
+            [class.active]="activeTab === 'projects'"
+            (click)="setActiveTab('projects')"
+          >
+            <i class="fas fa-project-diagram me-2"></i>All Projects
+          </button>
+        </li>
+        <li>
+          <button
+            class="sidebar-link"
+            [class.active]="activeTab === 'users'"
+            (click)="setActiveTab('users')"
+          >
+            <i class="fas fa-users me-2"></i>User Management
+          </button>
+        </li>
+        <li>
+          <button
+            class="sidebar-link"
+            [class.active]="activeTab === 'subtasks'"
+            (click)="setActiveTab('subtasks')"
+          >
+            <i class="fas fa-tasks me-2"></i>Sub-Tasks
+          </button>
+        </li>
+        <li>
+          <button
+            class="sidebar-link"
+            [class.active]="activeTab === 'analytics'"
+            (click)="setActiveTab('analytics')"
+          >
+            <i class="fas fa-chart-line me-2"></i>Analytics
+          </button>
+        </li>
+      </ul>
+      <div class="sidebar-footer d-lg-none">
+        <button class="sidebar-link logout-btn" (click)="logout()">
+          <i class="fas fa-sign-out-alt me-2"></i>Logout
+        </button>
+      </div>
+    </div>
 
+    <!-- Sidebar Overlay for Mobile -->
+    <div class="sidebar-overlay" [class.show]="sidebarOpen" (click)="toggleSidebar()"></div>
+
+    <!-- Main Content -->
+    <div class="main-content">
 
       <!-- System Overview Tab -->
       <div *ngIf="activeTab === 'overview'" class="tab-content">
@@ -633,82 +668,204 @@ import { RegisterModel } from '../../model/auth.model';
   `,
   styles: [
     `
-      .nav-link.active {
-        background-color: #0d6efd !important;
-        color: white !important;
-        border-radius: 5px;
+      .navbar {
+        z-index: 1030;
+        height: 60px;
       }
-      .nav-link {
-        color: #0d6efd;
-        margin-right: 0.5rem;
+      
+      .sidebar {
+        position: fixed;
+        top: 0;
+        left: -250px;
+        width: 250px;
+        height: 100vh;
+        background: #f8f9fa;
+        border-right: 1px solid #dee2e6;
+        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        transition: left 0.3s ease;
+        z-index: 1020;
+        overflow-y: auto;
+      }
+      
+      .sidebar.show {
+        left: 0;
+      }
+      
+      .sidebar-header {
+        padding: 1rem;
+        border-bottom: 1px solid #dee2e6;
+        margin-top: 60px;
+        background: white;
+      }
+      
+      .sidebar-footer {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        border-top: 1px solid #dee2e6;
+        background: white;
+      }
+      
+      .logout-btn {
+        color: #dc3545 !important;
+      }
+      
+      .logout-btn:hover {
+        background: #f8d7da !important;
+        color: #721c24 !important;
+      }
+      
+      .sidebar-nav {
+        list-style: none;
+        padding: 0.5rem 0 0 0;
+        margin: 0;
+      }
+      
+      @media (min-width: 992px) {
+        .sidebar-nav {
+          padding: 3.5rem 0 0 0;
+        }
+      }
+      
+      .sidebar-link {
+        display: block;
+        width: 100%;
+        padding: 0.75rem 1rem;
+        color: #495057;
         text-decoration: none;
         border: none;
         background: none;
+        text-align: left;
+        transition: all 0.3s ease;
       }
-      .nav-link:hover {
-        color: #0a58ca;
-        background-color: #e7f1ff;
-        border-radius: 5px;
+      
+      .sidebar-link:hover {
+        background: #e9ecef;
+        color: #2563eb;
       }
-      @media (max-width: 991.98px) {
-        .navbar-collapse {
-          position: absolute;
-          top: 100%;
-          right: 0;
-          background: white;
-          border: 1px solid #dee2e6;
-          border-radius: 8px;
-          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-          width: 250px;
-          z-index: 1000;
+      
+      .sidebar-link.active {
+        background: #2563eb;
+        color: white;
+        border-right: 3px solid #1d4ed8;
+      }
+      
+      .sidebar-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1010;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+      }
+      
+      .sidebar-overlay.show {
+        opacity: 1;
+        visibility: visible;
+      }
+      
+      .main-content {
+        margin-top: 60px;
+        padding: 2rem;
+        transition: margin-left 0.3s ease;
+      }
+      
+      @media (min-width: 992px) {
+        .sidebar {
+          left: 0;
+          box-shadow: none;
         }
-        .navbar-nav {
-          flex-direction: column;
+        
+        .main-content {
+          margin-left: 250px;
+        }
+        
+        .sidebar-overlay {
+          display: none;
+        }
+        
+        .sidebar-header {
+          display: none !important;
+        }
+        
+        .sidebar-footer {
+          display: none !important;
+        }
+      }
+      
+      @media (max-width: 991.98px) {
+        .main-content {
           padding: 1rem;
         }
-        .nav-link {
-          padding: 0.5rem 1rem;
-          margin: 0.2rem 0;
-          border-radius: 5px;
-        }
       }
+      
       .card {
         border-radius: 10px;
+        border: none;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       }
+      
       .table th {
         border-top: none;
         font-weight: 600;
+        background-color: #f8f9fa;
       }
+      
       .toast.show {
         display: block;
       }
+      
       .toast {
         display: none;
       }
+      
       .tab-content {
         min-height: 400px;
       }
-      body {
-        background-color: #f8f9fa;
-      }
+      
       .fs-1 {
         font-size: 2.5rem;
       }
-      .btn-group-sm .btn {
-        font-size: 0.75rem;
-        padding: 0.25rem 0.5rem;
-      }
+      
       .pagination {
         margin-top: 1rem;
       }
+      
       .page-link {
-        color: #0d6efd;
+        color: #2563eb;
         border: 1px solid #dee2e6;
       }
+      
       .page-item.active .page-link {
-        background-color: #0d6efd;
-        border-color: #0d6efd;
+        background-color: #2563eb;
+        border-color: #2563eb;
         color: white !important;
+      }
+      
+      .btn-outline-primary {
+        color: #2563eb !important;
+        border-color: #2563eb !important;
+      }
+      
+      .hamburger-icon {
+        display: inline-block;
+        width: 18px;
+        height: 14px;
+        position: relative;
+      }
+      
+      .hamburger-icon span {
+        display: block;
+        height: 2px;
+        width: 100%;
+        background: #2563eb;
+        margin: 3px 0;
+        transition: 0.3s;
       }
     `,
   ],
@@ -738,7 +895,7 @@ export class AdminDashboard implements OnInit {
   showToast = false;
   toastMessage = '';
   toastError = false;
-  isNavbarCollapsed = false;
+  sidebarOpen = false;
   
   // Pagination
   projectsPage = 0;
@@ -803,6 +960,9 @@ export class AdminDashboard implements OnInit {
 
   setActiveTab(tab: string): void {
     this.activeTab = tab;
+    if (typeof window !== 'undefined' && window.innerWidth < 992) {
+      this.sidebarOpen = false;
+    }
   }
 
   createUser(): void {
@@ -913,20 +1073,6 @@ export class AdminDashboard implements OnInit {
     }
   }
 
-  getProjectStatus(project: any): string {
-    const projectTasks = this.allSubTasks.filter(
-      (task) => task.projectId === project.id
-    );
-    if (projectTasks.length === 0) return 'Not Started';
-
-    const completed = projectTasks.filter(
-      (task) => task.status === 'DONE'
-    ).length;
-    if (completed === projectTasks.length) return 'Completed';
-    if (completed > 0) return 'In Progress';
-    return 'Not Started';
-  }
-
   getProjectSubTasksCount(projectId: number): number {
     return this.allSubTasks.filter((task) => task.projectId === projectId)
       .length;
@@ -950,25 +1096,6 @@ export class AdminDashboard implements OnInit {
         project.managerUsername === username ||
         project.tlUsername === username ||
         project.memberUsernames?.includes(username)
-    ).length;
-  }
-
-  getProjectsDueThisMonth(): number {
-    const currentMonth = new Date().getMonth();
-    const currentYear = new Date().getFullYear();
-    return this.allProjects.filter((project) => {
-      const dueDate = new Date(project.dueDate);
-      return (
-        dueDate.getMonth() === currentMonth &&
-        dueDate.getFullYear() === currentYear
-      );
-    }).length;
-  }
-
-  getOverdueProjects(): number {
-    const today = new Date();
-    return this.allProjects.filter(
-      (project) => new Date(project.dueDate) < today
     ).length;
   }
 
@@ -1007,11 +1134,6 @@ export class AdminDashboard implements OnInit {
     return this.allUsers.filter((user) => user.role === this.selectedUserRole);
   }
 
-  getAverageTasksPerProject(): number {
-    if (this.allProjects.length === 0) return 0;
-    return Math.round(this.allSubTasks.length / this.allProjects.length);
-  }
-
   resetForm(): void {
     this.userObj = new RegisterModel();
     this.selectedRole = '';
@@ -1028,8 +1150,8 @@ export class AdminDashboard implements OnInit {
     this.showToast = false;
   }
 
-  toggleNavbar(): void {
-    this.isNavbarCollapsed = !this.isNavbarCollapsed;
+  toggleSidebar(): void {
+    this.sidebarOpen = !this.sidebarOpen;
   }
 
   // Pagination methods

@@ -1,0 +1,13 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+  <div class="container-fluid">
+    <span class="navbar-brand mb-0 h1">{{ pageTitle }}</span>
+    
+    <div class="navbar-nav ms-auto d-flex flex-row align-items-center">
+      <span class="nav-text me-3">{{ welcomeMessage }}</span>
+      <button class="btn btn-outline-danger btn-sm" (click)="logout()">
+        <i class="fas fa-sign-out-alt me-1"></i>
+        Logout
+      </button>
+    </div>
+  </div>
+</nav>
