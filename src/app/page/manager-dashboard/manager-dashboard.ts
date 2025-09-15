@@ -48,7 +48,14 @@ import { Task } from '../../model/todo.model';
               [class.active]="activeTab === 'subtasks'"
               (click)="setActiveTab('subtasks')"
             >
-              Sub-Tasks
+              Create Sub-Task
+            </button>
+            <button
+              class="nav-link btn btn-link"
+              [class.active]="activeTab === 'project-subtasks'"
+              (click)="setActiveTab('project-subtasks')"
+            >
+              Project Sub-Tasks
             </button>
             <button
               class="nav-link btn btn-link"
@@ -314,10 +321,10 @@ import { Task } from '../../model/todo.model';
         </div>
       </div>
 
-      <!-- Sub-Tasks Tab -->
+      <!-- Create Sub-Task Tab -->
       <div *ngIf="activeTab === 'subtasks'" class="tab-content">
         <div class="row">
-          <div class="col-md-5">
+          <div class="col-md-6">
             <div class="card border-0 shadow-sm">
               <div class="card-header bg-info text-white">
                 <h5 class="mb-0">Create Sub-Task</h5>
@@ -399,130 +406,178 @@ import { Task } from '../../model/todo.model';
             </div>
           </div>
 
-          <div class="col-md-7">
+          <div class="col-md-6">
             <div class="card border-0 shadow-sm">
               <div class="card-header bg-light">
-                <h5 class="mb-0 text-dark">Project Sub-Tasks</h5>
+                <h5 class="mb-0 text-dark">Sub-Task Creation Guide</h5>
               </div>
               <div class="card-body">
-                <div class="row mb-3">
-                  <div class="col-md-4">
-                    <select
-                      class="form-select form-select-sm"
-                      [(ngModel)]="subTaskStatusFilter"
-                    >
-                      <option value="">All Status</option>
-                      <option value="NOT_STARTED">Not Started</option>
-                      <option value="IN_PROGRESS">In Progress</option>
-                      <option value="DONE">Done</option>
-                    </select>
-                  </div>
-                  <div class="col-md-4">
-                    <input
-                      type="date"
-                      class="form-control form-control-sm"
-                      [(ngModel)]="subTaskDueDateFilter"
-                      placeholder="Filter by due date"
-                    />
-                  </div>
-                  <div class="col-md-4">
-                    <select
-                      class="form-select form-select-sm"
-                      [(ngModel)]="subTaskProjectFilter"
-                    >
-                      <option value="">All Projects</option>
-                      <option
-                        *ngFor="let project of projects"
-                        [value]="project.id"
-                      >
-                        {{ project.name }}
-                      </option>
-                    </select>
-                  </div>
+                <div class="alert alert-info">
+                  <h6>Creating Sub-Tasks</h6>
+                  <ul class="mb-0">
+                    <li>Select a project you manage</li>
+                    <li>Choose team members from the project</li>
+                    <li>Set due dates within project timeline</li>
+                    <li>Break down complex tasks into manageable pieces</li>
+                    <li>Monitor progress in Project Sub-Tasks tab</li>
+                  </ul>
                 </div>
-                <div class="table-responsive">
-                  <table class="table table-hover">
-                    <thead class="table-light">
-                      <tr>
-                        <th>Name</th>
-                        <th>Assigned To</th>
-                        <th>Status</th>
-                        <th>Due Date</th>
-                        <th>Project</th>
-                        <th>Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr *ngFor="let subtask of getFilteredSubTasks()">
-                        <td>{{ subtask.name }}</td>
-                        <td>{{ subtask.memberUsername }}</td>
-                        <td>
-                          <span
-                            class="badge"
-                            [ngClass]="{
-                              'bg-secondary': subtask.status === 'NOT_STARTED',
-                              'bg-primary': subtask.status === 'IN_PROGRESS',
-                              'bg-success': subtask.status === 'DONE'
-                            }"
-                            >{{ subtask.status }}</span
-                          >
-                        </td>
-                        <td>{{ subtask.dueDate | date }}</td>
-                        <td>{{ subtask.projectName }}</td>
-                        <td>
-                          <div class="btn-group btn-group-sm mb-1">
-                            <button
-                              class="btn btn-outline-secondary"
-                              (click)="
-                                updateSubTaskStatus(subtask.id, 'NOT_STARTED')
-                              "
-                              [disabled]="subtask.status === 'NOT_STARTED'"
-                            >
-                              Not Started
-                            </button>
-                            <button
-                              class="btn btn-outline-primary"
-                              (click)="
-                                updateSubTaskStatus(subtask.id, 'IN_PROGRESS')
-                              "
-                              [disabled]="subtask.status === 'IN_PROGRESS'"
-                            >
-                              In Progress
-                            </button>
-                            <button
-                              class="btn btn-outline-success"
-                              (click)="updateSubTaskStatus(subtask.id, 'DONE')"
-                              [disabled]="subtask.status === 'DONE'"
-                            >
-                              Done
-                            </button>
-                          </div>
-                          <div class="btn-group btn-group-sm">
-                            <button
-                              class="btn btn-outline-info"
-                              (click)="editSubTask(subtask)"
-                            >
-                              Edit
-                            </button>
-                            <button
-                              class="btn btn-outline-danger"
-                              (click)="deleteSubTask(subtask.id)"
-                            >
-                              Delete
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                      <tr *ngIf="getFilteredSubTasks().length === 0">
-                        <td colspan="6" class="text-center text-muted">
-                          No sub-tasks found
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
+                <div class="alert alert-warning">
+                  <h6>Best Practices</h6>
+                  <ul class="mb-0">
+                    <li>Keep sub-task names clear and specific</li>
+                    <li>Assign realistic deadlines</li>
+                    <li>Include detailed descriptions for complex tasks</li>
+                    <li>Regularly update task status</li>
+                  </ul>
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Project Sub-Tasks Tab -->
+      <div *ngIf="activeTab === 'project-subtasks'" class="tab-content">
+        <div class="card border-0 shadow-sm">
+          <div class="card-header bg-light">
+            <h5 class="mb-0 text-dark">Project Sub-Tasks</h5>
+          </div>
+          <div class="card-body">
+            <div class="row mb-3">
+              <div class="col-md-4">
+                <select
+                  class="form-select form-select-sm"
+                  [(ngModel)]="subTaskStatusFilter"
+                >
+                  <option value="">All Status</option>
+                  <option value="NOT_STARTED">Not Started</option>
+                  <option value="IN_PROGRESS">In Progress</option>
+                  <option value="DONE">Done</option>
+                </select>
+              </div>
+              <div class="col-md-4">
+                <input
+                  type="date"
+                  class="form-control form-control-sm"
+                  [(ngModel)]="subTaskDueDateFilter"
+                  placeholder="Filter by due date"
+                />
+              </div>
+              <div class="col-md-4">
+                <select
+                  class="form-select form-select-sm"
+                  [(ngModel)]="subTaskProjectFilter"
+                >
+                  <option value="">All Projects</option>
+                  <option
+                    *ngFor="let project of projects"
+                    [value]="project.id"
+                  >
+                    {{ project.name }}
+                  </option>
+                </select>
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table class="table table-hover">
+                <thead class="table-light">
+                  <tr>
+                    <th>Name</th>
+                    <th>Assigned To</th>
+                    <th>Status</th>
+                    <th>Due Date</th>
+                    <th>Project</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let subtask of getFilteredSubTasks()">
+                    <td>{{ subtask.name }}</td>
+                    <td>{{ subtask.memberUsername }}</td>
+                    <td>
+                      <span
+                        class="badge"
+                        [ngClass]="{
+                          'bg-secondary': subtask.status === 'NOT_STARTED',
+                          'bg-primary': subtask.status === 'IN_PROGRESS',
+                          'bg-success': subtask.status === 'DONE'
+                        }"
+                        >{{ subtask.status }}</span
+                      >
+                    </td>
+                    <td>{{ subtask.dueDate | date }}</td>
+                    <td>{{ subtask.projectName }}</td>
+                    <td>
+                      <div class="btn-group btn-group-sm mb-1">
+                        <button
+                          class="btn btn-outline-secondary"
+                          (click)="
+                            updateSubTaskStatus(subtask.id, 'NOT_STARTED')
+                          "
+                          [disabled]="subtask.status === 'NOT_STARTED'"
+                        >
+                          Not Started
+                        </button>
+                        <button
+                          class="btn btn-outline-primary"
+                          (click)="
+                            updateSubTaskStatus(subtask.id, 'IN_PROGRESS')
+                          "
+                          [disabled]="subtask.status === 'IN_PROGRESS'"
+                        >
+                          In Progress
+                        </button>
+                        <button
+                          class="btn btn-outline-success"
+                          (click)="updateSubTaskStatus(subtask.id, 'DONE')"
+                          [disabled]="subtask.status === 'DONE'"
+                        >
+                          Done
+                        </button>
+                      </div>
+                      <div class="btn-group btn-group-sm">
+                        <button
+                          class="btn btn-outline-info"
+                          (click)="editSubTask(subtask)"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          class="btn btn-outline-danger"
+                          (click)="deleteSubTask(subtask.id)"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr *ngIf="getFilteredSubTasks().length === 0">
+                    <td colspan="6" class="text-center text-muted">
+                      No sub-tasks found
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <!-- Pagination Info -->
+            <div class="d-flex justify-content-between align-items-center mt-3" *ngIf="managerSubTasks.length > 0">
+              <small class="text-muted">Page {{managerSubTasksPage + 1}} of {{managerSubTasksTotalPages}} ({{managerSubTasks.length}} items)</small>
+            </div>
+            <!-- Pagination for Manager Sub-Tasks -->
+            <nav *ngIf="managerSubTasks.length > 0">
+              <ul class="pagination justify-content-center">
+                <li class="page-item" [class.disabled]="managerSubTasksPage === 0">
+                  <button class="page-link" (click)="changeManagerSubTasksPage(managerSubTasksPage - 1)">Previous</button>
+                </li>
+                <li class="page-item" *ngFor="let page of getPageNumbers(managerSubTasksTotalPages)" [class.active]="page === managerSubTasksPage">
+                  <button class="page-link" (click)="changeManagerSubTasksPage(page)">{{page + 1}}</button>
+                </li>
+                <li class="page-item" [class.disabled]="managerSubTasksPage >= managerSubTasksTotalPages - 1">
+                  <button class="page-link" (click)="changeManagerSubTasksPage(managerSubTasksPage + 1)">Next</button>
+                </li>
+              </ul>
+            </nav>
           </div>
         </div>
       </div>
@@ -699,6 +754,24 @@ import { Task } from '../../model/todo.model';
                     </tbody>
                   </table>
                 </div>
+                <!-- Pagination Info -->
+                <div class="d-flex justify-content-between align-items-center mt-3" *ngIf="personalTasks.length > 0">
+                  <small class="text-muted">Page {{personalTasksPage + 1}} of {{personalTasksTotalPages}} ({{personalTasks.length}} items)</small>
+                </div>
+                <!-- Pagination for Personal Tasks -->
+                <nav *ngIf="personalTasks.length > 0">
+                  <ul class="pagination justify-content-center">
+                    <li class="page-item" [class.disabled]="personalTasksPage === 0">
+                      <button class="page-link" (click)="changePersonalTasksPage(personalTasksPage - 1)">Previous</button>
+                    </li>
+                    <li class="page-item" *ngFor="let page of getPageNumbers(personalTasksTotalPages)" [class.active]="page === personalTasksPage">
+                      <button class="page-link" (click)="changePersonalTasksPage(page)">{{page + 1}}</button>
+                    </li>
+                    <li class="page-item" [class.disabled]="personalTasksPage >= personalTasksTotalPages - 1">
+                      <button class="page-link" (click)="changePersonalTasksPage(personalTasksPage + 1)">Next</button>
+                    </li>
+                  </ul>
+                </nav>
               </div>
             </div>
           </div>
@@ -1033,6 +1106,18 @@ import { Task } from '../../model/todo.model';
         font-size: 0.75rem;
         padding: 0.25rem 0.5rem;
       }
+      .pagination {
+        margin-top: 1rem;
+      }
+      .page-link {
+        color: #0d6efd;
+        border: 1px solid #dee2e6;
+      }
+      .page-item.active .page-link {
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+        color: white !important;
+      }
     `,
   ],
 })
@@ -1077,6 +1162,14 @@ export class ManagerDashboard implements OnInit {
   subTaskStatusFilter: string = '';
   subTaskDueDateFilter: string = '';
   subTaskProjectFilter: string = '';
+  
+  // Pagination
+  managerSubTasksPage = 0;
+  managerSubTasksSize = 10;
+  managerSubTasksTotalPages = 0;
+  personalTasksPage = 0;
+  personalTasksSize = 5;
+  personalTasksTotalPages = 0;
 
   ngOnInit(): void {
     this.currentUser = this.auth.getUserName() || 'Manager';
@@ -1103,9 +1196,10 @@ export class ManagerDashboard implements OnInit {
   }
 
   loadPersonalTasks(): void {
-    this.todoService.getAllTasks(0, 10).subscribe({
+    this.todoService.getAllTasks(this.personalTasksPage, this.personalTasksSize).subscribe({
       next: (response: any) => {
         this.personalTasks = response.content || [];
+        this.personalTasksTotalPages = Math.max(1, response.totalPages || 0);
       },
       error: (error) => {
         console.error('Error loading personal tasks:', error);
@@ -1257,6 +1351,7 @@ export class ManagerDashboard implements OnInit {
       next: (subtask) => {
         this.showToastMessage('Sub-task created successfully!');
         this.resetSubTaskForm();
+        this.managerSubTasksPage = 0;
         this.loadManagerSubTasks();
       },
       error: (error) => {
@@ -1296,6 +1391,7 @@ export class ManagerDashboard implements OnInit {
       next: (task) => {
         this.showToastMessage('Personal task created successfully!');
         this.resetPersonalTaskForm();
+        this.personalTasksPage = 0;
         this.loadPersonalTasks();
       },
       error: (error) => {
@@ -1378,9 +1474,10 @@ export class ManagerDashboard implements OnInit {
   }
 
   loadManagerSubTasks(): void {
-    this.subTaskService.getSubTasksByManager().subscribe({
-      next: (subtasks) => {
-        this.managerSubTasks = subtasks;
+    this.subTaskService.getSubTasksByManager(this.managerSubTasksPage, this.managerSubTasksSize).subscribe({
+      next: (response) => {
+        this.managerSubTasks = response.content || response || [];
+        this.managerSubTasksTotalPages = Math.max(1, response.totalPages || 0);
       },
       error: (error) => {
         console.error('Error loading manager sub-tasks:', error);
@@ -1562,6 +1659,26 @@ export class ManagerDashboard implements OnInit {
         },
       });
     }
+  }
+
+  // Pagination methods
+  changeManagerSubTasksPage(page: number): void {
+    if (page >= 0 && page < this.managerSubTasksTotalPages) {
+      this.managerSubTasksPage = page;
+      this.loadManagerSubTasks();
+    }
+  }
+
+  changePersonalTasksPage(page: number): void {
+    if (page >= 0 && page < this.personalTasksTotalPages) {
+      this.personalTasksPage = page;
+      this.loadPersonalTasks();
+    }
+  }
+
+  getPageNumbers(totalPages: number): number[] {
+    const pages = Math.max(1, totalPages);
+    return Array.from({length: Math.min(5, pages)}, (_, i) => i);
   }
 
   logout(): void {

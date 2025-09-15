@@ -157,6 +157,24 @@ import { SubTask } from '../../model/subtask.model';
                 </tbody>
               </table>
             </div>
+            <!-- Pagination Info -->
+            <div class="d-flex justify-content-between align-items-center mt-3" *ngIf="assignedSubTasks.length > 0">
+              <small class="text-muted">Page {{assignedSubTasksPage + 1}} of {{assignedSubTasksTotalPages}} ({{assignedSubTasks.length}} items)</small>
+            </div>
+            <!-- Pagination for Assigned Sub-Tasks -->
+            <nav *ngIf="assignedSubTasks.length > 0">
+              <ul class="pagination justify-content-center">
+                <li class="page-item" [class.disabled]="assignedSubTasksPage === 0">
+                  <button class="page-link" (click)="changeAssignedSubTasksPage(assignedSubTasksPage - 1)">Previous</button>
+                </li>
+                <li class="page-item" *ngFor="let page of getPageNumbers(assignedSubTasksTotalPages)" [class.active]="page === assignedSubTasksPage">
+                  <button class="page-link" (click)="changeAssignedSubTasksPage(page)">{{page + 1}}</button>
+                </li>
+                <li class="page-item" [class.disabled]="assignedSubTasksPage >= assignedSubTasksTotalPages - 1">
+                  <button class="page-link" (click)="changeAssignedSubTasksPage(assignedSubTasksPage + 1)">Next</button>
+                </li>
+              </ul>
+            </nav>
           </div>
         </div>
       </div>
@@ -206,6 +224,24 @@ import { SubTask } from '../../model/subtask.model';
                 </tbody>
               </table>
             </div>
+            <!-- Pagination Info -->
+            <div class="d-flex justify-content-between align-items-center mt-3" *ngIf="createdSubTasks.length > 0">
+              <small class="text-muted">Page {{createdSubTasksPage + 1}} of {{createdSubTasksTotalPages}} ({{createdSubTasks.length}} items)</small>
+            </div>
+            <!-- Pagination for Created Sub-Tasks -->
+            <nav *ngIf="createdSubTasks.length > 0">
+              <ul class="pagination justify-content-center">
+                <li class="page-item" [class.disabled]="createdSubTasksPage === 0">
+                  <button class="page-link" (click)="changeCreatedSubTasksPage(createdSubTasksPage - 1)">Previous</button>
+                </li>
+                <li class="page-item" *ngFor="let page of getPageNumbers(createdSubTasksTotalPages)" [class.active]="page === createdSubTasksPage">
+                  <button class="page-link" (click)="changeCreatedSubTasksPage(page)">{{page + 1}}</button>
+                </li>
+                <li class="page-item" [class.disabled]="createdSubTasksPage >= createdSubTasksTotalPages - 1">
+                  <button class="page-link" (click)="changeCreatedSubTasksPage(createdSubTasksPage + 1)">Next</button>
+                </li>
+              </ul>
+            </nav>
           </div>
         </div>
       </div>
@@ -388,6 +424,24 @@ import { SubTask } from '../../model/subtask.model';
                     </tbody>
                   </table>
                 </div>
+                <!-- Pagination Info -->
+                <div class="d-flex justify-content-between align-items-center mt-3" *ngIf="personalTasks.length > 0">
+                  <small class="text-muted">Page {{personalTasksPage + 1}} of {{personalTasksTotalPages}} ({{personalTasks.length}} items)</small>
+                </div>
+                <!-- Pagination for Personal Tasks -->
+                <nav *ngIf="personalTasks.length > 0">
+                  <ul class="pagination justify-content-center">
+                    <li class="page-item" [class.disabled]="personalTasksPage === 0">
+                      <button class="page-link" (click)="changePersonalTasksPage(personalTasksPage - 1)">Previous</button>
+                    </li>
+                    <li class="page-item" *ngFor="let page of getPageNumbers(personalTasksTotalPages)" [class.active]="page === personalTasksPage">
+                      <button class="page-link" (click)="changePersonalTasksPage(page)">{{page + 1}}</button>
+                    </li>
+                    <li class="page-item" [class.disabled]="personalTasksPage >= personalTasksTotalPages - 1">
+                      <button class="page-link" (click)="changePersonalTasksPage(personalTasksPage + 1)">Next</button>
+                    </li>
+                  </ul>
+                </nav>
               </div>
             </div>
           </div>
@@ -554,6 +608,18 @@ import { SubTask } from '../../model/subtask.model';
       font-size: 0.75rem;
       padding: 0.25rem 0.5rem;
     }
+    .pagination {
+      margin-top: 1rem;
+    }
+    .page-link {
+      color: #0d6efd;
+      border: 1px solid #dee2e6;
+    }
+    .page-item.active .page-link {
+      background-color: #0d6efd;
+      border-color: #0d6efd;
+      color: white !important;
+    }
   `]
 })
 export class TlDashboard implements OnInit {
@@ -577,6 +643,17 @@ export class TlDashboard implements OnInit {
   selectedProjectId: string | null = '';
   editingTask: any = null;
   editingSubTask: any = null;
+  
+  // Pagination
+  assignedSubTasksPage = 0;
+  assignedSubTasksSize = 10;
+  assignedSubTasksTotalPages = 0;
+  createdSubTasksPage = 0;
+  createdSubTasksSize = 10;
+  createdSubTasksTotalPages = 0;
+  personalTasksPage = 0;
+  personalTasksSize = 5;
+  personalTasksTotalPages = 0;
   
   // Form objects
   personalTaskObj: Task = new Task();
@@ -657,9 +734,10 @@ export class TlDashboard implements OnInit {
   }
 
   loadAssignedSubTasks(): void {
-    this.subTaskService.getSubTasksByTL().subscribe({
-      next: (subtasks) => {
-        this.assignedSubTasks = subtasks;
+    this.subTaskService.getSubTasksByTL(this.assignedSubTasksPage, this.assignedSubTasksSize).subscribe({
+      next: (response) => {
+        this.assignedSubTasks = response.content || [];
+        this.assignedSubTasksTotalPages = Math.max(1, response.totalPages || 0);
       },
       error: (error) => {
         console.error('Error loading assigned sub-tasks:', error);
@@ -669,9 +747,10 @@ export class TlDashboard implements OnInit {
   }
 
   loadCreatedSubTasks(): void {
-    this.subTaskService.getSubTasksCreatedByTL().subscribe({
-      next: (subtasks) => {
-        this.createdSubTasks = subtasks;
+    this.subTaskService.getSubTasksCreatedByTL(this.createdSubTasksPage, this.createdSubTasksSize).subscribe({
+      next: (response) => {
+        this.createdSubTasks = response.content || [];
+        this.createdSubTasksTotalPages = Math.max(1, response.totalPages || 0);
       },
       error: (error) => {
         console.error('Error loading created sub-tasks:', error);
@@ -681,9 +760,10 @@ export class TlDashboard implements OnInit {
   }
 
   loadPersonalTasks(): void {
-    this.todoService.getAllTasks(0, 10).subscribe({
+    this.todoService.getAllTasks(this.personalTasksPage, this.personalTasksSize).subscribe({
       next: (response: any) => {
         this.personalTasks = response.content || [];
+        this.personalTasksTotalPages = Math.max(1, response.totalPages || 0);
       },
       error: (error) => {
         console.error('Error loading personal tasks:', error);
@@ -737,6 +817,7 @@ export class TlDashboard implements OnInit {
       next: (task) => {
         this.showToastMessage('Personal task created successfully!');
         this.resetPersonalTaskForm();
+        this.personalTasksPage = 0; // Reset to first page
         this.loadPersonalTasks();
       },
       error: (error) => {
@@ -976,6 +1057,33 @@ export class TlDashboard implements OnInit {
     if (event.target === event.currentTarget) {
       this.cancelSubTaskEdit();
     }
+  }
+
+  // Pagination methods
+  changeAssignedSubTasksPage(page: number): void {
+    if (page >= 0 && page < this.assignedSubTasksTotalPages) {
+      this.assignedSubTasksPage = page;
+      this.loadAssignedSubTasks();
+    }
+  }
+
+  changeCreatedSubTasksPage(page: number): void {
+    if (page >= 0 && page < this.createdSubTasksTotalPages) {
+      this.createdSubTasksPage = page;
+      this.loadCreatedSubTasks();
+    }
+  }
+
+  changePersonalTasksPage(page: number): void {
+    if (page >= 0 && page < this.personalTasksTotalPages) {
+      this.personalTasksPage = page;
+      this.loadPersonalTasks();
+    }
+  }
+
+  getPageNumbers(totalPages: number): number[] {
+    const pages = Math.max(1, totalPages); // Always show at least 1 page
+    return Array.from({length: Math.min(5, pages)}, (_, i) => i);
   }
 
   logout(): void {

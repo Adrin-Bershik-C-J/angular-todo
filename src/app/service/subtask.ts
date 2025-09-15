@@ -13,20 +13,20 @@ export class SubTaskService {
     return this.http.post<SubtaskResponse>(`${this.apiUrl}`, obj);
   }
 
-  getSubTasksByTL(): Observable<SubtaskResponse[]> {
-    return this.http.get<SubtaskResponse[]>(`${this.apiUrl}/tl`);
+  getSubTasksByTL(page: number = 0, size: number = 10): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/tl?page=${page}&size=${size}`);
   }
 
-  getSubTasksCreatedByTL(): Observable<SubtaskResponse[]> {
-    return this.http.get<SubtaskResponse[]>(`${this.apiUrl}/tl/created`);
+  getSubTasksCreatedByTL(page: number = 0, size: number = 10): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/tl/created?page=${page}&size=${size}`);
   }
 
-  getSubTasksByMember(): Observable<SubtaskResponse[]> {
-    return this.http.get<SubtaskResponse[]>(`${this.apiUrl}/member`);
+  getSubTasksByMember(page: number = 0, size: number = 10): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/member?page=${page}&size=${size}`);
   }
 
-  getSubTasksByManager(): Observable<SubtaskResponse[]> {
-    return this.http.get<SubtaskResponse[]>(`${this.apiUrl}/manager`);
+  getSubTasksByManager(page: number = 0, size: number = 10): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/manager?page=${page}&size=${size}`);
   }
 
   updateStatus(taskId: number, status: string): Observable<SubtaskResponse> {

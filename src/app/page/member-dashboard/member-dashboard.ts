@@ -215,6 +215,24 @@ import { Task } from '../../model/todo.model';
                 </tbody>
               </table>
             </div>
+            <!-- Pagination Info -->
+            <div class="d-flex justify-content-between align-items-center mt-3" *ngIf="assignedSubTasks.length > 0">
+              <small class="text-muted">Page {{assignedSubTasksPage + 1}} of {{assignedSubTasksTotalPages}} ({{assignedSubTasks.length}} items)</small>
+            </div>
+            <!-- Pagination for Assigned Sub-Tasks -->
+            <nav *ngIf="assignedSubTasks.length > 0">
+              <ul class="pagination justify-content-center">
+                <li class="page-item" [class.disabled]="assignedSubTasksPage === 0">
+                  <button class="page-link" (click)="changeAssignedSubTasksPage(assignedSubTasksPage - 1)">Previous</button>
+                </li>
+                <li class="page-item" *ngFor="let page of getPageNumbers(assignedSubTasksTotalPages)" [class.active]="page === assignedSubTasksPage">
+                  <button class="page-link" (click)="changeAssignedSubTasksPage(page)">{{page + 1}}</button>
+                </li>
+                <li class="page-item" [class.disabled]="assignedSubTasksPage >= assignedSubTasksTotalPages - 1">
+                  <button class="page-link" (click)="changeAssignedSubTasksPage(assignedSubTasksPage + 1)">Next</button>
+                </li>
+              </ul>
+            </nav>
           </div>
         </div>
       </div>
@@ -330,6 +348,24 @@ import { Task } from '../../model/todo.model';
                     </tbody>
                   </table>
                 </div>
+                <!-- Pagination Info -->
+                <div class="d-flex justify-content-between align-items-center mt-3" *ngIf="personalTasks.length > 0">
+                  <small class="text-muted">Page {{personalTasksPage + 1}} of {{personalTasksTotalPages}} ({{personalTasks.length}} items)</small>
+                </div>
+                <!-- Pagination for Personal Tasks -->
+                <nav *ngIf="personalTasks.length > 0">
+                  <ul class="pagination justify-content-center">
+                    <li class="page-item" [class.disabled]="personalTasksPage === 0">
+                      <button class="page-link" (click)="changePersonalTasksPage(personalTasksPage - 1)">Previous</button>
+                    </li>
+                    <li class="page-item" *ngFor="let page of getPageNumbers(personalTasksTotalPages)" [class.active]="page === personalTasksPage">
+                      <button class="page-link" (click)="changePersonalTasksPage(page)">{{page + 1}}</button>
+                    </li>
+                    <li class="page-item" [class.disabled]="personalTasksPage >= personalTasksTotalPages - 1">
+                      <button class="page-link" (click)="changePersonalTasksPage(personalTasksPage + 1)">Next</button>
+                    </li>
+                  </ul>
+                </nav>
               </div>
             </div>
           </div>
@@ -433,6 +469,18 @@ import { Task } from '../../model/todo.model';
     .fs-1 {
       font-size: 2.5rem;
     }
+    .pagination {
+      margin-top: 1rem;
+    }
+    .page-link {
+      color: #0d6efd;
+      border: 1px solid #dee2e6;
+    }
+    .page-item.active .page-link {
+      background-color: #0d6efd;
+      border-color: #0d6efd;
+      color: white !important;
+    }
     @media (max-width: 991.98px) {
       .navbar-collapse {
         position: absolute;
@@ -485,6 +533,14 @@ export class MemberDashboard implements OnInit {
   subTaskStatusFilter: string = '';
   subTaskDueDateFilter: string = '';
   subTaskProjectFilter: string = '';
+  
+  // Pagination
+  assignedSubTasksPage = 0;
+  assignedSubTasksSize = 10;
+  assignedSubTasksTotalPages = 0;
+  personalTasksPage = 0;
+  personalTasksSize = 5;
+  personalTasksTotalPages = 0;
 
   ngOnInit(): void {
     this.currentUser = this.auth.getUserName() || 'Member';
@@ -497,9 +553,10 @@ export class MemberDashboard implements OnInit {
   }
 
   loadAssignedSubTasks(): void {
-    this.subTaskService.getSubTasksByMember().subscribe({
-      next: (subtasks) => {
-        this.assignedSubTasks = subtasks;
+    this.subTaskService.getSubTasksByMember(this.assignedSubTasksPage, this.assignedSubTasksSize).subscribe({
+      next: (response) => {
+        this.assignedSubTasks = response.content || response || [];
+        this.assignedSubTasksTotalPages = Math.max(1, response.totalPages || 0);
       },
       error: (error) => {
         console.error('Error loading assigned sub-tasks:', error);
@@ -509,9 +566,10 @@ export class MemberDashboard implements OnInit {
   }
 
   loadPersonalTasks(): void {
-    this.todoService.getAllTasks(0, 10).subscribe({
+    this.todoService.getAllTasks(this.personalTasksPage, this.personalTasksSize).subscribe({
       next: (response: any) => {
         this.personalTasks = response.content || [];
+        this.personalTasksTotalPages = Math.max(1, response.totalPages || 0);
       },
       error: (error) => {
         console.error('Error loading personal tasks:', error);
@@ -546,6 +604,7 @@ export class MemberDashboard implements OnInit {
       next: (task) => {
         this.showToastMessage('Personal task created successfully!');
         this.resetPersonalTaskForm();
+        this.personalTasksPage = 0;
         this.loadPersonalTasks();
       },
       error: (error) => {
@@ -670,6 +729,26 @@ export class MemberDashboard implements OnInit {
 
   toggleNavbar(): void {
     this.isNavbarCollapsed = !this.isNavbarCollapsed;
+  }
+
+  // Pagination methods
+  changeAssignedSubTasksPage(page: number): void {
+    if (page >= 0 && page < this.assignedSubTasksTotalPages) {
+      this.assignedSubTasksPage = page;
+      this.loadAssignedSubTasks();
+    }
+  }
+
+  changePersonalTasksPage(page: number): void {
+    if (page >= 0 && page < this.personalTasksTotalPages) {
+      this.personalTasksPage = page;
+      this.loadPersonalTasks();
+    }
+  }
+
+  getPageNumbers(totalPages: number): number[] {
+    const pages = Math.max(1, totalPages);
+    return Array.from({length: Math.min(5, pages)}, (_, i) => i);
   }
 
   logout(): void {
