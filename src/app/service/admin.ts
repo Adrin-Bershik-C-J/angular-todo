@@ -18,12 +18,12 @@ export class AdminService {
     return this.http.post(`${this.apiUrl}/create-user?role=${role}`, obj, { responseType: 'text' });
   }
 
-  getAllProjects(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/projects`);
+  getAllProjects(page: number = 0, size: number = 10): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/projects?page=${page}&size=${size}`);
   }
 
-  getAllSubTasks(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/subtasks`);
+  getAllSubTasks(page: number = 0, size: number = 10): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/subtasks?page=${page}&size=${size}`);
   }
 
   deleteUser(username: string): Observable<void> {

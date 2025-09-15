@@ -36,8 +36,8 @@ export class ProjectService {
     return this.http.put<ProjectResponseModel>(`${this.apiUrl}/${projectId}`, project);
   }
 
-  getAllUsers(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/users`);
+  getAllUsers(page: number = 0, size: number = 10): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/users?page=${page}&size=${size}`);
   }
 
   getProjectMembers(projectId: number): Observable<any[]> {

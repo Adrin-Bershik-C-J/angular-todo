@@ -267,6 +267,24 @@ import { RegisterModel } from '../../model/auth.model';
                 </tbody>
               </table>
             </div>
+            <!-- Pagination Info -->
+            <div class="d-flex justify-content-between align-items-center mt-3" *ngIf="allProjects.length > 0">
+              <small class="text-muted">Page {{projectsPage + 1}} of {{projectsTotalPages}} ({{allProjects.length}} items)</small>
+            </div>
+            <!-- Pagination for Projects -->
+            <nav *ngIf="allProjects.length > 0">
+              <ul class="pagination justify-content-center">
+                <li class="page-item" [class.disabled]="projectsPage === 0">
+                  <button class="page-link" (click)="changeProjectsPage(projectsPage - 1)">Previous</button>
+                </li>
+                <li class="page-item" *ngFor="let page of getPageNumbers(projectsTotalPages)" [class.active]="page === projectsPage">
+                  <button class="page-link" (click)="changeProjectsPage(page)">{{page + 1}}</button>
+                </li>
+                <li class="page-item" [class.disabled]="projectsPage >= projectsTotalPages - 1">
+                  <button class="page-link" (click)="changeProjectsPage(projectsPage + 1)">Next</button>
+                </li>
+              </ul>
+            </nav>
           </div>
         </div>
       </div>
@@ -410,6 +428,24 @@ import { RegisterModel } from '../../model/auth.model';
                     </tbody>
                   </table>
                 </div>
+                <!-- Pagination Info -->
+                <div class="d-flex justify-content-between align-items-center mt-3" *ngIf="allUsers.length > 0">
+                  <small class="text-muted">Page {{usersPage + 1}} of {{usersTotalPages}} ({{allUsers.length}} items)</small>
+                </div>
+                <!-- Pagination for Users -->
+                <nav *ngIf="allUsers.length > 0">
+                  <ul class="pagination justify-content-center">
+                    <li class="page-item" [class.disabled]="usersPage === 0">
+                      <button class="page-link" (click)="changeUsersPage(usersPage - 1)">Previous</button>
+                    </li>
+                    <li class="page-item" *ngFor="let page of getPageNumbers(usersTotalPages)" [class.active]="page === usersPage">
+                      <button class="page-link" (click)="changeUsersPage(page)">{{page + 1}}</button>
+                    </li>
+                    <li class="page-item" [class.disabled]="usersPage >= usersTotalPages - 1">
+                      <button class="page-link" (click)="changeUsersPage(usersPage + 1)">Next</button>
+                    </li>
+                  </ul>
+                </nav>
               </div>
             </div>
           </div>
@@ -469,6 +505,24 @@ import { RegisterModel } from '../../model/auth.model';
                 </tbody>
               </table>
             </div>
+            <!-- Pagination Info -->
+            <div class="d-flex justify-content-between align-items-center mt-3" *ngIf="allSubTasks.length > 0">
+              <small class="text-muted">Page {{subTasksPage + 1}} of {{subTasksTotalPages}} ({{allSubTasks.length}} items)</small>
+            </div>
+            <!-- Pagination for Sub-Tasks -->
+            <nav *ngIf="allSubTasks.length > 0">
+              <ul class="pagination justify-content-center">
+                <li class="page-item" [class.disabled]="subTasksPage === 0">
+                  <button class="page-link" (click)="changeSubTasksPage(subTasksPage - 1)">Previous</button>
+                </li>
+                <li class="page-item" *ngFor="let page of getPageNumbers(subTasksTotalPages)" [class.active]="page === subTasksPage">
+                  <button class="page-link" (click)="changeSubTasksPage(page)">{{page + 1}}</button>
+                </li>
+                <li class="page-item" [class.disabled]="subTasksPage >= subTasksTotalPages - 1">
+                  <button class="page-link" (click)="changeSubTasksPage(subTasksPage + 1)">Next</button>
+                </li>
+              </ul>
+            </nav>
           </div>
         </div>
       </div>
@@ -644,6 +698,18 @@ import { RegisterModel } from '../../model/auth.model';
         font-size: 0.75rem;
         padding: 0.25rem 0.5rem;
       }
+      .pagination {
+        margin-top: 1rem;
+      }
+      .page-link {
+        color: #0d6efd;
+        border: 1px solid #dee2e6;
+      }
+      .page-item.active .page-link {
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+        color: white !important;
+      }
     `,
   ],
 })
@@ -673,6 +739,17 @@ export class AdminDashboard implements OnInit {
   toastMessage = '';
   toastError = false;
   isNavbarCollapsed = false;
+  
+  // Pagination
+  projectsPage = 0;
+  projectsSize = 10;
+  projectsTotalPages = 0;
+  usersPage = 0;
+  usersSize = 10;
+  usersTotalPages = 0;
+  subTasksPage = 0;
+  subTasksSize = 10;
+  subTasksTotalPages = 0;
 
   ngOnInit(): void {
     this.currentUser = this.auth.getUserName() || 'Admin';
@@ -686,9 +763,10 @@ export class AdminDashboard implements OnInit {
   }
 
   loadAllProjects(): void {
-    this.adminService.getAllProjects().subscribe({
-      next: (projects) => {
-        this.allProjects = projects;
+    this.adminService.getAllProjects(this.projectsPage, this.projectsSize).subscribe({
+      next: (response) => {
+        this.allProjects = response.content || response || [];
+        this.projectsTotalPages = Math.max(1, response.totalPages || 0);
       },
       error: (error) => {
         console.error('Error loading projects:', error);
@@ -698,9 +776,10 @@ export class AdminDashboard implements OnInit {
   }
 
   loadAllUsers(): void {
-    this.projectService.getAllUsers().subscribe({
-      next: (users) => {
-        this.allUsers = users;
+    this.projectService.getAllUsers(this.usersPage, this.usersSize).subscribe({
+      next: (response) => {
+        this.allUsers = response.content || response || [];
+        this.usersTotalPages = Math.max(1, response.totalPages || 0);
       },
       error: (error) => {
         console.error('Error loading users:', error);
@@ -710,9 +789,10 @@ export class AdminDashboard implements OnInit {
   }
 
   loadAllSubTasks(): void {
-    this.adminService.getAllSubTasks().subscribe({
-      next: (subtasks) => {
-        this.allSubTasks = subtasks;
+    this.adminService.getAllSubTasks(this.subTasksPage, this.subTasksSize).subscribe({
+      next: (response) => {
+        this.allSubTasks = response.content || response || [];
+        this.subTasksTotalPages = Math.max(1, response.totalPages || 0);
       },
       error: (error) => {
         console.error('Error loading subtasks:', error);
@@ -742,6 +822,7 @@ export class AdminDashboard implements OnInit {
         next: (response) => {
           this.showToastMessage('User created successfully!');
           this.resetForm();
+          this.usersPage = 0;
           this.loadAllUsers();
         },
         error: (error) => {
@@ -949,6 +1030,33 @@ export class AdminDashboard implements OnInit {
 
   toggleNavbar(): void {
     this.isNavbarCollapsed = !this.isNavbarCollapsed;
+  }
+
+  // Pagination methods
+  changeProjectsPage(page: number): void {
+    if (page >= 0 && page < this.projectsTotalPages) {
+      this.projectsPage = page;
+      this.loadAllProjects();
+    }
+  }
+
+  changeUsersPage(page: number): void {
+    if (page >= 0 && page < this.usersTotalPages) {
+      this.usersPage = page;
+      this.loadAllUsers();
+    }
+  }
+
+  changeSubTasksPage(page: number): void {
+    if (page >= 0 && page < this.subTasksTotalPages) {
+      this.subTasksPage = page;
+      this.loadAllSubTasks();
+    }
+  }
+
+  getPageNumbers(totalPages: number): number[] {
+    const pages = Math.max(1, totalPages);
+    return Array.from({length: Math.min(5, pages)}, (_, i) => i);
   }
 
   logout(): void {
