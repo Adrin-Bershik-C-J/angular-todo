@@ -1,44 +1,76 @@
-<div
-  class="d-flex justify-content-center align-items-center vh-100 register-bg"
->
-  <main class="card shadow-lg p-4 register-card">
-    <h4 class="text-muted text-center">Get started!</h4>
-    <h2 class="mb-4 text-center fw-bold">
-      Your daily tasks managed in a single application
-    </h2>
-
-    <form (ngSubmit)="onSubmit()">
-      <div class="mb-3">
-        <input
-          type="text"
-          class="form-control"
-          placeholder="Name"
-          name="name"
-          [(ngModel)]="registerObj.name"
-          required
-        />
+<div class="auth-wrapper">
+  <div class="auth-content">
+    <div class="auth-bg">
+      <span class="r"></span>
+      <span class="r s"></span>
+      <span class="r s"></span>
+      <span class="r"></span>
+    </div>
+    <div class="card">
+      <div class="card-body text-center">
+        <div class="mb-4">
+          <i class="feather icon-user-plus auth-icon"></i>
+        </div>
+        <h3 class="mb-2">Sign Up</h3>
+        <p class="text-muted mb-4">Create your account to get started</p>
+        <form (ngSubmit)="onSubmit()">
+          <div class="input-group mb-3">
+            <span class="input-group-text">
+              <i class="feather icon-user"></i>
+            </span>
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Full Name"
+              name="name"
+              [(ngModel)]="registerObj.name"
+              required
+              [disabled]="isLoading"
+            />
+          </div>
+          <div class="input-group mb-3">
+            <span class="input-group-text">
+              <i class="feather icon-at-sign"></i>
+            </span>
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Username"
+              name="username"
+              [(ngModel)]="registerObj.username"
+              required
+              [disabled]="isLoading"
+            />
+          </div>
+          <div class="input-group mb-4">
+            <span class="input-group-text">
+              <i class="feather icon-lock"></i>
+            </span>
+            <input
+              type="password"
+              class="form-control"
+              placeholder="Password"
+              name="password"
+              [(ngModel)]="registerObj.password"
+              required
+              [disabled]="isLoading"
+            />
+          </div>
+          <button 
+            type="submit" 
+            class="btn btn-primary btn-block mb-4"
+            [disabled]="isLoading"
+          >
+            <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2"></span>
+            <i *ngIf="!isLoading" class="feather icon-user-plus me-2"></i>
+            {{isLoading ? 'Creating Account...' : 'Sign Up'}}
+          </button>
+        </form>
+        <p class="mb-0 text-muted">
+          Already have an account? 
+          <a routerLink="/login" class="f-w-400">Sign in</a>
+        </p>
       </div>
-      <div class="mb-3">
-        <input
-          type="text"
-          class="form-control"
-          placeholder="Username"
-          name="username"
-          [(ngModel)]="registerObj.username"
-          required
-        />
-      </div>
-      <div class="mb-3">
-        <input
-          type="password"
-          class="form-control"
-          placeholder="Password"
-          name="password"
-          [(ngModel)]="registerObj.password"
-          required
-        />
-      </div>
-      <button type="submit" class="btn btn-primary w-100">Sign up</button>
-    </form>
-  </main>
+    </div>
+  </div>
 </div>

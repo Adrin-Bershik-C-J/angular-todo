@@ -43,6 +43,13 @@ import { RegisterModel } from '../../model/auth.model';
             </button>
             <button
               class="nav-link btn btn-link"
+              [class.active]="activeTab === 'subtasks'"
+              (click)="setActiveTab('subtasks')"
+            >
+              Sub-Tasks
+            </button>
+            <button
+              class="nav-link btn btn-link"
               [class.active]="activeTab === 'analytics'"
               (click)="setActiveTab('analytics')"
             >
@@ -127,17 +134,12 @@ import { RegisterModel } from '../../model/auth.model';
                         {{ project.tlUsername }}</small
                       >
                     </div>
-                    <span
-                      class="badge"
-                      [ngClass]="{
-                        'bg-success': getProjectStatus(project) === 'Completed',
-                        'bg-warning':
-                          getProjectStatus(project) === 'In Progress',
-                        'bg-secondary':
-                          getProjectStatus(project) === 'Not Started'
-                      }"
-                      >{{ getProjectStatus(project) }}</span
+                    <button
+                      class="btn btn-outline-danger btn-sm"
+                      (click)="deleteProject(project.id)"
                     >
+                      Delete
+                    </button>
                   </div>
                 </div>
                 <div *ngIf="allProjects.length === 0" class="text-muted">
@@ -221,7 +223,7 @@ import { RegisterModel } from '../../model/auth.model';
                     <th class="text-dark">Members</th>
                     <th class="text-dark">Due Date</th>
                     <th class="text-dark">Sub-Tasks</th>
-                    <th class="text-dark">Status</th>
+                    <th class="text-dark">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -249,18 +251,12 @@ import { RegisterModel } from '../../model/auth.model';
                       >
                     </td>
                     <td>
-                      <span
-                        class="badge"
-                        [ngClass]="{
-                          'bg-success':
-                            getProjectStatus(project) === 'Completed',
-                          'bg-warning':
-                            getProjectStatus(project) === 'In Progress',
-                          'bg-secondary':
-                            getProjectStatus(project) === 'Not Started'
-                        }"
-                        >{{ getProjectStatus(project) }}</span
+                      <button
+                        class="btn btn-outline-danger btn-sm"
+                        (click)="deleteProject(project.id)"
                       >
+                        Delete
+                      </button>
                     </td>
                   </tr>
                   <tr *ngIf="allProjects.length === 0">
@@ -369,6 +365,7 @@ import { RegisterModel } from '../../model/auth.model';
                         <th class="text-dark">Username</th>
                         <th class="text-dark">Role</th>
                         <th class="text-dark">Projects Involved</th>
+                        <th class="text-dark">Actions</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -395,9 +392,18 @@ import { RegisterModel } from '../../model/auth.model';
                             projects</span
                           >
                         </td>
+                        <td>
+                          <button
+                            class="btn btn-outline-danger btn-sm"
+                            (click)="deleteUser(user.username)"
+                            [disabled]="user.role === 'ADMIN'"
+                          >
+                            Delete
+                          </button>
+                        </td>
                       </tr>
                       <tr *ngIf="getFilteredUsers().length === 0">
-                        <td colspan="4" class="text-center text-muted">
+                        <td colspan="5" class="text-center text-muted">
                           No users found
                         </td>
                       </tr>
@@ -405,6 +411,63 @@ import { RegisterModel } from '../../model/auth.model';
                   </table>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sub-Tasks Tab -->
+      <div *ngIf="activeTab === 'subtasks'" class="tab-content">
+        <div class="card border-0 shadow-sm">
+          <div class="card-header bg-light">
+            <h5 class="mb-0 text-dark">All Sub-Tasks</h5>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-hover">
+                <thead class="table-light">
+                  <tr>
+                    <th class="text-dark">Sub-Task</th>
+                    <th class="text-dark">Project</th>
+                    <th class="text-dark">Assigned To</th>
+                    <th class="text-dark">Status</th>
+                    <th class="text-dark">Due Date</th>
+                    <th class="text-dark">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let subtask of allSubTasks">
+                    <td class="text-dark">{{ subtask.name }}</td>
+                    <td class="text-dark">{{ subtask.projectName }}</td>
+                    <td class="text-dark">{{ subtask.memberUsername }}</td>
+                    <td>
+                      <span
+                        class="badge"
+                        [ngClass]="{
+                          'bg-secondary': subtask.status === 'NOT_STARTED',
+                          'bg-primary': subtask.status === 'IN_PROGRESS',
+                          'bg-success': subtask.status === 'DONE'
+                        }"
+                        >{{ subtask.status }}</span
+                      >
+                    </td>
+                    <td class="text-dark">{{ subtask.dueDate | date }}</td>
+                    <td>
+                      <button
+                        class="btn btn-outline-danger btn-sm"
+                        (click)="deleteSubTask(subtask.id)"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                  <tr *ngIf="allSubTasks.length === 0">
+                    <td colspan="6" class="text-center text-muted">
+                      No sub-tasks found
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
@@ -724,6 +787,49 @@ export class AdminDashboard implements OnInit {
 
   getPendingSubTasksCount(): number {
     return this.allSubTasks.filter((task) => task.status !== 'DONE').length;
+  }
+
+  deleteUser(username: string): void {
+    if (confirm(`Are you sure you want to delete user: ${username}?`)) {
+      this.adminService.deleteUser(username).subscribe({
+        next: () => {
+          this.showToastMessage('User deleted successfully!');
+          this.loadAllUsers();
+        },
+        error: (error) => {
+          this.showToastMessage('Error deleting user: ' + (error.error || 'Unknown error'), true);
+        },
+      });
+    }
+  }
+
+  deleteProject(projectId: number): void {
+    if (confirm('Are you sure you want to delete this project? This will also delete all associated sub-tasks.')) {
+      this.projectService.deleteProject(projectId).subscribe({
+        next: () => {
+          this.showToastMessage('Project deleted successfully!');
+          this.loadAllProjects();
+          this.loadAllSubTasks();
+        },
+        error: (error) => {
+          this.showToastMessage('Error deleting project: ' + (error.error || 'Unknown error'), true);
+        },
+      });
+    }
+  }
+
+  deleteSubTask(subtaskId: number): void {
+    if (confirm('Are you sure you want to delete this sub-task?')) {
+      this.subTaskService.deleteSubTask(subtaskId).subscribe({
+        next: () => {
+          this.showToastMessage('Sub-task deleted successfully!');
+          this.loadAllSubTasks();
+        },
+        error: (error) => {
+          this.showToastMessage('Error deleting sub-task: ' + (error.error || 'Unknown error'), true);
+        },
+      });
+    }
   }
 
   getProjectStatus(project: any): string {

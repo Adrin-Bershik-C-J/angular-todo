@@ -1,35 +1,61 @@
-<div class="d-flex justify-content-center align-items-center vh-100 login-bg">
-  <main class="card shadow-lg p-4 login-card">
-    <h4 class="text-muted text-center">Please enter your details</h4>
-    <h2 class="mb-4 text-center fw-bold">Welcome back</h2>
-
-    <form (ngSubmit)="onSubmit()">
-      <div class="mb-3">
-        <input
-          type="text"
-          class="form-control"
-          placeholder="Username"
-          name="username"
-          [(ngModel)]="loginObj.username"
-          required
-        />
+<div class="auth-wrapper">
+  <div class="auth-content">
+    <div class="auth-bg">
+      <span class="r"></span>
+      <span class="r s"></span>
+      <span class="r s"></span>
+      <span class="r"></span>
+    </div>
+    <div class="card">
+      <div class="card-body text-center">
+        <div class="mb-4">
+          <i class="feather icon-unlock auth-icon"></i>
+        </div>
+        <h3 class="mb-4">Login</h3>
+        <form (ngSubmit)="onSubmit()">
+          <div class="input-group mb-3">
+            <span class="input-group-text">
+              <i class="feather icon-user"></i>
+            </span>
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Username"
+              name="username"
+              [(ngModel)]="loginObj.username"
+              required
+              [disabled]="isLoading"
+            />
+          </div>
+          <div class="input-group mb-4">
+            <span class="input-group-text">
+              <i class="feather icon-lock"></i>
+            </span>
+            <input
+              type="password"
+              class="form-control"
+              placeholder="Password"
+              name="password"
+              [(ngModel)]="loginObj.password"
+              required
+              [disabled]="isLoading"
+            />
+          </div>
+          <button 
+            type="submit" 
+            class="btn btn-primary btn-block mb-4"
+            [disabled]="isLoading"
+          >
+            <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2"></span>
+            <i *ngIf="!isLoading" class="feather icon-log-in me-2"></i>
+            {{isLoading ? 'Signing in...' : 'Sign in'}}
+          </button>
+        </form>
+        <p class="mb-2 text-muted">
+          Don't have an account? 
+          <a routerLink="/register" class="f-w-400">Sign up</a>
+        </p>
       </div>
-      <div class="mb-3">
-        <input
-          type="password"
-          class="form-control"
-          placeholder="Password"
-          name="password"
-          [(ngModel)]="loginObj.password"
-          required
-        />
-      </div>
-      <button type="submit" class="btn btn-primary w-100">Sign in</button>
-    </form>
-
-    <p class="text-center mt-3 mb-0">
-      Don't have an account?
-      <a routerLink="/register" class="text-decoration-none">Sign up</a>
-    </p>
-  </main>
+    </div>
+  </div>
 </div>

@@ -1,16 +1,2 @@
-.container {
-  max-width: 1100px;
-}
-
-.card {
-  border-radius: 8px;
-}
-
-.table th,
-.table td {
-  vertical-align: middle;
-}
-
-button i {
-  margin-right: 4px;
-}
+/* Todo Component Styles - Now integrated into component styles */
+/* This file is kept for compatibility but styles are now in the component */

@@ -25,4 +25,8 @@ export class AdminService {
   getAllSubTasks(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/subtasks`);
   }
+
+  deleteUser(username: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/users/${username}`);
+  }
 }
