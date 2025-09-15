@@ -20,7 +20,7 @@ import { Task } from '../../model/todo.model';
     <!-- Top Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom fixed-top">
       <div class="container-fluid">
-        <button class="btn btn-outline-primary d-lg-none me-2" (click)="toggleSidebar()">
+        <button class="btn btn-primary d-lg-none me-2" (click)="toggleSidebar()">
           <span class="hamburger-icon">
             <span></span>
             <span></span>
@@ -32,7 +32,7 @@ import { Task } from '../../model/todo.model';
           <span class="navbar-text me-3 text-dark d-none d-lg-block">
             Welcome, <span class="fw-bold">{{ currentUser }}!</span>
           </span>
-          <button class="btn btn-outline-primary btn-sm d-none d-lg-block" (click)="logout()">
+          <button class="btn btn-primary btn-sm d-none d-lg-block" (click)="logout()">
             <i class="fas fa-sign-out-alt me-1"></i>Logout
           </button>
         </div>
@@ -172,13 +172,13 @@ import { Task } from '../../model/todo.model';
                     </div>
                     <div class="btn-group btn-group-sm">
                       <button
-                        class="btn btn-outline-primary"
+                        class="btn btn-primary"
                         (click)="editProject(project)"
                       >
                         Edit
                       </button>
                       <button
-                        class="btn btn-outline-danger"
+                        class="btn btn-danger"
                         (click)="deleteProject(project.id)"
                       >
                         Delete
@@ -519,7 +519,8 @@ import { Task } from '../../model/todo.model';
                     <th>Status</th>
                     <th>Due Date</th>
                     <th>Project</th>
-                    <th>Actions</th>
+                    <th>Status Actions</th>
+                    <th>Edit/Delete</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -540,42 +541,34 @@ import { Task } from '../../model/todo.model';
                     <td>{{ subtask.dueDate | date }}</td>
                     <td>{{ subtask.projectName }}</td>
                     <td>
-                      <div class="btn-group btn-group-sm mb-1">
-                        <button
-                          class="btn btn-outline-secondary"
-                          (click)="
-                            updateSubTaskStatus(subtask.id, 'NOT_STARTED')
-                          "
-                          [disabled]="subtask.status === 'NOT_STARTED'"
-                        >
+                      <div class="btn-group btn-group-sm">
+                        <button class="btn btn-secondary" 
+                                (click)="updateSubTaskStatus(subtask.id, 'NOT_STARTED')"
+                                [disabled]="subtask.status === 'NOT_STARTED'">
                           Not Started
                         </button>
-                        <button
-                          class="btn btn-outline-primary"
-                          (click)="
-                            updateSubTaskStatus(subtask.id, 'IN_PROGRESS')
-                          "
-                          [disabled]="subtask.status === 'IN_PROGRESS'"
-                        >
+                        <button class="btn btn-primary" 
+                                (click)="updateSubTaskStatus(subtask.id, 'IN_PROGRESS')"
+                                [disabled]="subtask.status === 'IN_PROGRESS'">
                           In Progress
                         </button>
-                        <button
-                          class="btn btn-outline-success"
-                          (click)="updateSubTaskStatus(subtask.id, 'DONE')"
-                          [disabled]="subtask.status === 'DONE'"
-                        >
+                        <button class="btn btn-success" 
+                                (click)="updateSubTaskStatus(subtask.id, 'DONE')"
+                                [disabled]="subtask.status === 'DONE'">
                           Done
                         </button>
                       </div>
+                    </td>
+                    <td>
                       <div class="btn-group btn-group-sm">
                         <button
-                          class="btn btn-outline-info"
+                          class="btn btn-info"
                           (click)="editSubTask(subtask)"
                         >
                           Edit
                         </button>
                         <button
-                          class="btn btn-outline-danger"
+                          class="btn btn-danger"
                           (click)="deleteSubTask(subtask.id)"
                         >
                           Delete
@@ -584,7 +577,7 @@ import { Task } from '../../model/todo.model';
                     </td>
                   </tr>
                   <tr *ngIf="getFilteredSubTasks().length === 0">
-                    <td colspan="6" class="text-center text-muted">
+                    <td colspan="7" class="text-center text-muted">
                       No sub-tasks found
                     </td>
                   </tr>
@@ -763,18 +756,20 @@ import { Task } from '../../model/todo.model';
                         </td>
                         <td>{{ task.dueDate | date }}</td>
                         <td>
-                          <button
-                            class="btn btn-sm btn-primary me-1"
-                            (click)="editPersonalTask(task)"
-                          >
-                            Edit
-                          </button>
-                          <button
-                            class="btn btn-sm btn-danger"
-                            (click)="deletePersonalTask(task.id)"
-                          >
-                            Delete
-                          </button>
+                          <div class="btn-group btn-group-sm">
+                            <button
+                              class="btn btn-primary"
+                              (click)="editPersonalTask(task)"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              class="btn btn-danger"
+                              (click)="deletePersonalTask(task.id)"
+                            >
+                              Delete
+                            </button>
+                          </div>
                         </td>
                       </tr>
                       <tr *ngIf="getFilteredPersonalTasks().length === 0">

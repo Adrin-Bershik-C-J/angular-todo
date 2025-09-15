@@ -15,7 +15,7 @@ import { RegisterModel } from '../../model/auth.model';
     <!-- Top Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom fixed-top">
       <div class="container-fluid">
-        <button class="btn btn-outline-primary d-lg-none me-2" (click)="toggleSidebar()">
+        <button class="btn btn-primary d-lg-none me-2" (click)="toggleSidebar()">
           <span class="hamburger-icon">
             <span></span>
             <span></span>
@@ -27,7 +27,7 @@ import { RegisterModel } from '../../model/auth.model';
           <span class="navbar-text me-3 text-dark d-none d-lg-block">
             Welcome, <span class="fw-bold">System Admin!</span>
           </span>
-          <button class="btn btn-outline-primary btn-sm d-none d-lg-block" (click)="logout()">
+          <button class="btn btn-primary btn-sm d-none d-lg-block" (click)="logout()">
             <i class="fas fa-sign-out-alt me-1"></i>Logout
           </button>
         </div>
@@ -170,7 +170,7 @@ import { RegisterModel } from '../../model/auth.model';
                       >
                     </div>
                     <button
-                      class="btn btn-outline-danger btn-sm"
+                      class="btn btn-danger btn-sm"
                       (click)="deleteProject(project.id)"
                     >
                       Delete
@@ -287,7 +287,7 @@ import { RegisterModel } from '../../model/auth.model';
                     </td>
                     <td>
                       <button
-                        class="btn btn-outline-danger btn-sm"
+                        class="btn btn-danger btn-sm"
                         (click)="deleteProject(project.id)"
                       >
                         Delete
@@ -447,7 +447,7 @@ import { RegisterModel } from '../../model/auth.model';
                         </td>
                         <td>
                           <button
-                            class="btn btn-outline-danger btn-sm"
+                            class="btn btn-danger btn-sm"
                             (click)="deleteUser(user.username)"
                             [disabled]="user.role === 'ADMIN'"
                           >
@@ -525,7 +525,7 @@ import { RegisterModel } from '../../model/auth.model';
                     <td class="text-dark">{{ subtask.dueDate | date }}</td>
                     <td>
                       <button
-                        class="btn btn-outline-danger btn-sm"
+                        class="btn btn-danger btn-sm"
                         (click)="deleteSubTask(subtask.id)"
                       >
                         Delete

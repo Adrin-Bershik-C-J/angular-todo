@@ -16,7 +16,7 @@ import { SubTask } from '../../model/subtask.model';
     <!-- Top Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom fixed-top">
       <div class="container-fluid">
-        <button class="btn btn-outline-primary d-lg-none me-2" (click)="toggleSidebar()">
+        <button class="btn btn-primary d-lg-none me-2" (click)="toggleSidebar()">
           <span class="hamburger-icon">
             <span></span>
             <span></span>
@@ -28,7 +28,7 @@ import { SubTask } from '../../model/subtask.model';
           <span class="navbar-text me-3 text-dark d-none d-lg-block">
             Welcome, <span class="fw-bold">{{ currentUser }}!</span>
           </span>
-          <button class="btn btn-outline-primary btn-sm d-none d-lg-block" (click)="logout()">
+          <button class="btn btn-primary btn-sm d-none d-lg-block" (click)="logout()">
             <i class="fas fa-sign-out-alt me-1"></i>Logout
           </button>
         </div>
@@ -191,17 +191,17 @@ import { SubTask } from '../../model/subtask.model';
                     </td>
                     <td>
                       <div class="btn-group btn-group-sm">
-                        <button class="btn btn-outline-secondary" 
+                        <button class="btn btn-secondary" 
                                 (click)="updateSubTaskStatus(subtask.id, 'NOT_STARTED')"
                                 [disabled]="subtask.status === 'NOT_STARTED'">
                           Not Started
                         </button>
-                        <button class="btn btn-outline-primary" 
+                        <button class="btn btn-primary" 
                                 (click)="updateSubTaskStatus(subtask.id, 'IN_PROGRESS')"
                                 [disabled]="subtask.status === 'IN_PROGRESS'">
                           In Progress
                         </button>
-                        <button class="btn btn-outline-success" 
+                        <button class="btn btn-success" 
                                 (click)="updateSubTaskStatus(subtask.id, 'DONE')"
                                 [disabled]="subtask.status === 'DONE'">
                           Done
@@ -272,8 +272,10 @@ import { SubTask } from '../../model/subtask.model';
                     <td>{{subtask.dueDate | date}}</td>
                     <td><small>{{subtask.projectName}}</small></td>
                     <td>
-                      <button class="btn btn-sm btn-primary me-1" (click)="editSubTask(subtask)">Edit</button>
-                      <button class="btn btn-sm btn-danger" (click)="deleteSubTask(subtask.id)">Delete</button>
+                      <div class="btn-group btn-group-sm">
+                        <button class="btn btn-primary" (click)="editSubTask(subtask)">Edit</button>
+                        <button class="btn btn-danger" (click)="deleteSubTask(subtask.id)">Delete</button>
+                      </div>
                     </td>
                   </tr>
                   <tr *ngIf="createdSubTasks.length === 0">
@@ -472,8 +474,10 @@ import { SubTask } from '../../model/subtask.model';
                         </td>
                         <td>{{task.dueDate | date}}</td>
                         <td>
-                          <button class="btn btn-sm btn-primary me-1" (click)="editPersonalTask(task)">Edit</button>
-                          <button class="btn btn-sm btn-danger" (click)="deletePersonalTask(task.id)">Delete</button>
+                          <div class="btn-group btn-group-sm">
+                            <button class="btn btn-primary" (click)="editPersonalTask(task)">Edit</button>
+                            <button class="btn btn-danger" (click)="deletePersonalTask(task.id)">Delete</button>
+                          </div>
                         </td>
                       </tr>
                       <tr *ngIf="getFilteredPersonalTasks().length === 0">
