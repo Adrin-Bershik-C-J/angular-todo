@@ -27,6 +27,9 @@ import { SubTask } from '../../model/subtask.model';
             <button class="nav-link btn btn-link" [class.active]="activeTab === 'assigned-subtasks'" (click)="setActiveTab('assigned-subtasks')">
               Assigned Sub-Tasks
             </button>
+            <button class="nav-link btn btn-link" [class.active]="activeTab === 'my-subtasks'" (click)="setActiveTab('my-subtasks')">
+              My Sub-Tasks
+            </button>
             <button class="nav-link btn btn-link" [class.active]="activeTab === 'create-subtask'" (click)="setActiveTab('create-subtask')">
               Create Sub-Task
             </button>
@@ -150,6 +153,55 @@ import { SubTask } from '../../model/subtask.model';
                   </tr>
                   <tr *ngIf="getFilteredTLSubTasks().length === 0">
                     <td colspan="7" class="text-center text-muted">No sub-tasks found for selected project</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- My Sub-Tasks Tab -->
+      <div *ngIf="activeTab === 'my-subtasks'" class="tab-content">
+        <div class="card border-0 shadow-sm">
+          <div class="card-header bg-light">
+            <h5 class="mb-0 text-dark">Sub-Tasks Created by Me</h5>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-hover">
+                <thead class="table-light">
+                  <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Assigned To</th>
+                    <th>Status</th>
+                    <th>Due Date</th>
+                    <th>Project</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let subtask of createdSubTasks">
+                    <td><strong>{{subtask.name}}</strong></td>
+                    <td><small>{{subtask.description || 'No description'}}</small></td>
+                    <td>{{subtask.memberUsername}}</td>
+                    <td>
+                      <span class="badge" [ngClass]="{
+                        'bg-secondary': subtask.status === 'NOT_STARTED',
+                        'bg-primary': subtask.status === 'IN_PROGRESS',
+                        'bg-success': subtask.status === 'DONE'
+                      }">{{subtask.status}}</span>
+                    </td>
+                    <td>{{subtask.dueDate | date}}</td>
+                    <td><small>{{subtask.projectName}}</small></td>
+                    <td>
+                      <button class="btn btn-sm btn-primary me-1" (click)="editSubTask(subtask)">Edit</button>
+                      <button class="btn btn-sm btn-danger" (click)="deleteSubTask(subtask.id)">Delete</button>
+                    </td>
+                  </tr>
+                  <tr *ngIf="createdSubTasks.length === 0">
+                    <td colspan="7" class="text-center text-muted">No sub-tasks created by you</td>
                   </tr>
                 </tbody>
               </table>
@@ -405,6 +457,48 @@ import { SubTask } from '../../model/subtask.model';
       </div>
     </div>
     <div class="modal-backdrop fade" [class.show]="editingTask" *ngIf="editingTask"></div>
+
+    <!-- Edit Sub-Task Modal -->
+    <div class="modal fade" [class.show]="editingSubTask" [style.display]="editingSubTask ? 'block' : 'none'" 
+         *ngIf="editingSubTask" tabindex="-1" (keydown.escape)="cancelSubTaskEdit()" (click)="onSubTaskModalBackdropClick($event)">
+      <div class="modal-dialog" (click)="$event.stopPropagation()">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Edit Sub-Task</h5>
+            <button type="button" class="btn-close" (click)="cancelSubTaskEdit()"></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3">
+              <label class="form-label">Name</label>
+              <input type="text" class="form-control" [(ngModel)]="editingSubTask.name">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Description</label>
+              <textarea class="form-control" rows="3" [(ngModel)]="editingSubTask.description"></textarea>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Due Date</label>
+              <input type="date" class="form-control" [(ngModel)]="editingSubTask.dueDate">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Assign To</label>
+              <select class="form-select" [(ngModel)]="editingSubTask.assigneeUsername">
+                <option value="">Select Assignee</option>
+                <option *ngFor="let member of editProjectMembers" [value]="member.username">
+                  {{member.name}} ({{member.username}}) - {{member.role}}
+                </option>
+              </select>
+              <small class="text-muted" *ngIf="editProjectMembers.length === 0">Loading project members...</small>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="cancelSubTaskEdit()">Cancel</button>
+            <button type="button" class="btn btn-primary" (click)="updateSubTask()">Update Sub-Task</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-backdrop fade" [class.show]="editingSubTask" *ngIf="editingSubTask"></div>
   `,
   styles: [`
     .nav-link.active {
@@ -474,12 +568,15 @@ export class TlDashboard implements OnInit {
   
   // Data
   assignedSubTasks: any[] = [];
+  createdSubTasks: any[] = [];
   personalTasks: any[] = [];
   allUsers: any[] = [];
   projectMembers: any[] = [];
+  editProjectMembers: any[] = [];
   tlProjects: any[] = [];
   selectedProjectId: string | null = '';
   editingTask: any = null;
+  editingSubTask: any = null;
   
   // Form objects
   personalTaskObj: Task = new Task();
@@ -504,6 +601,7 @@ export class TlDashboard implements OnInit {
 
   loadDashboardData(): void {
     this.loadAssignedSubTasks();
+    this.loadCreatedSubTasks();
     this.loadPersonalTasks();
     this.loadAllUsers();
     this.loadTLProjects();
@@ -570,6 +668,18 @@ export class TlDashboard implements OnInit {
     });
   }
 
+  loadCreatedSubTasks(): void {
+    this.subTaskService.getSubTasksCreatedByTL().subscribe({
+      next: (subtasks) => {
+        this.createdSubTasks = subtasks;
+      },
+      error: (error) => {
+        console.error('Error loading created sub-tasks:', error);
+        this.createdSubTasks = [];
+      }
+    });
+  }
+
   loadPersonalTasks(): void {
     this.todoService.getAllTasks(0, 10).subscribe({
       next: (response: any) => {
@@ -609,6 +719,7 @@ export class TlDashboard implements OnInit {
         this.showToastMessage('Sub-task created successfully!');
         this.resetSubTaskForm();
         this.loadAssignedSubTasks();
+        this.loadCreatedSubTasks();
       },
       error: (error) => {
         this.showToastMessage('Error creating sub-task: ' + (error.error?.error || 'Unknown error'), true);
@@ -794,6 +905,77 @@ export class TlDashboard implements OnInit {
 
   toggleNavbar(): void {
     this.isNavbarCollapsed = !this.isNavbarCollapsed;
+  }
+
+  editSubTask(subtask: any): void {
+    this.editingSubTask = { ...subtask };
+    if (this.editingSubTask.dueDate) {
+      this.editingSubTask.dueDate = this.editingSubTask.dueDate.split('T')[0];
+    }
+    // Set the assignee username from memberUsername field
+    this.editingSubTask.assigneeUsername = subtask.memberUsername;
+    // Clear previous members and load project members for the sub-task's project
+    this.editProjectMembers = [];
+    this.loadEditProjectMembers(subtask.projectId);
+  }
+
+  loadEditProjectMembers(projectId: number): void {
+    this.projectService.getProjectMembers(projectId).subscribe({
+      next: (members) => {
+        this.editProjectMembers = members;
+      },
+      error: (error) => {
+        console.error('Error loading project members for edit:', error);
+        this.editProjectMembers = [];
+      }
+    });
+  }
+
+  updateSubTask(): void {
+    if (!this.editingSubTask) return;
+    
+    const updateData = {
+      name: this.editingSubTask.name,
+      description: this.editingSubTask.description,
+      dueDate: this.editingSubTask.dueDate,
+      projectId: this.editingSubTask.projectId,
+      assigneeUsername: this.editingSubTask.assigneeUsername
+    };
+
+    this.subTaskService.updateSubTask(this.editingSubTask.id, updateData).subscribe({
+      next: (updated) => {
+        this.showToastMessage('Sub-task updated successfully!');
+        this.editingSubTask = null;
+        this.loadCreatedSubTasks();
+      },
+      error: (error) => {
+        this.showToastMessage('Error updating sub-task', true);
+      }
+    });
+  }
+
+  deleteSubTask(subtaskId: number): void {
+    if (confirm('Are you sure you want to delete this sub-task?')) {
+      this.subTaskService.deleteSubTask(subtaskId).subscribe({
+        next: () => {
+          this.showToastMessage('Sub-task deleted successfully!');
+          this.loadCreatedSubTasks();
+        },
+        error: (error) => {
+          this.showToastMessage('Error deleting sub-task', true);
+        }
+      });
+    }
+  }
+
+  cancelSubTaskEdit(): void {
+    this.editingSubTask = null;
+  }
+
+  onSubTaskModalBackdropClick(event: Event): void {
+    if (event.target === event.currentTarget) {
+      this.cancelSubTaskEdit();
+    }
   }
 
   logout(): void {

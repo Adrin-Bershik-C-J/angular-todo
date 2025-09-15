@@ -17,6 +17,10 @@ export class SubTaskService {
     return this.http.get<SubtaskResponse[]>(`${this.apiUrl}/tl`);
   }
 
+  getSubTasksCreatedByTL(): Observable<SubtaskResponse[]> {
+    return this.http.get<SubtaskResponse[]>(`${this.apiUrl}/tl/created`);
+  }
+
   getSubTasksByMember(): Observable<SubtaskResponse[]> {
     return this.http.get<SubtaskResponse[]>(`${this.apiUrl}/member`);
   }
