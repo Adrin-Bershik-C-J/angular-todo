@@ -160,11 +160,11 @@ import { SubTask } from '../../model/subtask.model';
         <!-- Dashboard Content -->
         <div class="row">
           <div class="col-md-6">
-            <div class="card border-0 shadow-sm">
+            <div class="card border-0 shadow-sm h-100">
               <div class="card-header bg-light">
                 <h5 class="mb-0 text-dark">My Projects</h5>
               </div>
-              <div class="card-body">
+              <div class="card-body" style="height: 250px; overflow-y: auto;">
                 <div *ngFor="let project of tlProjects" class="mb-3 p-3 border rounded">
                   <div class="d-flex justify-content-between align-items-start">
                     <div>
@@ -185,11 +185,11 @@ import { SubTask } from '../../model/subtask.model';
             </div>
           </div>
           <div class="col-md-6">
-            <div class="card border-0 shadow-sm">
+            <div class="card border-0 shadow-sm h-100">
               <div class="card-header bg-light">
                 <h5 class="mb-0 text-dark">{{ selectedProjectId ? 'Project Team Performance' : 'Overall Performance' }}</h5>
               </div>
-              <div class="card-body">
+              <div class="card-body" style="height: 250px; overflow-y: auto;">
                 <div class="mb-3">
                   <div class="d-flex justify-content-between">
                     <span class="text-dark">Not Started</span>

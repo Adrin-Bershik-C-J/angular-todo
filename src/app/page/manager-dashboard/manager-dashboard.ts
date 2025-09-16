@@ -172,11 +172,11 @@ import { Task } from '../../model/todo.model';
         <!-- Dashboard Content -->
         <div class="row">
           <div class="col-md-6">
-            <div class="card border-0 shadow-sm">
+            <div class="card border-0 shadow-sm h-100">
               <div class="card-header bg-light">
                 <h5 class="mb-0 text-dark">{{ selectedProjectId ? 'Project Details' : 'My Projects' }}</h5>
               </div>
-              <div class="card-body" [style.max-height]="!selectedProjectId && getFilteredProjects().length > 2 ? '400px' : 'auto'" [style.overflow-y]="!selectedProjectId && getFilteredProjects().length > 2 ? 'auto' : 'visible'">
+              <div class="card-body" style="height: 250px; overflow-y: auto;">
                 <div
                   *ngFor="let project of getFilteredProjects()"
                   class="mb-3 p-3 border rounded"
@@ -221,7 +221,7 @@ import { Task } from '../../model/todo.model';
               <div class="card-header bg-light">
                 <h5 class="mb-0 text-dark">{{ selectedProjectId ? 'Project Performance' : 'Overall Performance' }}</h5>
               </div>
-              <div class="card-body">
+              <div class="card-body" style="height: 250px; overflow-y: auto;">
                 <div class="mb-3">
                   <div class="d-flex justify-content-between">
                     <span class="text-dark">Not Started</span>
@@ -442,6 +442,35 @@ import { Task } from '../../model/todo.model';
                     <li>
                       Projects can be edited later (except Team Lead assignment)
                     </li>
+                  </ul>
+                </div>
+                <div class="row text-center mb-4">
+                  <div class="col-4">
+                    <div class="border rounded p-3">
+                      <h3 class="text-primary">{{projects.length}}</h3>
+                      <small class="text-muted">My Projects</small>
+                    </div>
+                  </div>
+                  <div class="col-4">
+                    <div class="border rounded p-3">
+                      <h3 class="text-success">{{getTLUsers().length}}</h3>
+                      <small class="text-muted">Available TLs</small>
+                    </div>
+                  </div>
+                  <div class="col-4">
+                    <div class="border rounded p-3">
+                      <h3 class="text-info">{{getMemberUsers().length}}</h3>
+                      <small class="text-muted">Available Members</small>
+                    </div>
+                  </div>
+                </div>
+                <div class="alert alert-warning">
+                  <h6>Project Tips</h6>
+                  <ul class="mb-0 small">
+                    <li>Assign team leads who can effectively manage team members</li>
+                    <li>Balance workload across multiple projects</li>
+                    <li>Consider team member availability and skills</li>
+                    <li>Set buffer time for unexpected delays</li>
                   </ul>
                 </div>
               </div>
