@@ -332,7 +332,6 @@ import Chart from 'chart.js/auto';
               </button>
               <span class="page-info">
                 Page {{projectsPage + 1}} of {{projectsTotalPages}}
-                ({{allProjects.length}} total)
               </span>
               <button class="btn"
                       [disabled]="projectsPage >= projectsTotalPages - 1"
@@ -522,7 +521,6 @@ import Chart from 'chart.js/auto';
               </button>
               <span class="page-info">
                 Page {{usersPage + 1}} of {{usersTotalPages}}
-                ({{allUsers.length}} total)
               </span>
               <button class="btn"
                       [disabled]="usersPage >= usersTotalPages - 1"
@@ -617,7 +615,6 @@ import Chart from 'chart.js/auto';
               </button>
               <span class="page-info">
                 Page {{subTasksPage + 1}} of {{subTasksTotalPages}}
-                ({{getFilteredSubTasksComplete().length}} total)
               </span>
               <button class="btn"
                       [disabled]="subTasksPage >= subTasksTotalPages - 1"

@@ -724,7 +724,6 @@ import { Task } from '../../model/todo.model';
               </button>
               <span class="page-info">
                 Page {{subTasksCurrentPage + 1}} of {{getSubTasksTotalPages()}}
-                ({{getFilteredSubTasks().length}} total)
               </span>
               <button class="btn"
                       [disabled]="subTasksCurrentPage >= getSubTasksTotalPages() - 1"
@@ -968,7 +967,6 @@ import { Task } from '../../model/todo.model';
               </button>
               <span class="page-info">
                 Page {{personalTasksPage + 1}} of {{personalTasksTotalPages}}
-                ({{personalTasks.length}} total)
               </span>
               <button class="btn"
                       [disabled]="personalTasksPage >= personalTasksTotalPages - 1"

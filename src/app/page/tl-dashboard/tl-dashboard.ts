@@ -360,7 +360,6 @@ import { SubTask } from '../../model/subtask.model';
               </button>
               <span class="page-info">
                 Page {{assignedSubTasksPage + 1}} of {{assignedSubTasksTotalPages}}
-                ({{assignedSubTasks.length}} total)
               </span>
               <button class="btn"
                       [disabled]="assignedSubTasksPage >= assignedSubTasksTotalPages - 1"
@@ -431,7 +430,6 @@ import { SubTask } from '../../model/subtask.model';
               </button>
               <span class="page-info">
                 Page {{createdSubTasksPage + 1}} of {{createdSubTasksTotalPages}}
-                ({{createdSubTasks.length}} total)
               </span>
               <button class="btn"
                       [disabled]="createdSubTasksPage >= createdSubTasksTotalPages - 1"
@@ -635,7 +633,6 @@ import { SubTask } from '../../model/subtask.model';
                   </button>
                   <span class="page-info">
                     Page {{personalTasksPage + 1}} of {{personalTasksTotalPages}}
-                    ({{personalTasks.length}} total)
                   </span>
                   <button class="btn"
                           [disabled]="personalTasksPage >= personalTasksTotalPages - 1"

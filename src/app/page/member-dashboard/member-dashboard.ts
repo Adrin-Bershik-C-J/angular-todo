@@ -65,10 +65,19 @@ import { Task } from '../../model/todo.model';
         <li>
           <button
             class="sidebar-link"
-            [class.active]="activeTab === 'personal'"
-            (click)="setActiveTab('personal')"
+            [class.active]="activeTab === 'create-personal'"
+            (click)="setActiveTab('create-personal')"
           >
-            <i class="far fa-clipboard me-2"></i>Personal Tasks
+            <i class="far fa-plus-square me-2"></i>Create Personal Task
+          </button>
+        </li>
+        <li>
+          <button
+            class="sidebar-link"
+            [class.active]="activeTab === 'my-personal'"
+            (click)="setActiveTab('my-personal')"
+          >
+            <i class="far fa-clipboard me-2"></i>My Personal Tasks
           </button>
         </li>
       </ul>
@@ -269,7 +278,6 @@ import { Task } from '../../model/todo.model';
               </button>
               <span class="page-info">
                 Page {{assignedSubTasksPage + 1}} of {{assignedSubTasksTotalPages}}
-                ({{assignedSubTasks.length}} total)
               </span>
               <button class="btn"
                       [disabled]="assignedSubTasksPage >= assignedSubTasksTotalPages - 1"
@@ -281,10 +289,10 @@ import { Task } from '../../model/todo.model';
         </div>
       </div>
 
-      <!-- Personal Tasks Tab -->
-      <div *ngIf="activeTab === 'personal'" class="tab-content">
+      <!-- Create Personal Task Tab -->
+      <div *ngIf="activeTab === 'create-personal'" class="tab-content">
         <div class="row">
-          <div class="col-md-5">
+          <div class="col-md-6">
             <div class="card border-0 shadow-sm">
               <div class="card-header bg-primary text-white">
                 <h5 class="mb-0">Create Personal Task</h5>
@@ -324,97 +332,115 @@ import { Task } from '../../model/todo.model';
               </div>
             </div>
           </div>
-
-          <div class="col-md-7">
+          <div class="col-md-6">
             <div class="card border-0 shadow-sm">
               <div class="card-header bg-light">
-                <h5 class="mb-0 text-dark">My Personal Tasks</h5>
+                <h5 class="mb-0 text-dark">Personal Task Guide</h5>
               </div>
               <div class="card-body">
-                <div class="row mb-3">
-                  <div class="col-md-4">
-                    <select class="form-select form-select-sm" [(ngModel)]="taskPriorityFilter">
-                      <option value="">All Priorities</option>
-                      <option value="LOW">Low</option>
-                      <option value="MEDIUM">Medium</option>
-                      <option value="HIGH">High</option>
-                    </select>
-                  </div>
-                  <div class="col-md-4">
-                    <select class="form-select form-select-sm" [(ngModel)]="taskStatusFilter">
-                      <option value="">All Status</option>
-                      <option value="NOT_STARTED">Not Started</option>
-                      <option value="IN_PROGRESS">In Progress</option>
-                      <option value="DONE">Done</option>
-                    </select>
-                  </div>
-                  <div class="col-md-4">
-                    <input type="date" class="form-control form-control-sm" [(ngModel)]="taskDueDateFilter" placeholder="Filter by due date">
-                  </div>
-                </div>
-                <div class="table-responsive">
-                  <table class="table table-hover">
-                    <thead class="table-light">
-                      <tr>
-                        <th>Title</th>
-                        <th>Priority</th>
-                        <th>Status</th>
-                        <th>Due Date</th>
-                        <th>Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr *ngFor="let task of getFilteredPersonalTasks()">
-                        <td>{{task.title}}</td>
-                        <td>
-                          <span class="badge" [ngClass]="{
-                            'bg-success': task.priority === 'LOW',
-                            'bg-warning': task.priority === 'MEDIUM',
-                            'bg-danger': task.priority === 'HIGH'
-                          }">{{task.priority}}</span>
-                        </td>
-                        <td>
-                          <span class="badge" [ngClass]="{
-                            'bg-secondary': task.status === 'NOT_STARTED',
-                            'bg-warning': task.status === 'IN_PROGRESS',
-                            'bg-primary': task.status === 'DONE'
-                          }">{{task.status}}</span>
-                        </td>
-                        <td>{{task.dueDate | date}}</td>
-                        <td>
-                          <div class="btn-group btn-group-sm">
-                            <button class="btn btn-primary" (click)="editPersonalTask(task)" title="Edit">
-                              <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn btn-danger" (click)="deletePersonalTask(task.id)" title="Delete">
-                              <i class="fas fa-trash"></i>
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                      <tr *ngIf="getFilteredPersonalTasks().length === 0">
-                        <td colspan="5" class="text-center text-muted">No personal tasks found</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-                <div *ngIf="personalTasks.length > 0" class="pagination">
-                  <button class="btn" 
-                          [disabled]="personalTasksPage === 0"
-                          (click)="changePersonalTasksPage(personalTasksPage - 1)">
-                    Previous
-                  </button>
-                  <span class="page-info">
-                    Page {{personalTasksPage + 1}} of {{personalTasksTotalPages}}
-                    ({{personalTasks.length}} total)
-                  </span>
-                  <button class="btn"
-                          [disabled]="personalTasksPage >= personalTasksTotalPages - 1"
-                          (click)="changePersonalTasksPage(personalTasksPage + 1)">
-                    Next
-                  </button>
+                <div class="alert alert-info">
+                  <h6>Creating Personal Tasks</h6>
+                  <ul class="mb-0">
+                    <li>Set realistic due dates for better time management</li>
+                    <li>Use HIGH priority for urgent personal tasks</li>
+                    <li>Break down complex tasks into smaller ones</li>
+                    <li>Review and update task status regularly</li>
+                  </ul>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- My Personal Tasks Tab -->
+      <div *ngIf="activeTab === 'my-personal'" class="tab-content">
+        <div class="card border-0 shadow-sm">
+          <div class="card-header bg-light">
+            <h5 class="mb-0 text-dark">My Personal Tasks</h5>
+          </div>
+          <div class="card-body">
+            <div class="row mb-3">
+              <div class="col-md-4">
+                <select class="form-select form-select-sm" [(ngModel)]="taskPriorityFilter">
+                  <option value="">All Priorities</option>
+                  <option value="LOW">Low</option>
+                  <option value="MEDIUM">Medium</option>
+                  <option value="HIGH">High</option>
+                </select>
+              </div>
+              <div class="col-md-4">
+                <select class="form-select form-select-sm" [(ngModel)]="taskStatusFilter">
+                  <option value="">All Status</option>
+                  <option value="NOT_STARTED">Not Started</option>
+                  <option value="IN_PROGRESS">In Progress</option>
+                  <option value="DONE">Done</option>
+                </select>
+              </div>
+              <div class="col-md-4">
+                <input type="date" class="form-control form-control-sm" [(ngModel)]="taskDueDateFilter" placeholder="Filter by due date">
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table class="table table-hover">
+                <thead class="table-light">
+                  <tr>
+                    <th>Title</th>
+                    <th>Priority</th>
+                    <th>Status</th>
+                    <th>Due Date</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let task of getFilteredPersonalTasks()">
+                    <td>{{task.title}}</td>
+                    <td>
+                      <span class="badge" [ngClass]="{
+                        'bg-success': task.priority === 'LOW',
+                        'bg-warning': task.priority === 'MEDIUM',
+                        'bg-danger': task.priority === 'HIGH'
+                      }">{{task.priority}}</span>
+                    </td>
+                    <td>
+                      <span class="badge" [ngClass]="{
+                        'bg-secondary': task.status === 'NOT_STARTED',
+                        'bg-warning': task.status === 'IN_PROGRESS',
+                        'bg-primary': task.status === 'DONE'
+                      }">{{task.status}}</span>
+                    </td>
+                    <td>{{task.dueDate | date}}</td>
+                    <td>
+                      <div class="btn-group btn-group-sm">
+                        <button class="btn btn-primary" (click)="editPersonalTask(task)" title="Edit">
+                          <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-danger" (click)="deletePersonalTask(task.id)" title="Delete">
+                          <i class="fas fa-trash"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr *ngIf="getFilteredPersonalTasks().length === 0">
+                    <td colspan="5" class="text-center text-muted">No personal tasks found</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div *ngIf="personalTasks.length > 0" class="pagination">
+              <button class="btn" 
+                      [disabled]="personalTasksPage === 0"
+                      (click)="changePersonalTasksPage(personalTasksPage - 1)">
+                Previous
+              </button>
+              <span class="page-info">
+                Page {{personalTasksPage + 1}} of {{personalTasksTotalPages}}
+              </span>
+              <button class="btn"
+                      [disabled]="personalTasksPage >= personalTasksTotalPages - 1"
+                      (click)="changePersonalTasksPage(personalTasksPage + 1)">
+                Next
+              </button>
             </div>
           </div>
         </div>
@@ -907,12 +933,14 @@ export class MemberDashboard implements OnInit {
 
   getUpcomingSubTaskDeadlines(): any[] {
     return this.assignedSubTasks
+      .filter(task => (task.status === 'NOT_STARTED' || task.status === 'IN_PROGRESS'))
       .sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime())
       .slice(0, 5);
   }
 
   getUpcomingPersonalTaskDeadlines(): any[] {
     return this.personalTasks
+      .filter(task => (task.status === 'NOT_STARTED' || task.status === 'IN_PROGRESS'))
       .sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime())
       .slice(0, 5);
   }
