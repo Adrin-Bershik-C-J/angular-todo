@@ -85,13 +85,25 @@ import { SubTask } from '../../model/subtask.model';
         <li>
           <button
             class="sidebar-link"
-            [class.active]="activeTab === 'personal'"
-            (click)="setActiveTab('personal')"
+            [class.active]="activeTab === 'create-personal'"
+            (click)="setActiveTab('create-personal')"
           >
-            <i class="far fa-clipboard me-2"></i>Personal Tasks
+            <i class="far fa-plus-square me-2"></i>Create Personal Task
+          </button>
+        </li>
+        <li>
+          <button
+            class="sidebar-link"
+            [class.active]="activeTab === 'my-personal'"
+            (click)="setActiveTab('my-personal')"
+          >
+            <i class="far fa-clipboard me-2"></i>My Personal Tasks
           </button>
         </li>
       </ul>
+      
+
+      
       <div class="sidebar-footer d-lg-none">
         <button class="sidebar-link logout-btn" (click)="logout()">
           <i class="fas fa-sign-out-alt me-2"></i>Logout
@@ -328,20 +340,23 @@ import { SubTask } from '../../model/subtask.model';
                     </td>
                     <td>
                       <div class="btn-group btn-group-sm">
-                        <button class="btn btn-secondary" 
+                        <button class="btn btn-secondary btn-sm" 
                                 (click)="updateSubTaskStatus(subtask.id, 'NOT_STARTED')"
-                                [disabled]="subtask.status === 'NOT_STARTED'">
-                          Not Started
+                                [disabled]="subtask.status === 'NOT_STARTED'"
+                                title="Not Started">
+                          <i class="fas fa-pause"></i>
                         </button>
-                        <button class="btn btn-primary" 
+                        <button class="btn btn-primary btn-sm" 
                                 (click)="updateSubTaskStatus(subtask.id, 'IN_PROGRESS')"
-                                [disabled]="subtask.status === 'IN_PROGRESS'">
-                          In Progress
+                                [disabled]="subtask.status === 'IN_PROGRESS'"
+                                title="In Progress">
+                          <i class="fas fa-play"></i>
                         </button>
-                        <button class="btn btn-success" 
+                        <button class="btn btn-success btn-sm" 
                                 (click)="updateSubTaskStatus(subtask.id, 'DONE')"
-                                [disabled]="subtask.status === 'DONE'">
-                          Done
+                                [disabled]="subtask.status === 'DONE'"
+                                title="Done">
+                          <i class="fas fa-check"></i>
                         </button>
                       </div>
                     </td>
@@ -508,10 +523,10 @@ import { SubTask } from '../../model/subtask.model';
         </div>
       </div>
 
-      <!-- Personal Tasks Tab -->
-      <div *ngIf="activeTab === 'personal'" class="tab-content">
+      <!-- Create Personal Task Tab -->
+      <div *ngIf="activeTab === 'create-personal'" class="tab-content">
         <div class="row">
-          <div class="col-md-5">
+          <div class="col-md-6">
             <div class="card border-0 shadow-sm">
               <div class="card-header bg-primary text-white">
                 <h5 class="mb-0">Create Personal Task</h5>
@@ -551,13 +566,34 @@ import { SubTask } from '../../model/subtask.model';
               </div>
             </div>
           </div>
-
-          <div class="col-md-7">
+          <div class="col-md-6">
             <div class="card border-0 shadow-sm">
               <div class="card-header bg-light">
-                <h5 class="mb-0 text-dark">My Personal Tasks</h5>
+                <h5 class="mb-0 text-dark">Personal Task Guide</h5>
               </div>
               <div class="card-body">
+                <div class="alert alert-info">
+                  <h6>Creating Personal Tasks</h6>
+                  <ul class="mb-0">
+                    <li>Set realistic due dates for better time management</li>
+                    <li>Use HIGH priority for urgent personal tasks</li>
+                    <li>Break down complex tasks into smaller ones</li>
+                    <li>Review and update task status regularly</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- My Personal Tasks Tab -->
+      <div *ngIf="activeTab === 'my-personal'" class="tab-content">
+        <div class="card border-0 shadow-sm">
+          <div class="card-header bg-light">
+            <h5 class="mb-0 text-dark">My Personal Tasks</h5>
+          </div>
+          <div class="card-body">
                 <div class="row mb-3">
                   <div class="col-md-4">
                     <select class="form-select form-select-sm" [(ngModel)]="taskPriorityFilter">
@@ -642,10 +678,7 @@ import { SubTask } from '../../model/subtask.model';
                 </div>
               </div>
             </div>
-          </div>
-        </div>
       </div>
-
 
     </div>
 

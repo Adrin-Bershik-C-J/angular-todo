@@ -53,7 +53,7 @@ export const routes: Routes = [
   },
   {
     path: 'unauthorized',
-    component: UnauthorizedComponent
+    component: UnauthorizedComponent,
   },
   {
     path: '**',

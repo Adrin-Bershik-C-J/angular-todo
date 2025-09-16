@@ -52,7 +52,7 @@ import Chart from 'chart.js/auto';
             [class.active]="activeTab === 'overview'"
             (click)="setActiveTab('overview')"
           >
-            <i class="far fa-chart-bar me-2"></i>System Overview
+            <i class="far fa-chart-bar me-2"></i>Overview
           </button>
         </li>
         <li>
@@ -286,9 +286,6 @@ import Chart from 'chart.js/auto';
                   <tr *ngFor="let project of getFilteredProjects()">
                     <td>
                       <strong class="text-primary">{{ project.name }}</strong>
-                      <br /><small class="text-muted">{{
-                        project.description
-                      }}</small>
                     </td>
                     <td class="text-dark">{{ project.managerUsername }}</td>
                     <td class="text-dark">{{ project.tlUsername }}</td>

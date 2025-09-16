@@ -672,20 +672,23 @@ import { Task } from '../../model/todo.model';
                     <td>{{ subtask.projectName }}</td>
                     <td>
                       <div class="btn-group btn-group-sm">
-                        <button class="btn btn-secondary" 
+                        <button class="btn btn-secondary btn-sm" 
                                 (click)="updateSubTaskStatus(subtask.id, 'NOT_STARTED')"
-                                [disabled]="subtask.status === 'NOT_STARTED'">
-                          Not Started
+                                [disabled]="subtask.status === 'NOT_STARTED'"
+                                title="Not Started">
+                          <i class="fas fa-pause"></i>
                         </button>
-                        <button class="btn btn-primary" 
+                        <button class="btn btn-primary btn-sm" 
                                 (click)="updateSubTaskStatus(subtask.id, 'IN_PROGRESS')"
-                                [disabled]="subtask.status === 'IN_PROGRESS'">
-                          In Progress
+                                [disabled]="subtask.status === 'IN_PROGRESS'"
+                                title="In Progress">
+                          <i class="fas fa-play"></i>
                         </button>
-                        <button class="btn btn-success" 
+                        <button class="btn btn-success btn-sm" 
                                 (click)="updateSubTaskStatus(subtask.id, 'DONE')"
-                                [disabled]="subtask.status === 'DONE'">
-                          Done
+                                [disabled]="subtask.status === 'DONE'"
+                                title="Done">
+                          <i class="fas fa-check"></i>
                         </button>
                       </div>
                     </td>
