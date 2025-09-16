@@ -186,14 +186,16 @@ import { Task } from '../../model/todo.model';
                       <button
                         class="btn btn-primary"
                         (click)="editProject(project)"
+                        title="Edit"
                       >
-                        Edit
+                        <i class="fas fa-edit"></i>
                       </button>
                       <button
                         class="btn btn-danger"
                         (click)="deleteProject(project.id)"
+                        title="Delete"
                       >
-                        Delete
+                        <i class="fas fa-trash"></i>
                       </button>
                     </div>
                   </div>
@@ -651,14 +653,16 @@ import { Task } from '../../model/todo.model';
                         <button
                           class="btn btn-info"
                           (click)="editSubTask(subtask)"
+                          title="Edit"
                         >
-                          Edit
+                          <i class="fas fa-edit"></i>
                         </button>
                         <button
                           class="btn btn-danger"
                           (click)="deleteSubTask(subtask.id)"
+                          title="Delete"
                         >
-                          Delete
+                          <i class="fas fa-trash"></i>
                         </button>
                       </div>
                     </td>
@@ -845,14 +849,16 @@ import { Task } from '../../model/todo.model';
                             <button
                               class="btn btn-primary"
                               (click)="editPersonalTask(task)"
+                              title="Edit"
                             >
-                              Edit
+                              <i class="fas fa-edit"></i>
                             </button>
                             <button
                               class="btn btn-danger"
                               (click)="deletePersonalTask(task.id)"
+                              title="Delete"
                             >
-                              Delete
+                              <i class="fas fa-trash"></i>
                             </button>
                           </div>
                         </td>

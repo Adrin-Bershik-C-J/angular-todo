@@ -180,10 +180,11 @@ import Chart from 'chart.js/auto';
                       >
                     </div>
                     <button
-                      class="btn btn-danger btn-sm"
+                      class="btn btn-danger btn-xs"
                       (click)="deleteProject(project.id)"
+                      title="Delete"
                     >
-                      Delete
+                      <i class="fas fa-trash"></i>
                     </button>
                   </div>
                 </div>
@@ -307,10 +308,11 @@ import Chart from 'chart.js/auto';
                     </td>
                     <td>
                       <button
-                        class="btn btn-danger btn-sm"
+                        class="btn btn-danger btn-xs"
                         (click)="deleteProject(project.id)"
+                        title="Delete"
                       >
-                        Delete
+                        <i class="fas fa-trash"></i>
                       </button>
                     </td>
                   </tr>
@@ -495,11 +497,12 @@ import Chart from 'chart.js/auto';
                     </td>
                     <td>
                       <button
-                        class="btn btn-danger btn-sm"
+                        class="btn btn-danger btn-xs"
                         (click)="deleteUser(user.username)"
                         [disabled]="user.role === 'ADMIN'"
+                        title="Delete"
                       >
-                        Delete
+                        <i class="fas fa-trash"></i>
                       </button>
                     </td>
                   </tr>
@@ -587,10 +590,11 @@ import Chart from 'chart.js/auto';
                     <td class="text-dark">{{ subtask.dueDate | date }}</td>
                     <td>
                       <button
-                        class="btn btn-danger btn-sm"
+                        class="btn btn-danger btn-xs"
                         (click)="deleteSubTask(subtask.id)"
+                        title="Delete"
                       >
-                        Delete
+                        <i class="fas fa-trash"></i>
                       </button>
                     </td>
                   </tr>
@@ -827,6 +831,13 @@ import Chart from 'chart.js/auto';
       
       .overview-metric-card {
         border-left: 4px solid #2563eb;
+      }
+      
+      .btn-xs {
+        padding: 0.125rem 0.25rem;
+        font-size: 0.625rem;
+        min-width: 24px;
+        height: 24px;
       }
       
       .table th {

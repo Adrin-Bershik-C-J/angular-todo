@@ -408,8 +408,12 @@ import { SubTask } from '../../model/subtask.model';
                     <td><small>{{subtask.projectName}}</small></td>
                     <td>
                       <div class="btn-group btn-group-sm">
-                        <button class="btn btn-primary" (click)="editSubTask(subtask)">Edit</button>
-                        <button class="btn btn-danger" (click)="deleteSubTask(subtask.id)">Delete</button>
+                        <button class="btn btn-primary" (click)="editSubTask(subtask)" title="Edit">
+                          <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-danger" (click)="deleteSubTask(subtask.id)" title="Delete">
+                          <i class="fas fa-trash"></i>
+                        </button>
                       </div>
                     </td>
                   </tr>
@@ -608,8 +612,12 @@ import { SubTask } from '../../model/subtask.model';
                         <td>{{task.dueDate | date}}</td>
                         <td>
                           <div class="btn-group btn-group-sm">
-                            <button class="btn btn-primary" (click)="editPersonalTask(task)">Edit</button>
-                            <button class="btn btn-danger" (click)="deletePersonalTask(task.id)">Delete</button>
+                            <button class="btn btn-primary" (click)="editPersonalTask(task)" title="Edit">
+                              <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-danger" (click)="deletePersonalTask(task.id)" title="Delete">
+                              <i class="fas fa-trash"></i>
+                            </button>
                           </div>
                         </td>
                       </tr>
