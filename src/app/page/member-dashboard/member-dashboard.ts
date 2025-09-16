@@ -89,7 +89,7 @@ import { Task } from '../../model/todo.model';
       <div *ngIf="activeTab === 'overview'" class="tab-content">
         <div class="row mb-4">
           <div class="col-md-3">
-            <div class="card border-primary">
+            <div class="card border-primary overview-metric-card">
               <div class="card-body text-center">
                 <i class="fas fa-tasks text-primary fs-1 mb-2"></i>
                 <h5 class="text-primary">Assigned Sub-Tasks</h5>
@@ -98,7 +98,7 @@ import { Task } from '../../model/todo.model';
             </div>
           </div>
           <div class="col-md-3">
-            <div class="card border-success">
+            <div class="card border-success overview-metric-card">
               <div class="card-body text-center">
                 <i class="fas fa-check-circle text-success fs-1 mb-2"></i>
                 <h5 class="text-success">Completed Sub-Tasks</h5>
@@ -107,7 +107,7 @@ import { Task } from '../../model/todo.model';
             </div>
           </div>
           <div class="col-md-3">
-            <div class="card border-secondary">
+            <div class="card border-secondary overview-metric-card">
               <div class="card-body text-center">
                 <i class="far fa-clipboard text-secondary fs-1 mb-2"></i>
                 <h5 class="text-secondary">Personal Tasks</h5>
@@ -116,7 +116,7 @@ import { Task } from '../../model/todo.model';
             </div>
           </div>
           <div class="col-md-3">
-            <div class="card border-info">
+            <div class="card border-info overview-metric-card">
               <div class="card-body text-center">
                 <i class="fas fa-trophy text-info fs-1 mb-2"></i>
                 <h5 class="text-info">Completed Personal</h5>
@@ -619,6 +619,10 @@ import { Task } from '../../model/todo.model';
       border-radius: 10px;
       border: none;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .overview-metric-card {
+      border-left: 4px solid #2563eb;
     }
     
     .table th {

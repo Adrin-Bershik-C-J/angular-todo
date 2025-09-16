@@ -119,7 +119,7 @@ import Chart from 'chart.js/auto';
         <!-- Key Metrics -->
         <div class="row mb-4">
           <div class="col-md-3">
-            <div class="card border-primary">
+            <div class="card border-primary overview-metric-card">
               <div class="card-body text-center">
                 <i class="fas fa-project-diagram text-primary fs-1 mb-2"></i>
                 <h5 class="text-primary">Total Projects</h5>
@@ -128,7 +128,7 @@ import Chart from 'chart.js/auto';
             </div>
           </div>
           <div class="col-md-3">
-            <div class="card border-success">
+            <div class="card border-success overview-metric-card">
               <div class="card-body text-center">
                 <i class="fas fa-users text-success fs-1 mb-2"></i>
                 <h5 class="text-success">Total Users</h5>
@@ -137,7 +137,7 @@ import Chart from 'chart.js/auto';
             </div>
           </div>
           <div class="col-md-3">
-            <div class="card border-info">
+            <div class="card border-info overview-metric-card">
               <div class="card-body text-center">
                 <i class="fas fa-tasks text-info fs-1 mb-2"></i>
                 <h5 class="text-info">Total Sub-Tasks</h5>
@@ -146,7 +146,7 @@ import Chart from 'chart.js/auto';
             </div>
           </div>
           <div class="col-md-3">
-            <div class="card border-secondary">
+            <div class="card border-secondary overview-metric-card">
               <div class="card-body text-center">
                 <i class="fas fa-chart-line text-secondary fs-1 mb-2"></i>
                 <h5 class="text-secondary">Completion Rate</h5>
@@ -823,6 +823,10 @@ import Chart from 'chart.js/auto';
         border-radius: 10px;
         border: none;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      
+      .overview-metric-card {
+        border-left: 4px solid #2563eb;
       }
       
       .table th {

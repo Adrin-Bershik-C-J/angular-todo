@@ -120,7 +120,7 @@ import { SubTask } from '../../model/subtask.model';
         <!-- Key Metrics -->
         <div class="row mb-4">
           <div class="col-md-3">
-            <div class="card border-primary">
+            <div class="card border-primary overview-metric-card">
               <div class="card-body text-center">
                 <i class="fas fa-project-diagram text-primary fs-1 mb-2"></i>
                 <h5 class="text-primary">{{ selectedProjectId ? 'Current Project' : 'My Projects' }}</h5>
@@ -129,7 +129,7 @@ import { SubTask } from '../../model/subtask.model';
             </div>
           </div>
           <div class="col-md-3">
-            <div class="card border-info">
+            <div class="card border-info overview-metric-card">
               <div class="card-body text-center">
                 <i class="fas fa-tasks text-info fs-1 mb-2"></i>
                 <h5 class="text-info">Sub-Tasks</h5>
@@ -138,7 +138,7 @@ import { SubTask } from '../../model/subtask.model';
             </div>
           </div>
           <div class="col-md-3">
-            <div class="card border-success">
+            <div class="card border-success overview-metric-card">
               <div class="card-body text-center">
                 <i class="fas fa-check-circle text-success fs-1 mb-2"></i>
                 <h5 class="text-success">Completed</h5>
@@ -147,7 +147,7 @@ import { SubTask } from '../../model/subtask.model';
             </div>
           </div>
           <div class="col-md-3">
-            <div class="card border-warning">
+            <div class="card border-warning overview-metric-card">
               <div class="card-body text-center">
                 <i class="fas fa-clock text-warning fs-1 mb-2"></i>
                 <h5 class="text-warning">Completion Rate</h5>
@@ -888,6 +888,10 @@ import { SubTask } from '../../model/subtask.model';
       border-radius: 10px;
       border: none;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .overview-metric-card {
+      border-left: 4px solid #2563eb;
     }
     
     .table th {
