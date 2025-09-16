@@ -28,7 +28,7 @@ import Chart from 'chart.js/auto';
           <span class="navbar-text me-3 text-dark d-none d-lg-block">
             Welcome, <span class="fw-bold">System Admin!</span>
           </span>
-          <button class="btn btn-primary btn-sm d-none d-lg-block" (click)="logout()">
+          <button class="btn btn-danger btn-sm d-none d-lg-block" (click)="logout()">
             <i class="fas fa-sign-out-alt me-1"></i>Logout
           </button>
         </div>
