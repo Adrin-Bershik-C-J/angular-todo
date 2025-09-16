@@ -578,6 +578,7 @@ import { Task } from '../../model/todo.model';
                 <select
                   class="form-select form-select-sm"
                   [(ngModel)]="subTaskStatusFilter"
+                  (change)="onSubTaskFilterChange()"
                 >
                   <option value="">All Status</option>
                   <option value="NOT_STARTED">Not Started</option>
@@ -590,6 +591,7 @@ import { Task } from '../../model/todo.model';
                   type="date"
                   class="form-control form-control-sm"
                   [(ngModel)]="subTaskDueDateFilter"
+                  (change)="onSubTaskFilterChange()"
                   placeholder="Filter by due date"
                 />
               </div>
@@ -597,6 +599,7 @@ import { Task } from '../../model/todo.model';
                 <select
                   class="form-select form-select-sm"
                   [(ngModel)]="subTaskProjectFilter"
+                  (change)="onSubTaskFilterChange()"
                 >
                   <option value="">All Projects</option>
                   <option
@@ -622,7 +625,7 @@ import { Task } from '../../model/todo.model';
                   </tr>
                 </thead>
                 <tbody>
-                  <tr *ngFor="let subtask of getFilteredSubTasks()">
+                  <tr *ngFor="let subtask of getPaginatedSubTasks()">
                     <td>{{ subtask.name }}</td>
                     <td>{{ subtask.memberUsername }}</td>
                     <td>
@@ -676,7 +679,7 @@ import { Task } from '../../model/todo.model';
                       </div>
                     </td>
                   </tr>
-                  <tr *ngIf="getFilteredSubTasks().length === 0">
+                  <tr *ngIf="getPaginatedSubTasks().length === 0">
                     <td colspan="7" class="text-center text-muted">
                       No sub-tasks found
                     </td>
@@ -684,19 +687,19 @@ import { Task } from '../../model/todo.model';
                 </tbody>
               </table>
             </div>
-            <div *ngIf="managerSubTasks.length > 0" class="pagination">
+            <div *ngIf="getFilteredSubTasks().length > 0" class="pagination">
               <button class="btn" 
-                      [disabled]="managerSubTasksPage === 0"
-                      (click)="changeManagerSubTasksPage(managerSubTasksPage - 1)">
+                      [disabled]="subTasksCurrentPage === 0"
+                      (click)="changeSubTasksPage(subTasksCurrentPage - 1)">
                 Previous
               </button>
               <span class="page-info">
-                Page {{managerSubTasksPage + 1}} of {{managerSubTasksTotalPages}}
-                ({{managerSubTasks.length}} total)
+                Page {{subTasksCurrentPage + 1}} of {{getSubTasksTotalPages()}}
+                ({{getFilteredSubTasks().length}} total)
               </span>
               <button class="btn"
-                      [disabled]="managerSubTasksPage >= managerSubTasksTotalPages - 1"
-                      (click)="changeManagerSubTasksPage(managerSubTasksPage + 1)">
+                      [disabled]="subTasksCurrentPage >= getSubTasksTotalPages() - 1"
+                      (click)="changeSubTasksPage(subTasksCurrentPage + 1)">
                 Next
               </button>
             </div>
@@ -1493,6 +1496,8 @@ export class ManagerDashboard implements OnInit {
   subTaskDueDateFilter: string = '';
   subTaskProjectFilter: string = '';
   selectedProjectId: string | null = '';
+  subTasksCurrentPage = 0;
+  subTasksPageSize = 10;
   
   // Pagination
   managerSubTasksPage = 0;
@@ -1670,6 +1675,29 @@ export class ManagerDashboard implements OnInit {
     });
   }
 
+  getPaginatedSubTasks(): any[] {
+    const filtered = this.getFilteredSubTasks();
+    if (filtered.length === 0) return [];
+    
+    const startIndex = this.subTasksCurrentPage * this.subTasksPageSize;
+    const endIndex = startIndex + this.subTasksPageSize;
+    const result = filtered.slice(startIndex, endIndex);
+    
+    return result;
+  }
+
+  getSubTasksTotalPages(): number {
+    const filtered = this.getFilteredSubTasks();
+    if (filtered.length === 0) return 1;
+    return Math.ceil(filtered.length / this.subTasksPageSize);
+  }
+
+  changeSubTasksPage(page: number): void {
+    if (page >= 0 && page < this.getSubTasksTotalPages()) {
+      this.subTasksCurrentPage = page;
+    }
+  }
+
   createSubTask(): void {
     if (
       !this.subTaskObj.name ||
@@ -1685,7 +1713,7 @@ export class ManagerDashboard implements OnInit {
       next: (subtask) => {
         this.showToastMessage('Sub-task created successfully!');
         this.resetSubTaskForm();
-        this.managerSubTasksPage = 0;
+        this.subTasksCurrentPage = 0;
         this.loadManagerSubTasks();
       },
       error: (error) => {
@@ -1808,10 +1836,9 @@ export class ManagerDashboard implements OnInit {
   }
 
   loadManagerSubTasks(): void {
-    this.subTaskService.getSubTasksByManager(this.managerSubTasksPage, this.managerSubTasksSize).subscribe({
+    this.subTaskService.getSubTasksByManager(0, 1000).subscribe({
       next: (response) => {
         this.managerSubTasks = response.content || response || [];
-        this.managerSubTasksTotalPages = Math.max(1, response.totalPages || 0);
       },
       error: (error) => {
         console.error('Error loading manager sub-tasks:', error);
@@ -1971,6 +1998,10 @@ export class ManagerDashboard implements OnInit {
 
   onProjectFilterChange(): void {
     // Filter is handled by the getter methods
+  }
+
+  onSubTaskFilterChange(): void {
+    this.subTasksCurrentPage = 0;
   }
 
   resetProjectForm(): void {

@@ -159,13 +159,13 @@ import Chart from 'chart.js/auto';
         <!-- Recent Activity -->
         <div class="row">
           <div class="col-md-6">
-            <div class="card border-0 shadow-sm">
+            <div class="card border-0 shadow-sm h-100">
               <div class="card-header bg-light">
                 <h5 class="mb-0 text-dark">Recent Projects</h5>
               </div>
               <div class="card-body">
                 <div
-                  *ngFor="let project of allProjects.slice(0, 5)"
+                  *ngFor="let project of getRecentProjects()"
                   class="mb-3 p-3 border rounded"
                 >
                   <div class="d-flex justify-content-between align-items-start">
@@ -195,7 +195,7 @@ import Chart from 'chart.js/auto';
             </div>
           </div>
           <div class="col-md-6">
-            <div class="card border-0 shadow-sm">
+            <div class="card border-0 shadow-sm h-100">
               <div class="card-header bg-light">
                 <h5 class="mb-0 text-dark">System Statistics</h5>
               </div>
@@ -546,10 +546,13 @@ import Chart from 'chart.js/auto';
                 <input type="text" 
                        class="form-control form-control-sm" 
                        placeholder="Search sub-tasks..." 
-                       [(ngModel)]="subTaskSearchTerm">
+                       [(ngModel)]="subTaskSearchTerm"
+                       (input)="onSubTaskFilterChange()">
               </div>
               <div class="col-md-3">
-                <select class="form-select form-select-sm" [(ngModel)]="subTaskStatusFilter">
+                <select class="form-select form-select-sm" 
+                        [(ngModel)]="subTaskStatusFilter"
+                        (change)="onSubTaskFilterChange()">
                   <option value="">All Status</option>
                   <option value="NOT_STARTED">Not Started</option>
                   <option value="IN_PROGRESS">In Progress</option>
@@ -606,7 +609,7 @@ import Chart from 'chart.js/auto';
                 </tbody>
               </table>
             </div>
-            <div *ngIf="allSubTasks.length > 0" class="pagination">
+            <div *ngIf="allSubTasksComplete.length > 0" class="pagination">
               <button class="btn" 
                       [disabled]="subTasksPage === 0"
                       (click)="changeSubTasksPage(subTasksPage - 1)">
@@ -614,7 +617,7 @@ import Chart from 'chart.js/auto';
               </button>
               <span class="page-info">
                 Page {{subTasksPage + 1}} of {{subTasksTotalPages}}
-                ({{allSubTasks.length}} total)
+                ({{getFilteredSubTasksComplete().length}} total)
               </span>
               <button class="btn"
                       [disabled]="subTasksPage >= subTasksTotalPages - 1"
@@ -947,6 +950,7 @@ export class AdminDashboard implements OnInit, AfterViewInit {
   allProjects: any[] = [];
   allUsers: any[] = [];
   allSubTasks: any[] = [];
+  allSubTasksComplete: any[] = []; // Store all sub-tasks for pagination
   selectedProjectId: string | null = '';
   selectedUserRole: string = '';
 
@@ -1127,17 +1131,45 @@ export class AdminDashboard implements OnInit, AfterViewInit {
   }
 
   loadAllSubTasks(): void {
-    this.adminService.getAllSubTasks(this.subTasksPage, this.subTasksSize).subscribe({
+    this.adminService.getAllSubTasks(0, 1000).subscribe({
       next: (response) => {
-        this.allSubTasks = response.content || response || [];
-        this.subTasksTotalPages = Math.max(1, response.totalPages || 0);
+        this.allSubTasksComplete = response.content || response || [];
+        this.updateSubTasksPagination();
         this.updateCharts();
       },
       error: (error) => {
         console.error('Error loading subtasks:', error);
         this.allSubTasks = [];
+        this.allSubTasksComplete = [];
       },
     });
+  }
+
+  updateSubTasksPagination(): void {
+    const filtered = this.getFilteredSubTasksComplete();
+    this.subTasksTotalPages = Math.ceil(filtered.length / this.subTasksSize);
+    const startIndex = this.subTasksPage * this.subTasksSize;
+    const endIndex = startIndex + this.subTasksSize;
+    this.allSubTasks = filtered.slice(startIndex, endIndex);
+  }
+
+  getFilteredSubTasksComplete(): any[] {
+    let filtered = this.allSubTasksComplete;
+    
+    if (this.subTaskSearchTerm) {
+      const term = this.subTaskSearchTerm.toLowerCase();
+      filtered = filtered.filter((task) => 
+        task.name.toLowerCase().includes(term) ||
+        task.projectName.toLowerCase().includes(term) ||
+        task.memberUsername.toLowerCase().includes(term)
+      );
+    }
+    
+    if (this.subTaskStatusFilter && this.subTaskStatusFilter !== '') {
+      filtered = filtered.filter((task) => task.status === this.subTaskStatusFilter);
+    }
+    
+    return filtered;
   }
 
   setActiveTab(tab: string): void {
@@ -1331,22 +1363,7 @@ export class AdminDashboard implements OnInit, AfterViewInit {
   }
   
   getFilteredSubTasks(): any[] {
-    let filtered = this.allSubTasks;
-    
-    if (this.subTaskSearchTerm) {
-      const term = this.subTaskSearchTerm.toLowerCase();
-      filtered = filtered.filter((task) => 
-        task.name.toLowerCase().includes(term) ||
-        task.projectName.toLowerCase().includes(term) ||
-        task.memberUsername.toLowerCase().includes(term)
-      );
-    }
-    
-    if (this.subTaskStatusFilter && this.subTaskStatusFilter !== '') {
-      filtered = filtered.filter((task) => task.status === this.subTaskStatusFilter);
-    }
-    
-    return filtered;
+    return this.allSubTasks; // Already filtered and paginated
   }
 
   resetForm(): void {
@@ -1387,13 +1404,24 @@ export class AdminDashboard implements OnInit, AfterViewInit {
   changeSubTasksPage(page: number): void {
     if (page >= 0 && page < this.subTasksTotalPages) {
       this.subTasksPage = page;
-      this.loadAllSubTasks();
+      this.updateSubTasksPagination();
     }
+  }
+
+  onSubTaskFilterChange(): void {
+    this.subTasksPage = 0;
+    this.updateSubTasksPagination();
   }
 
   getPageNumbers(totalPages: number): number[] {
     const pages = Math.max(1, totalPages);
     return Array.from({length: Math.min(5, pages)}, (_, i) => i);
+  }
+
+  getRecentProjects(): any[] {
+    return this.allProjects
+      .sort((a, b) => new Date(b.createdAt || b.dueDate).getTime() - new Date(a.createdAt || a.dueDate).getTime())
+      .slice(0, 3);
   }
 
   logout(): void {
