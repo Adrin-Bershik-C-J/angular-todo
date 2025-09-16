@@ -16,14 +16,14 @@ import Chart from 'chart.js/auto';
     <!-- Top Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom fixed-top">
       <div class="container-fluid">
-        <button class="btn btn-primary d-lg-none me-2" (click)="toggleSidebar()">
+        <button class="btn btn-light d-lg-none me-2" (click)="toggleSidebar()">
           <span class="hamburger-icon">
             <span></span>
             <span></span>
             <span></span>
           </span>
         </button>
-        <span class="navbar-brand text-primary fw-bold mb-0">Admin Dashboard</span>
+        <span class="navbar-brand text-primary fw-bold mb-0">ePS Task Hub</span>
         <div class="ms-auto d-flex align-items-center">
           <span class="navbar-text me-3 text-dark d-none d-lg-block">
             Welcome, <span class="fw-bold">System Admin!</span>
@@ -52,7 +52,7 @@ import Chart from 'chart.js/auto';
             [class.active]="activeTab === 'overview'"
             (click)="setActiveTab('overview')"
           >
-            <i class="fas fa-tachometer-alt me-2"></i>System Overview
+            <i class="far fa-chart-bar me-2"></i>System Overview
           </button>
         </li>
         <li>
@@ -61,7 +61,7 @@ import Chart from 'chart.js/auto';
             [class.active]="activeTab === 'projects'"
             (click)="setActiveTab('projects')"
           >
-            <i class="fas fa-project-diagram me-2"></i>All Projects
+            <i class="far fa-folder me-2"></i>All Projects
           </button>
         </li>
         <li>
@@ -70,7 +70,7 @@ import Chart from 'chart.js/auto';
             [class.active]="activeTab === 'create-user'"
             (click)="setActiveTab('create-user')"
           >
-            <i class="fas fa-user-plus me-2"></i>Create User
+            <i class="far fa-user me-2"></i>Create User
           </button>
         </li>
         <li>
@@ -79,7 +79,7 @@ import Chart from 'chart.js/auto';
             [class.active]="activeTab === 'all-users'"
             (click)="setActiveTab('all-users')"
           >
-            <i class="fas fa-users me-2"></i>All Users
+            <i class="far fa-address-book me-2"></i>All Users
           </button>
         </li>
         <li>
@@ -88,7 +88,7 @@ import Chart from 'chart.js/auto';
             [class.active]="activeTab === 'subtasks'"
             (click)="setActiveTab('subtasks')"
           >
-            <i class="fas fa-tasks me-2"></i>Sub-Tasks
+            <i class="far fa-list-alt me-2"></i>Sub-Tasks
           </button>
         </li>
         <li>
@@ -97,7 +97,7 @@ import Chart from 'chart.js/auto';
             [class.active]="activeTab === 'analytics'"
             (click)="setActiveTab('analytics')"
           >
-            <i class="fas fa-chart-line me-2"></i>Analytics
+            <i class="far fa-chart-bar me-2"></i>Analytics
           </button>
         </li>
       </ul>
@@ -255,7 +255,17 @@ import Chart from 'chart.js/auto';
       <div *ngIf="activeTab === 'projects'" class="tab-content">
         <div class="card border-0 shadow-sm">
           <div class="card-header bg-light">
-            <h5 class="mb-0 text-dark">All Projects Overview</h5>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h5 class="mb-0 text-dark">All Projects Overview</h5>
+            </div>
+            <div class="row g-3">
+              <div class="col-md-6">
+                <input type="text" 
+                       class="form-control form-control-sm" 
+                       placeholder="Search projects..." 
+                       [(ngModel)]="projectSearchTerm">
+              </div>
+            </div>
           </div>
           <div class="card-body">
             <div class="table-responsive">
@@ -272,7 +282,7 @@ import Chart from 'chart.js/auto';
                   </tr>
                 </thead>
                 <tbody>
-                  <tr *ngFor="let project of allProjects">
+                  <tr *ngFor="let project of getFilteredProjects()">
                     <td>
                       <strong class="text-primary">{{ project.name }}</strong>
                       <br /><small class="text-muted">{{
@@ -304,7 +314,7 @@ import Chart from 'chart.js/auto';
                       </button>
                     </td>
                   </tr>
-                  <tr *ngIf="allProjects.length === 0">
+                  <tr *ngIf="getFilteredProjects().length === 0">
                     <td colspan="7" class="text-center text-muted">
                       No projects found
                     </td>
@@ -312,24 +322,22 @@ import Chart from 'chart.js/auto';
                 </tbody>
               </table>
             </div>
-            <!-- Pagination Info -->
-            <div class="d-flex justify-content-between align-items-center mt-3" *ngIf="allProjects.length > 0">
-              <small class="text-muted">Page {{projectsPage + 1}} of {{projectsTotalPages}} ({{allProjects.length}} items)</small>
+            <div *ngIf="allProjects.length > 0" class="pagination">
+              <button class="btn" 
+                      [disabled]="projectsPage === 0"
+                      (click)="changeProjectsPage(projectsPage - 1)">
+                Previous
+              </button>
+              <span class="page-info">
+                Page {{projectsPage + 1}} of {{projectsTotalPages}}
+                ({{allProjects.length}} total)
+              </span>
+              <button class="btn"
+                      [disabled]="projectsPage >= projectsTotalPages - 1"
+                      (click)="changeProjectsPage(projectsPage + 1)">
+                Next
+              </button>
             </div>
-            <!-- Pagination for Projects -->
-            <nav *ngIf="allProjects.length > 0">
-              <ul class="pagination justify-content-center">
-                <li class="page-item" [class.disabled]="projectsPage === 0">
-                  <button class="page-link" (click)="changeProjectsPage(projectsPage - 1)">Previous</button>
-                </li>
-                <li class="page-item" *ngFor="let page of getPageNumbers(projectsTotalPages)" [class.active]="page === projectsPage">
-                  <button class="page-link" (click)="changeProjectsPage(page)">{{page + 1}}</button>
-                </li>
-                <li class="page-item" [class.disabled]="projectsPage >= projectsTotalPages - 1">
-                  <button class="page-link" (click)="changeProjectsPage(projectsPage + 1)">Next</button>
-                </li>
-              </ul>
-            </nav>
           </div>
         </div>
       </div>
@@ -427,25 +435,26 @@ import Chart from 'chart.js/auto';
       <!-- All Users Tab -->
       <div *ngIf="activeTab === 'all-users'" class="tab-content">
         <div class="card border-0 shadow-sm">
-          <div
-            class="card-header bg-light d-flex justify-content-between align-items-center"
-          >
-            <h5 class="mb-0 text-dark">All Users</h5>
-            <div>
-              <label class="form-label text-dark me-2"
-                >Filter by Role:</label
-              >
-              <select
-                class="form-select form-select-sm"
-                [(ngModel)]="selectedUserRole"
-                style="width: auto; display: inline-block;"
-              >
-                <option value="">All Roles</option>
-                <option value="MANAGER">Manager</option>
-                <option value="TL">Team Lead</option>
-                <option value="MEMBER">Member</option>
-                <option value="ADMIN">Admin</option>
-              </select>
+          <div class="card-header bg-light">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h5 class="mb-0 text-dark">All Users</h5>
+            </div>
+            <div class="row g-3">
+              <div class="col-md-6">
+                <input type="text" 
+                       class="form-control form-control-sm" 
+                       placeholder="Search users..." 
+                       [(ngModel)]="userSearchTerm">
+              </div>
+              <div class="col-md-3">
+                <select class="form-select form-select-sm" [(ngModel)]="selectedUserRole">
+                  <option value="">All Roles</option>
+                  <option value="MANAGER">Manager</option>
+                  <option value="TL">Team Lead</option>
+                  <option value="MEMBER">Member</option>
+                  <option value="ADMIN">Admin</option>
+                </select>
+              </div>
             </div>
           </div>
           <div class="card-body">
@@ -502,24 +511,22 @@ import Chart from 'chart.js/auto';
                 </tbody>
               </table>
             </div>
-            <!-- Pagination Info -->
-            <div class="d-flex justify-content-between align-items-center mt-3" *ngIf="allUsers.length > 0">
-              <small class="text-muted">Page {{usersPage + 1}} of {{usersTotalPages}} ({{allUsers.length}} items)</small>
+            <div *ngIf="allUsers.length > 0" class="pagination">
+              <button class="btn" 
+                      [disabled]="usersPage === 0"
+                      (click)="changeUsersPage(usersPage - 1)">
+                Previous
+              </button>
+              <span class="page-info">
+                Page {{usersPage + 1}} of {{usersTotalPages}}
+                ({{allUsers.length}} total)
+              </span>
+              <button class="btn"
+                      [disabled]="usersPage >= usersTotalPages - 1"
+                      (click)="changeUsersPage(usersPage + 1)">
+                Next
+              </button>
             </div>
-            <!-- Pagination for Users -->
-            <nav *ngIf="allUsers.length > 0">
-              <ul class="pagination justify-content-center">
-                <li class="page-item" [class.disabled]="usersPage === 0">
-                  <button class="page-link" (click)="changeUsersPage(usersPage - 1)">Previous</button>
-                </li>
-                <li class="page-item" *ngFor="let page of getPageNumbers(usersTotalPages)" [class.active]="page === usersPage">
-                  <button class="page-link" (click)="changeUsersPage(page)">{{page + 1}}</button>
-                </li>
-                <li class="page-item" [class.disabled]="usersPage >= usersTotalPages - 1">
-                  <button class="page-link" (click)="changeUsersPage(usersPage + 1)">Next</button>
-                </li>
-              </ul>
-            </nav>
           </div>
         </div>
       </div>
@@ -528,7 +535,25 @@ import Chart from 'chart.js/auto';
       <div *ngIf="activeTab === 'subtasks'" class="tab-content">
         <div class="card border-0 shadow-sm">
           <div class="card-header bg-light">
-            <h5 class="mb-0 text-dark">All Sub-Tasks</h5>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h5 class="mb-0 text-dark">All Sub-Tasks</h5>
+            </div>
+            <div class="row g-3">
+              <div class="col-md-6">
+                <input type="text" 
+                       class="form-control form-control-sm" 
+                       placeholder="Search sub-tasks..." 
+                       [(ngModel)]="subTaskSearchTerm">
+              </div>
+              <div class="col-md-3">
+                <select class="form-select form-select-sm" [(ngModel)]="subTaskStatusFilter">
+                  <option value="">All Status</option>
+                  <option value="NOT_STARTED">Not Started</option>
+                  <option value="IN_PROGRESS">In Progress</option>
+                  <option value="DONE">Done</option>
+                </select>
+              </div>
+            </div>
           </div>
           <div class="card-body">
             <div class="table-responsive">
@@ -544,7 +569,7 @@ import Chart from 'chart.js/auto';
                   </tr>
                 </thead>
                 <tbody>
-                  <tr *ngFor="let subtask of allSubTasks">
+                  <tr *ngFor="let subtask of getFilteredSubTasks()">
                     <td class="text-dark">{{ subtask.name }}</td>
                     <td class="text-dark">{{ subtask.projectName }}</td>
                     <td class="text-dark">{{ subtask.memberUsername }}</td>
@@ -569,7 +594,7 @@ import Chart from 'chart.js/auto';
                       </button>
                     </td>
                   </tr>
-                  <tr *ngIf="allSubTasks.length === 0">
+                  <tr *ngIf="getFilteredSubTasks().length === 0">
                     <td colspan="6" class="text-center text-muted">
                       No sub-tasks found
                     </td>
@@ -577,24 +602,22 @@ import Chart from 'chart.js/auto';
                 </tbody>
               </table>
             </div>
-            <!-- Pagination Info -->
-            <div class="d-flex justify-content-between align-items-center mt-3" *ngIf="allSubTasks.length > 0">
-              <small class="text-muted">Page {{subTasksPage + 1}} of {{subTasksTotalPages}} ({{allSubTasks.length}} items)</small>
+            <div *ngIf="allSubTasks.length > 0" class="pagination">
+              <button class="btn" 
+                      [disabled]="subTasksPage === 0"
+                      (click)="changeSubTasksPage(subTasksPage - 1)">
+                Previous
+              </button>
+              <span class="page-info">
+                Page {{subTasksPage + 1}} of {{subTasksTotalPages}}
+                ({{allSubTasks.length}} total)
+              </span>
+              <button class="btn"
+                      [disabled]="subTasksPage >= subTasksTotalPages - 1"
+                      (click)="changeSubTasksPage(subTasksPage + 1)">
+                Next
+              </button>
             </div>
-            <!-- Pagination for Sub-Tasks -->
-            <nav *ngIf="allSubTasks.length > 0">
-              <ul class="pagination justify-content-center">
-                <li class="page-item" [class.disabled]="subTasksPage === 0">
-                  <button class="page-link" (click)="changeSubTasksPage(subTasksPage - 1)">Previous</button>
-                </li>
-                <li class="page-item" *ngFor="let page of getPageNumbers(subTasksTotalPages)" [class.active]="page === subTasksPage">
-                  <button class="page-link" (click)="changeSubTasksPage(page)">{{page + 1}}</button>
-                </li>
-                <li class="page-item" [class.disabled]="subTasksPage >= subTasksTotalPages - 1">
-                  <button class="page-link" (click)="changeSubTasksPage(subTasksPage + 1)">Next</button>
-                </li>
-              </ul>
-            </nav>
           </div>
         </div>
       </div>
@@ -738,9 +761,9 @@ import Chart from 'chart.js/auto';
       }
       
       .sidebar-link.active {
-        background: #2563eb;
-        color: white;
-        border-right: 3px solid #1d4ed8;
+        background: #e3f2fd;
+        color: #2563eb;
+        border-left: 3px solid #2563eb;
       }
       
       .sidebar-overlay {
@@ -859,6 +882,32 @@ import Chart from 'chart.js/auto';
         margin: 3px 0;
         transition: 0.3s;
       }
+      
+      .pagination {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 1.5rem;
+        background: #f8f9fa;
+        border-top: 1px solid #dee2e6;
+      }
+      
+      .pagination .btn {
+        background: #6c757d;
+        border-color: #dee2e6;
+        color: white;
+      }
+      
+      .pagination .btn:hover:not(:disabled) {
+        background: #5a6268;
+        border-color: #adb5bd;
+      }
+      
+      .page-info {
+        color: #6c757d;
+        font-size: 0.875rem;
+        font-weight: 500;
+      }
     `,
   ],
 })
@@ -895,6 +944,13 @@ export class AdminDashboard implements OnInit, AfterViewInit {
   toastMessage = '';
   toastError = false;
   sidebarOpen = false;
+  
+  // Filters
+  projectSearchTerm = '';
+  userSearchTerm = '';
+  subTaskSearchTerm = '';
+  projectStatusFilter = '';
+  subTaskStatusFilter = '';
   
   // Pagination
   projectsPage = 0;
@@ -1036,13 +1092,19 @@ export class AdminDashboard implements OnInit, AfterViewInit {
   }
 
   loadAllUsers(): void {
-    this.projectService.getAllUsers(this.usersPage, this.usersSize).subscribe({
-      next: (response) => {
-        this.allUsers = response.content || response || [];
-        this.usersTotalPages = Math.max(1, response.totalPages || 0);
+    this.projectService.getAllUsers().subscribe({
+      next: (response: any) => {
+        this.allUsers = response || [];
+        // Calculate pagination manually since backend returns all users
+        const totalUsers = this.allUsers.length;
+        this.usersTotalPages = Math.ceil(totalUsers / this.usersSize);
+        // Slice users for current page
+        const startIndex = this.usersPage * this.usersSize;
+        const endIndex = startIndex + this.usersSize;
+        this.allUsers = this.allUsers.slice(startIndex, endIndex);
         this.updateCharts();
       },
-      error: (error) => {
+      error: (error: any) => {
         console.error('Error loading users:', error);
         this.allUsers = [];
       },
@@ -1207,23 +1269,7 @@ export class AdminDashboard implements OnInit, AfterViewInit {
     ).length;
   }
 
-  getFilteredProjects(): any[] {
-    if (!this.selectedProjectId || this.selectedProjectId === '') {
-      return this.allProjects;
-    }
-    return this.allProjects.filter(
-      (project) => project.id === Number(this.selectedProjectId)
-    );
-  }
 
-  getFilteredSubTasks(): any[] {
-    if (!this.selectedProjectId || this.selectedProjectId === '') {
-      return this.allSubTasks;
-    }
-    return this.allSubTasks.filter(
-      (task) => task.projectId === Number(this.selectedProjectId)
-    );
-  }
 
   getFilteredCompletedSubTasks(): number {
     return this.getFilteredSubTasks().filter((task) => task.status === 'DONE')
@@ -1236,10 +1282,56 @@ export class AdminDashboard implements OnInit, AfterViewInit {
   }
 
   getFilteredUsers(): any[] {
-    if (!this.selectedUserRole || this.selectedUserRole === '') {
-      return this.allUsers;
+    let filtered = this.allUsers;
+    
+    if (this.selectedUserRole && this.selectedUserRole !== '') {
+      filtered = filtered.filter((user) => user.role === this.selectedUserRole);
     }
-    return this.allUsers.filter((user) => user.role === this.selectedUserRole);
+    
+    if (this.userSearchTerm) {
+      const term = this.userSearchTerm.toLowerCase();
+      filtered = filtered.filter((user) => 
+        user.name.toLowerCase().includes(term) ||
+        user.username.toLowerCase().includes(term)
+      );
+    }
+    
+    return filtered;
+  }
+  
+  getFilteredProjects(): any[] {
+    let filtered = this.allProjects;
+    
+    if (this.projectSearchTerm) {
+      const term = this.projectSearchTerm.toLowerCase();
+      filtered = filtered.filter((project) => 
+        project.name.toLowerCase().includes(term) ||
+        project.description.toLowerCase().includes(term) ||
+        project.managerUsername.toLowerCase().includes(term) ||
+        project.tlUsername.toLowerCase().includes(term)
+      );
+    }
+    
+    return filtered;
+  }
+  
+  getFilteredSubTasks(): any[] {
+    let filtered = this.allSubTasks;
+    
+    if (this.subTaskSearchTerm) {
+      const term = this.subTaskSearchTerm.toLowerCase();
+      filtered = filtered.filter((task) => 
+        task.name.toLowerCase().includes(term) ||
+        task.projectName.toLowerCase().includes(term) ||
+        task.memberUsername.toLowerCase().includes(term)
+      );
+    }
+    
+    if (this.subTaskStatusFilter && this.subTaskStatusFilter !== '') {
+      filtered = filtered.filter((task) => task.status === this.subTaskStatusFilter);
+    }
+    
+    return filtered;
   }
 
   resetForm(): void {

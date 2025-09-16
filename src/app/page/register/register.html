@@ -1,72 +1,431 @@
-<div class="auth-wrapper">
-  <div class="auth-content">
-    <div class="auth-bg">
-      <span class="r"></span>
-      <span class="r s"></span>
-      <span class="r s"></span>
-      <span class="r"></span>
-    </div>
-    <div class="card">
-      <div class="card-body text-center">
-        <div class="mb-4">
-          <div class="auth-icon">👥</div>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign Up Form</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          sans-serif;
+        --heading-color: #2c3e50;
+        --border-color: #dee2e6;
+      }
+
+      /* Register Page Styles - Based on Reference Design */
+      .auth-wrapper {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f8f9fa;
+        position: relative;
+        overflow: hidden;
+        padding: 2rem 1rem;
+      }
+
+      .auth-content {
+        width: 100%;
+        max-width: 420px;
+        position: relative;
+        z-index: 1;
+      }
+
+      .auth-bg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 0;
+      }
+
+      .auth-bg .r {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          45deg,
+          rgba(255, 255, 255, 0.1),
+          transparent
+        );
+        animation: rotate 25s linear infinite;
+      }
+
+      .auth-bg .r.s {
+        animation-delay: -7s;
+      }
+
+      @keyframes rotate {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      .card {
+        background: white;
+        border: 1px solid #dee2e6;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+      }
+
+      .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 45px rgba(0, 0, 0, 0.15);
+      }
+
+      .card-body {
+        padding: 3rem 2.5rem;
+        text-align: center;
+      }
+
+      .auth-icon {
+        font-size: 4rem;
+        color: #2563eb;
+        margin-bottom: 1rem;
+        display: inline-block;
+        animation: bounce 2s infinite;
+      }
+
+      @keyframes bounce {
+        0%,
+        20%,
+        50%,
+        80%,
+        100% {
+          transform: translateY(0);
+        }
+        40% {
+          transform: translateY(-10px);
+        }
+        60% {
+          transform: translateY(-5px);
+        }
+      }
+
+      h3 {
+        color: var(--heading-color);
+        font-weight: 600;
+        margin-bottom: 2rem;
+      }
+
+      .input-group {
+        margin-bottom: 1.5rem;
+        display: flex;
+      }
+
+      .input-group-text {
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        color: #6c757d;
+        border-radius: 8px 0 0 8px;
+        width: 45px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-right: none;
+      }
+
+      .input-group .form-control {
+        border: 1px solid var(--border-color);
+        border-left: none;
+        border-radius: 0 8px 8px 0;
+        padding: 0.75rem 1rem;
+        font-size: 0.875rem;
+        transition: all 0.3s ease;
+        flex: 1;
+        outline: none;
+      }
+
+      .input-group .form-control:focus {
+        border-color: #2563eb;
+        box-shadow: none !important;
+        outline: none !important;
+        transform: translateY(-1px);
+      }
+
+      .input-group .form-control:focus-visible {
+        outline: none !important;
+        box-shadow: none !important;
+      }
+
+      input:focus {
+        outline: none !important;
+        box-shadow: none !important;
+      }
+
+      .btn-primary {
+        background: #2563eb;
+        border: 1px solid #2563eb;
+        border-radius: 8px;
+        padding: 0.75rem 2rem;
+        font-weight: 600;
+        font-size: 0.875rem;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        color: white;
+        cursor: pointer;
+        text-decoration: none;
+      }
+
+      .btn-primary::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.2),
+          transparent
+        );
+        transition: left 0.5s;
+      }
+
+      .btn-primary:hover::before {
+        left: 100%;
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(37, 99, 235, 0.3);
+      }
+
+      .btn-primary:disabled {
+        background: #6c757d;
+        border-color: #6c757d;
+        transform: none;
+        box-shadow: none;
+        cursor: not-allowed;
+      }
+
+      .btn-block {
+        width: 100%;
+        margin-bottom: 2rem;
+      }
+
+      .text-muted {
+        color: #748892 !important;
+        font-size: 0.875rem;
+      }
+
+      .f-w-400 {
+        font-weight: 400;
+        color: #2563eb;
+        text-decoration: none;
+        transition: all 0.3s ease;
+      }
+
+      .f-w-400:hover {
+        color: #1d4ed8;
+        text-decoration: underline;
+      }
+
+      .spinner-border-sm {
+        width: 1rem;
+        height: 1rem;
+        border: 0.125em solid currentColor;
+        border-right-color: transparent;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        display: inline-block;
+        margin-right: 0.5rem;
+      }
+
+      .me-2 {
+        margin-right: 0.5rem;
+      }
+
+      /* Responsive Design */
+      @media (max-width: 768px) {
+        .auth-wrapper {
+          padding: 1.5rem 1rem;
+        }
+
+        .auth-content {
+          max-width: 370px;
+        }
+
+        .card-body {
+          padding: 2rem 1.5rem;
+        }
+
+        .auth-icon {
+          font-size: 3rem;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .auth-wrapper {
+          padding: 1rem;
+        }
+
+        .auth-content {
+          max-width: 340px;
+        }
+
+        .card-body {
+          padding: 1.5rem 1rem;
+        }
+
+        .input-group-text {
+          width: 40px;
+          font-size: 0.875rem;
+        }
+      }
+
+      @media (max-height: 600px) {
+        .auth-wrapper {
+          padding: 1rem;
+        }
+
+        .card-body {
+          padding: 1.5rem 2rem;
+        }
+
+        .auth-icon {
+          font-size: 2.5rem;
+          margin-bottom: 0.5rem;
+        }
+
+        h3 {
+          margin-bottom: 1rem;
+        }
+
+        .input-group {
+          margin-bottom: 1rem;
+        }
+      }
+
+      /* Loading animation */
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      .hidden {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="auth-wrapper">
+      <div class="auth-content">
+        <div class="auth-bg">
+          <span class="r"></span>
+          <span class="r s"></span>
+          <span class="r s"></span>
+          <span class="r"></span>
         </div>
-        <h3 class="mb-4">Sign Up</h3>
-        <form (ngSubmit)="onSubmit()">
-          <div class="input-group mb-3">
-            <span class="input-group-text"> 👤 </span>
-            <input
-              type="text"
-              class="form-control"
-              placeholder="Full Name"
-              name="name"
-              [(ngModel)]="registerObj.name"
-              required
-              [disabled]="isLoading"
-            />
+        <div class="card">
+          <div class="card-body">
+            <div class="mb-4">
+              <div class="auth-icon">👥</div>
+            </div>
+            <h3>Sign Up</h3>
+            <form id="signupForm">
+              <div class="input-group">
+                <span class="input-group-text">👤</span>
+                <input
+                  type="text"
+                  class="form-control"
+                  placeholder="Full Name"
+                  name="name"
+                  required
+                  id="nameInput"
+                />
+              </div>
+              <div class="input-group">
+                <span class="input-group-text">@</span>
+                <input
+                  type="text"
+                  class="form-control"
+                  placeholder="Username"
+                  name="username"
+                  required
+                  id="usernameInput"
+                />
+              </div>
+              <div class="input-group">
+                <span class="input-group-text">🔒</span>
+                <input
+                  type="password"
+                  class="form-control"
+                  placeholder="Password"
+                  name="password"
+                  required
+                  id="passwordInput"
+                />
+              </div>
+              <button
+                type="submit"
+                class="btn btn-primary btn-block"
+                id="submitBtn"
+              >
+                <span
+                  id="loadingSpinner"
+                  class="spinner-border-sm hidden"
+                ></span>
+                <span id="buttonText">Sign Up</span>
+              </button>
+            </form>
+            <p class="text-muted">
+              Already have an account?
+              <a href="#" class="f-w-400">Sign in</a>
+            </p>
           </div>
-          <div class="input-group mb-3">
-            <span class="input-group-text"> @ </span>
-            <input
-              type="text"
-              class="form-control"
-              placeholder="Username"
-              name="username"
-              [(ngModel)]="registerObj.username"
-              required
-              [disabled]="isLoading"
-            />
-          </div>
-          <div class="input-group mb-4">
-            <span class="input-group-text"> 🔒 </span>
-            <input
-              type="password"
-              class="form-control"
-              placeholder="Password"
-              name="password"
-              [(ngModel)]="registerObj.password"
-              required
-              [disabled]="isLoading"
-            />
-          </div>
-          <button
-            type="submit"
-            class="btn btn-primary btn-block mb-4"
-            [disabled]="isLoading"
-          >
-            <span
-              *ngIf="isLoading"
-              class="spinner-border spinner-border-sm me-2"
-            ></span>
-            <span *ngIf="!isLoading" class="me-2"></span>
-            {{ isLoading ? "Creating Account..." : "Sign Up" }}
-          </button>
-        </form>
-        <p class="mb-0 text-muted">
-          Already have an account?
-          <a routerLink="/login" class="f-w-400">Sign in</a>
-        </p>
+        </div>
       </div>
     </div>
-  </div>
-</div>
+
+    <script>
+      document
+        .getElementById("signupForm")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+
+          const submitBtn = document.getElementById("submitBtn");
+          const loadingSpinner = document.getElementById("loadingSpinner");
+          const buttonText = document.getElementById("buttonText");
+          const inputs = document.querySelectorAll("input");
+
+          // Show loading state
+          submitBtn.disabled = true;
+          loadingSpinner.classList.remove("hidden");
+          buttonText.textContent = "Creating Account...";
+          inputs.forEach((input) => (input.disabled = true));
+
+          // Simulate API call
+          setTimeout(() => {
+            // Reset form
+            submitBtn.disabled = false;
+            loadingSpinner.classList.add("hidden");
+            buttonText.textContent = "Sign Up";
+            inputs.forEach((input) => (input.disabled = false));
+
+            alert("Account created successfully! (Demo)");
+            document.getElementById("signupForm").reset();
+          }, 2000);
+        });
+    </script>
+  </body>
+</html>

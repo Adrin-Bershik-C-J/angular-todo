@@ -20,14 +20,14 @@ import { Task } from '../../model/todo.model';
     <!-- Top Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom fixed-top">
       <div class="container-fluid">
-        <button class="btn btn-primary d-lg-none me-2" (click)="toggleSidebar()">
+        <button class="btn btn-light d-lg-none me-2" (click)="toggleSidebar()">
           <span class="hamburger-icon">
             <span></span>
             <span></span>
             <span></span>
           </span>
         </button>
-        <span class="navbar-brand text-primary fw-bold mb-0">Manager Dashboard</span>
+        <span class="navbar-brand text-primary fw-bold mb-0">ePS Task Hub</span>
         <div class="ms-auto d-flex align-items-center">
           <span class="navbar-text me-3 text-dark d-none d-lg-block">
             Welcome, <span class="fw-bold">{{ currentUser }}!</span>
@@ -56,7 +56,7 @@ import { Task } from '../../model/todo.model';
             [class.active]="activeTab === 'overview'"
             (click)="setActiveTab('overview')"
           >
-            <i class="fas fa-tachometer-alt me-2"></i>Overview
+            <i class="far fa-chart-bar me-2"></i>Overview
           </button>
         </li>
         <li>
@@ -65,7 +65,7 @@ import { Task } from '../../model/todo.model';
             [class.active]="activeTab === 'projects'"
             (click)="setActiveTab('projects')"
           >
-            <i class="fas fa-plus-circle me-2"></i>Create Project
+            <i class="far fa-plus-square me-2"></i>Create Project
           </button>
         </li>
         <li>
@@ -74,7 +74,7 @@ import { Task } from '../../model/todo.model';
             [class.active]="activeTab === 'subtasks'"
             (click)="setActiveTab('subtasks')"
           >
-            <i class="fas fa-plus-square me-2"></i>Create Sub-Task
+            <i class="far fa-edit me-2"></i>Create Sub-Task
           </button>
         </li>
         <li>
@@ -83,7 +83,7 @@ import { Task } from '../../model/todo.model';
             [class.active]="activeTab === 'project-subtasks'"
             (click)="setActiveTab('project-subtasks')"
           >
-            <i class="fas fa-tasks me-2"></i>Project Sub-Tasks
+            <i class="far fa-list-alt me-2"></i>Project Sub-Tasks
           </button>
         </li>
         <li>
@@ -92,7 +92,7 @@ import { Task } from '../../model/todo.model';
             [class.active]="activeTab === 'personal'"
             (click)="setActiveTab('personal')"
           >
-            <i class="fas fa-clipboard-list me-2"></i>Personal Tasks
+            <i class="far fa-clipboard me-2"></i>Personal Tasks
           </button>
         </li>
       </ul>
@@ -671,24 +671,22 @@ import { Task } from '../../model/todo.model';
                 </tbody>
               </table>
             </div>
-            <!-- Pagination Info -->
-            <div class="d-flex justify-content-between align-items-center mt-3" *ngIf="managerSubTasks.length > 0">
-              <small class="text-muted">Page {{managerSubTasksPage + 1}} of {{managerSubTasksTotalPages}} ({{managerSubTasks.length}} items)</small>
+            <div *ngIf="managerSubTasks.length > 0" class="pagination">
+              <button class="btn" 
+                      [disabled]="managerSubTasksPage === 0"
+                      (click)="changeManagerSubTasksPage(managerSubTasksPage - 1)">
+                Previous
+              </button>
+              <span class="page-info">
+                Page {{managerSubTasksPage + 1}} of {{managerSubTasksTotalPages}}
+                ({{managerSubTasks.length}} total)
+              </span>
+              <button class="btn"
+                      [disabled]="managerSubTasksPage >= managerSubTasksTotalPages - 1"
+                      (click)="changeManagerSubTasksPage(managerSubTasksPage + 1)">
+                Next
+              </button>
             </div>
-            <!-- Pagination for Manager Sub-Tasks -->
-            <nav *ngIf="managerSubTasks.length > 0">
-              <ul class="pagination justify-content-center">
-                <li class="page-item" [class.disabled]="managerSubTasksPage === 0">
-                  <button class="page-link" (click)="changeManagerSubTasksPage(managerSubTasksPage - 1)">Previous</button>
-                </li>
-                <li class="page-item" *ngFor="let page of getPageNumbers(managerSubTasksTotalPages)" [class.active]="page === managerSubTasksPage">
-                  <button class="page-link" (click)="changeManagerSubTasksPage(page)">{{page + 1}}</button>
-                </li>
-                <li class="page-item" [class.disabled]="managerSubTasksPage >= managerSubTasksTotalPages - 1">
-                  <button class="page-link" (click)="changeManagerSubTasksPage(managerSubTasksPage + 1)">Next</button>
-                </li>
-              </ul>
-            </nav>
           </div>
         </div>
       </div>
@@ -867,24 +865,22 @@ import { Task } from '../../model/todo.model';
                     </tbody>
                   </table>
                 </div>
-                <!-- Pagination Info -->
-                <div class="d-flex justify-content-between align-items-center mt-3" *ngIf="personalTasks.length > 0">
-                  <small class="text-muted">Page {{personalTasksPage + 1}} of {{personalTasksTotalPages}} ({{personalTasks.length}} items)</small>
+                <div *ngIf="personalTasks.length > 0" class="pagination">
+                  <button class="btn" 
+                          [disabled]="personalTasksPage === 0"
+                          (click)="changePersonalTasksPage(personalTasksPage - 1)">
+                    Previous
+                  </button>
+                  <span class="page-info">
+                    Page {{personalTasksPage + 1}} of {{personalTasksTotalPages}}
+                    ({{personalTasks.length}} total)
+                  </span>
+                  <button class="btn"
+                          [disabled]="personalTasksPage >= personalTasksTotalPages - 1"
+                          (click)="changePersonalTasksPage(personalTasksPage + 1)">
+                    Next
+                  </button>
                 </div>
-                <!-- Pagination for Personal Tasks -->
-                <nav *ngIf="personalTasks.length > 0">
-                  <ul class="pagination justify-content-center">
-                    <li class="page-item" [class.disabled]="personalTasksPage === 0">
-                      <button class="page-link" (click)="changePersonalTasksPage(personalTasksPage - 1)">Previous</button>
-                    </li>
-                    <li class="page-item" *ngFor="let page of getPageNumbers(personalTasksTotalPages)" [class.active]="page === personalTasksPage">
-                      <button class="page-link" (click)="changePersonalTasksPage(page)">{{page + 1}}</button>
-                    </li>
-                    <li class="page-item" [class.disabled]="personalTasksPage >= personalTasksTotalPages - 1">
-                      <button class="page-link" (click)="changePersonalTasksPage(personalTasksPage + 1)">Next</button>
-                    </li>
-                  </ul>
-                </nav>
               </div>
             </div>
           </div>
@@ -1235,9 +1231,9 @@ import { Task } from '../../model/todo.model';
       }
       
       .sidebar-link.active {
-        background: #2563eb;
-        color: white;
-        border-right: 3px solid #1d4ed8;
+        background: #e3f2fd;
+        color: #2563eb;
+        border-left: 3px solid #2563eb;
       }
       
       .sidebar-overlay {
@@ -1360,6 +1356,32 @@ import { Task } from '../../model/todo.model';
         background: #2563eb;
         margin: 3px 0;
         transition: 0.3s;
+      }
+      
+      .pagination {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 1.5rem;
+        background: #f8f9fa;
+        border-top: 1px solid #dee2e6;
+      }
+      
+      .pagination .btn {
+        background: #6c757d;
+        border-color: #dee2e6;
+        color: white;
+      }
+      
+      .pagination .btn:hover:not(:disabled) {
+        background: #5a6268;
+        border-color: #adb5bd;
+      }
+      
+      .page-info {
+        color: #6c757d;
+        font-size: 0.875rem;
+        font-weight: 500;
       }
     `,
   ],
