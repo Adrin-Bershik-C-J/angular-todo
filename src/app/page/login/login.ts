@@ -48,14 +48,14 @@ export class Login {
                 this.router.navigateByUrl('/dashboard/member');
                 break;
               default:
-                this.router.navigateByUrl('/todo');
+                this.router.navigateByUrl('/dashboard/member');
             }
             this.isLoading = false;
           },
           error: (userErr) => {
             console.error('Error getting user details:', userErr);
-            // Fallback to todo page if user details fetch fails
-            this.router.navigateByUrl('/todo');
+            // Fallback to member dashboard if user details fetch fails
+            this.router.navigateByUrl('/dashboard/member');
             this.isLoading = false;
           }
         });

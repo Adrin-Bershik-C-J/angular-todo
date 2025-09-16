@@ -1,7 +1,6 @@
 import { Routes } from '@angular/router';
 import { Login } from './page/login/login';
 import { Register } from './page/register/register';
-import { Todo } from './page/todo/todo';
 import { ManagerDashboard } from './page/manager-dashboard/manager-dashboard';
 import { TlDashboard } from './page/tl-dashboard/tl-dashboard';
 import { AdminDashboard } from './page/admin-dashboard/admin-dashboard';
@@ -51,11 +50,6 @@ export const routes: Routes = [
     path: 'dashboard/member',
     component: MemberDashboard,
     canActivate: [AuthGuard, RoleGuard(['MEMBER'])],
-  },
-  {
-    path: 'todo',
-    component: Todo,
-    canActivate: [AuthGuard],
   },
   {
     path: 'unauthorized',
