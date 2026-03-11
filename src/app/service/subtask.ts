@@ -2,12 +2,13 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { SubTask, SubtaskResponse } from '../model/subtask.model';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class SubTaskService {
   constructor(private http: HttpClient) {}
 
-  private apiUrl = 'http://localhost:8080/api/subtasks';
+  private apiUrl = `${environment.apiUrl}/subtasks`;
 
   createSubTask(obj: SubTask): Observable<SubtaskResponse> {
     return this.http.post<SubtaskResponse>(`${this.apiUrl}`, obj);

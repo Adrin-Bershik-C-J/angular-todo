@@ -7,6 +7,7 @@ import {
   RegisterResponse,
 } from '../model/auth.model';
 import { Observable, tap, switchMap, map } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -14,7 +15,7 @@ import { Observable, tap, switchMap, map } from 'rxjs';
 export class Auth {
   constructor(private http: HttpClient) {}
 
-  private apiUrl = 'http://localhost:8080/api/auth';
+  private apiUrl = `${environment.apiUrl}/auth`;
 
   login(obj: LoginModel): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/login`, obj).pipe(

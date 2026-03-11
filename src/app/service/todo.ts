@@ -2,6 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { TaskResponse, Task } from '../model/todo.model';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -9,7 +10,7 @@ import { Observable } from 'rxjs';
 export class TodoService {
   constructor(private http: HttpClient) {}
 
-  private apiUrl = 'http://localhost:8080/api/todo';
+  private apiUrl = `${environment.apiUrl}/todo`;
 
   createTask(task: Task): Observable<TaskResponse> {
     const payload = {

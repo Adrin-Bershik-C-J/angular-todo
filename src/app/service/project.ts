@@ -5,6 +5,7 @@ import {
   ProjectResponseModel,
 } from '../model/project.model';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -12,7 +13,7 @@ import { Observable } from 'rxjs';
 export class ProjectService {
   constructor(private http: HttpClient) {}
 
-  private apiUrl = 'http://localhost:8080/api/projects';
+  private apiUrl = `${environment.apiUrl}/projects`;
 
   createProject(obj: ProjectRequestModel): Observable<ProjectResponseModel> {
     return this.http.post<ProjectResponseModel>(`${this.apiUrl}`, obj);
