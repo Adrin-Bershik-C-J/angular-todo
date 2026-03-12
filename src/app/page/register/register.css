@@ -1,15 +1,22 @@
 /* Register Page Styles - Based on Reference Design */
 
+/* Ensure CSS variables are available */
+:root {
+  --heading-color: #2c3e50;
+  --border-color: #dee2e6;
+  --primary-color: #4099ff;
+  --text-muted: #748892;
+}
+
 .auth-wrapper {
-  height: 100vh;
+  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
   background: #f8f9fa;
   position: relative;
   overflow: hidden;
-  padding: 1rem;
-  box-sizing: border-box;
+  padding: 2rem 1rem;
 }
 
 .auth-content {
@@ -34,7 +41,11 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(45deg, rgba(255, 255, 255, 0.1), transparent);
+  background: linear-gradient(
+    45deg,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
   animation: rotate 25s linear infinite;
 }
 
@@ -66,6 +77,7 @@
 
 .card-body {
   padding: 3rem 2.5rem;
+  text-align: center;
 }
 
 .auth-icon {
@@ -77,7 +89,11 @@
 }
 
 @keyframes bounce {
-  0%, 20%, 50%, 80%, 100% {
+  0%,
+  20%,
+  50%,
+  80%,
+  100% {
     transform: translateY(0);
   }
   40% {
@@ -89,13 +105,14 @@
 }
 
 h3 {
-  color: var(--heading-color);
+  color: var(--heading-color, #2c3e50);
   font-weight: 600;
-  margin-bottom: 0.5rem;
+  margin-bottom: 2rem;
 }
 
 .input-group {
   margin-bottom: 1.5rem;
+  display: flex;
 }
 
 .input-group-text {
@@ -104,25 +121,39 @@ h3 {
   color: #6c757d;
   border-radius: 8px 0 0 8px;
   width: 45px;
+  display: flex;
   justify-content: center;
+  align-items: center;
+  border-right: none;
 }
 
 .input-group .form-control {
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border-color, #dee2e6);
   border-left: none;
   border-radius: 0 8px 8px 0;
   padding: 0.75rem 1rem;
   font-size: 0.875rem;
   transition: all 0.3s ease;
-}
-
-.input-group .form-control:focus {
-  border-color: #dee2e6;
-  box-shadow: none;
+  flex: 1;
   outline: none;
 }
 
+.input-group .form-control:focus {
+  border-color: #2563eb;
+  box-shadow: none !important;
+  outline: none !important;
+  transform: translateY(-1px);
+}
 
+.input-group .form-control:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+input:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
 
 .btn-primary {
   background: #2563eb;
@@ -134,16 +165,24 @@ h3 {
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
+  color: white;
+  cursor: pointer;
+  text-decoration: none;
 }
 
 .btn-primary::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
   transition: left 0.5s;
 }
 
@@ -153,17 +192,20 @@ h3 {
 
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(46, 216, 182, 0.3);
+  box-shadow: 0 8px 25px rgba(37, 99, 235, 0.3);
 }
 
 .btn-primary:disabled {
   background: #6c757d;
+  border-color: #6c757d;
   transform: none;
   box-shadow: none;
+  cursor: not-allowed;
 }
 
 .btn-block {
   width: 100%;
+  margin-bottom: 2rem;
 }
 
 .text-muted {
@@ -179,56 +221,96 @@ h3 {
 }
 
 .f-w-400:hover {
-  color: #26c6a4;
+  color: #1d4ed8;
   text-decoration: underline;
 }
 
 .spinner-border-sm {
   width: 1rem;
   height: 1rem;
+  border: 0.125em solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  display: inline-block;
+  margin-right: 0.5rem;
+}
+
+.me-2 {
+  margin-right: 0.5rem;
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
+  .auth-wrapper {
+    padding: 1.5rem 1rem;
+  }
+
   .auth-content {
     max-width: 370px;
-    margin: 0 1rem;
   }
-  
+
   .card-body {
     padding: 2rem 1.5rem;
   }
-  
+
   .auth-icon {
     font-size: 3rem;
   }
 }
 
 @media (max-width: 480px) {
+  .auth-wrapper {
+    padding: 1rem;
+  }
+
   .auth-content {
     max-width: 340px;
   }
-  
+
   .card-body {
     padding: 1.5rem 1rem;
   }
+
+  .input-group-text {
+    width: 40px;
+    font-size: 0.875rem;
+  }
 }
 
-/* Animation for form elements */
-.form-control {
-  transition: all 0.3s ease;
-}
+@media (max-height: 600px) {
+  .auth-wrapper {
+    padding: 1rem;
+  }
 
-.form-control:focus {
-  transform: translateY(-1px);
+  .card-body {
+    padding: 1.5rem 2rem;
+  }
+
+  .auth-icon {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  h3 {
+    margin-bottom: 1rem;
+  }
+
+  .input-group {
+    margin-bottom: 1rem;
+  }
 }
 
 /* Loading animation */
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
-.spinner-border {
-  animation: spin 1s linear infinite;
+.mb-4 {
+  margin-bottom: 1.5rem;
 }
