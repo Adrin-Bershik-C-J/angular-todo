@@ -1,5 +1,13 @@
 /* Login Page Styles - Based on Reference Design */
 
+/* Ensure CSS variables are available */
+:root {
+  --heading-color: #222;
+  --border-color: #e3eaef;
+  --primary-color: #4099ff;
+  --text-muted: #748892;
+}
+
 .auth-wrapper {
   height: 100vh;
   display: flex;
@@ -87,7 +95,7 @@
 }
 
 h3 {
-  color: var(--heading-color);
+  color: var(--heading-color, #222);
   font-weight: 600;
   margin-bottom: 2rem;
 }
@@ -106,7 +114,7 @@ h3 {
 }
 
 .input-group .form-control {
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border-color, #dee2e6);
   border-left: none;
   border-radius: 0 8px 8px 0;
   padding: 0.75rem 1rem;
