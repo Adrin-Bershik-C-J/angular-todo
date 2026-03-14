@@ -1,4 +1,39 @@
-# Frontend
+# Angular Todo App
+
+A role-based task management web application built with **Angular 20**. It supports four user roles — **Admin**, **Manager**, **Team Lead**, and **Member** — each with a dedicated dashboard and tailored set of permissions. Users can manage projects, create and assign todos, break work into subtasks, and visualise progress through interactive charts.
+
+## Features
+
+- 🔐 **Authentication** — JWT-based login and registration with route guards
+- 👥 **Role-based dashboards** — separate views for Admin, Manager, Team Lead, and Member
+- 📁 **Project management** — create and organise projects
+- ✅ **Todo & subtask tracking** — create todos, break them into subtasks, and update statuses
+- 📊 **Charts** — progress visualisations powered by Chart.js
+- 🐳 **Docker support** — ready-to-use `Dockerfile` for containerised deployment
+- 🚀 **Netlify deployment** — `netlify.toml` included for one-click cloud hosting
+
+## Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Framework | Angular 20 |
+| Language | TypeScript 5.8 |
+| Styling | Bootstrap 5 |
+| Charts | Chart.js 4 |
+| Auth | JWT (via HTTP interceptor) |
+| Containerisation | Docker |
+| Hosting | Netlify |
+
+## Roles
+
+| Role | Key Capabilities |
+|---|---|
+| **Admin** | Full system access, user management |
+| **Manager** | Create and oversee projects, assign team leads |
+| **Team Lead** | Manage todos and subtasks for their team |
+| **Member** | View and update their assigned todos |
+
+---
 
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.1.1.
 
