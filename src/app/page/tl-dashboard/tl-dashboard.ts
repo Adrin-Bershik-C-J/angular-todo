@@ -797,12 +797,15 @@ import { SubTask } from '../../model/subtask.model';
       left: -250px;
       width: 250px;
       height: 100vh;
-      background: #f8f9fa;
-      border-right: 1px solid #dee2e6;
-      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+      background: #ffffff;
+      border-right: 1px solid #e2e8f0;
+      box-shadow: 2px 0 12px rgba(0, 0, 0, 0.08);
       transition: left 0.3s ease;
       z-index: 1020;
       overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      padding-top: 60px;
     }
     
     .sidebar.show {
@@ -810,19 +813,16 @@ import { SubTask } from '../../model/subtask.model';
     }
     
     .sidebar-header {
-      padding: 1rem;
-      border-bottom: 1px solid #dee2e6;
-      margin-top: 60px;
-      background: white;
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid #e2e8f0;
+      background: #f8fafc;
     }
     
     .sidebar-footer {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      border-top: 1px solid #dee2e6;
-      background: white;
+      margin-top: auto;
+      border-top: 1px solid #e2e8f0;
+      background: #f8fafc;
+      padding: 0.5rem 0;
     }
     
     .logout-btn {
@@ -830,43 +830,55 @@ import { SubTask } from '../../model/subtask.model';
     }
     
     .logout-btn:hover {
-      background: #f8d7da !important;
-      color: #721c24 !important;
+      background: #fff5f5 !important;
+      color: #b91c1c !important;
     }
     
     .sidebar-nav {
       list-style: none;
-      padding: 0.5rem 0 0 0;
+      padding: 0.75rem 0;
       margin: 0;
+      flex: 1;
     }
     
-    @media (min-width: 992px) {
-      .sidebar-nav {
-        padding: 3.5rem 0 0 0;
-      }
+    .sidebar-nav li {
+      padding: 0 0.75rem;
+      margin-bottom: 2px;
     }
     
     .sidebar-link {
-      display: block;
+      display: flex;
+      align-items: center;
       width: 100%;
-      padding: 0.75rem 1rem;
-      color: #495057;
+      padding: 0.65rem 0.875rem;
+      color: #64748b;
       text-decoration: none;
       border: none;
       background: none;
       text-align: left;
-      transition: all 0.3s ease;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: background 0.15s ease, color 0.15s ease;
+      gap: 0.625rem;
+    }
+    
+    .sidebar-link i {
+      width: 16px;
+      text-align: center;
+      flex-shrink: 0;
+      font-size: 0.875rem;
     }
     
     .sidebar-link:hover {
-      background: #e9ecef;
+      background: #f1f5f9;
       color: #2563eb;
     }
     
     .sidebar-link.active {
-      background: #e3f2fd;
+      background: #eff6ff;
       color: #2563eb;
-      border-left: 3px solid #2563eb;
+      font-weight: 600;
     }
     
     .sidebar-overlay {
@@ -875,7 +887,7 @@ import { SubTask } from '../../model/subtask.model';
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0, 0, 0, 0.5);
+      background: rgba(0, 0, 0, 0.4);
       z-index: 1010;
       opacity: 0;
       visibility: hidden;
