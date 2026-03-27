@@ -13,6 +13,12 @@ import Chart from 'chart.js/auto';
   selector: 'app-admin-dashboard',
   imports: [CommonModule, FormsModule],
   template: `
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" *ngIf="isLoading">
+      <div class="spinner-border"></div>
+      <p>Loading dashboard...</p>
+    </div>
+
     <!-- Top Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom fixed-top">
       <div class="container-fluid">
@@ -394,8 +400,9 @@ import Chart from 'chart.js/auto';
                       <option value="MEMBER">Member</option>
                     </select>
                   </div>
-                  <button type="submit" class="btn btn-primary w-100">
-                    Create User
+                  <button type="submit" class="btn btn-primary w-100" [disabled]="isSubmitting">
+                    <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-2"></span>
+                    {{isSubmitting ? 'Creating...' : 'Create User'}}
                   </button>
                 </form>
               </div>
@@ -969,6 +976,8 @@ export class AdminDashboard implements OnInit, AfterViewInit {
   toastMessage = '';
   toastError = false;
   sidebarOpen = false;
+  isLoading = true;
+  isSubmitting = false;
   
   // Filters
   projectSearchTerm = '';
@@ -1081,6 +1090,11 @@ export class AdminDashboard implements OnInit, AfterViewInit {
     });
   }
 
+  private loadedCount = 0;
+  private markLoaded(): void {
+    if (++this.loadedCount >= 3) this.isLoading = false;
+  }
+
   loadDashboardData(): void {
     this.loadAllProjects();
     this.loadAllUsers();
@@ -1108,10 +1122,12 @@ export class AdminDashboard implements OnInit, AfterViewInit {
         this.allProjects = response.content || response || [];
         this.projectsTotalPages = Math.max(1, response.totalPages || 0);
         this.updateCharts();
+        this.markLoaded();
       },
       error: (error) => {
         console.error('Error loading projects:', error);
         this.allProjects = [];
+        this.markLoaded();
       },
     });
   }
@@ -1120,18 +1136,18 @@ export class AdminDashboard implements OnInit, AfterViewInit {
     this.projectService.getAllUsers().subscribe({
       next: (response: any) => {
         this.allUsers = response || [];
-        // Calculate pagination manually since backend returns all users
         const totalUsers = this.allUsers.length;
         this.usersTotalPages = Math.ceil(totalUsers / this.usersSize);
-        // Slice users for current page
         const startIndex = this.usersPage * this.usersSize;
         const endIndex = startIndex + this.usersSize;
         this.allUsers = this.allUsers.slice(startIndex, endIndex);
         this.updateCharts();
+        this.markLoaded();
       },
       error: (error: any) => {
         console.error('Error loading users:', error);
         this.allUsers = [];
+        this.markLoaded();
       },
     });
   }
@@ -1142,11 +1158,13 @@ export class AdminDashboard implements OnInit, AfterViewInit {
         this.allSubTasksComplete = response.content || response || [];
         this.updateSubTasksPagination();
         this.updateCharts();
+        this.markLoaded();
       },
       error: (error) => {
         console.error('Error loading subtasks:', error);
         this.allSubTasks = [];
         this.allSubTasksComplete = [];
+        this.markLoaded();
       },
     });
   }
@@ -1199,16 +1217,19 @@ export class AdminDashboard implements OnInit, AfterViewInit {
       return;
     }
 
+    this.isSubmitting = true;
     this.adminService
       .createManagerOrTL(this.selectedRole, this.userObj)
       .subscribe({
         next: (response) => {
+          this.isSubmitting = false;
           this.showToastMessage('User created successfully!');
           this.resetForm();
           this.usersPage = 0;
           this.loadAllUsers();
         },
         error: (error) => {
+          this.isSubmitting = false;
           const errorMsg =
             error.status === 409
               ? 'Username already exists'

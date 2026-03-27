@@ -11,6 +11,12 @@ import { Task } from '../../model/todo.model';
   selector: 'app-member-dashboard',
   imports: [CommonModule, FormsModule],
   template: `
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" *ngIf="isLoading">
+      <div class="spinner-border"></div>
+      <p>Loading dashboard...</p>
+    </div>
+
     <!-- Top Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom fixed-top">
       <div class="container-fluid">
@@ -330,7 +336,10 @@ import { Task } from '../../model/todo.model';
                       <option>IN_PROGRESS</option>
                     </select>
                   </div>
-                  <button type="submit" class="btn btn-primary w-100">Add Personal Task</button>
+                  <button type="submit" class="btn btn-primary w-100" [disabled]="isSubmitting">
+                    <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-2"></span>
+                    {{isSubmitting ? 'Adding...' : 'Add Personal Task'}}
+                  </button>
                 </form>
               </div>
             </div>
@@ -774,6 +783,8 @@ export class MemberDashboard implements OnInit {
   toastMessage = '';
   toastError = false;
   sidebarOpen = false;
+  isLoading = true;
+  isSubmitting = false;
   taskPriorityFilter: string = '';
   taskStatusFilter: string = '';
   taskDueDateFilter: string = '';
@@ -794,6 +805,11 @@ export class MemberDashboard implements OnInit {
     this.loadDashboardData();
   }
 
+  private loadedCount = 0;
+  private markLoaded(): void {
+    if (++this.loadedCount >= 2) this.isLoading = false;
+  }
+
   loadDashboardData(): void {
     this.loadAssignedSubTasks();
     this.loadPersonalTasks();
@@ -804,10 +820,12 @@ export class MemberDashboard implements OnInit {
       next: (response) => {
         this.assignedSubTasks = response.content || response || [];
         this.assignedSubTasksTotalPages = Math.max(1, response.totalPages || 0);
+        this.markLoaded();
       },
       error: (error) => {
         console.error('Error loading assigned sub-tasks:', error);
         this.assignedSubTasks = [];
+        this.markLoaded();
       }
     });
   }
@@ -817,10 +835,12 @@ export class MemberDashboard implements OnInit {
       next: (response: any) => {
         this.personalTasks = response.content || [];
         this.personalTasksTotalPages = Math.max(1, response.totalPages || 0);
+        this.markLoaded();
       },
       error: (error) => {
         console.error('Error loading personal tasks:', error);
         this.personalTasks = [];
+        this.markLoaded();
       }
     });
   }
@@ -850,14 +870,17 @@ export class MemberDashboard implements OnInit {
       return;
     }
 
+    this.isSubmitting = true;
     this.todoService.createTask(this.personalTaskObj).subscribe({
       next: (task) => {
+        this.isSubmitting = false;
         this.showToastMessage('Personal task created successfully!');
         this.resetPersonalTaskForm();
         this.personalTasksPage = 0;
         this.loadPersonalTasks();
       },
       error: (error) => {
+        this.isSubmitting = false;
         this.showToastMessage('Error creating task: ' + (error.error?.error || 'Unknown error'), true);
       }
     });

@@ -17,6 +17,12 @@ import { Task } from '../../model/todo.model';
   selector: 'app-manager-dashboard',
   imports: [CommonModule, FormsModule],
   template: `
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" *ngIf="isLoading">
+      <div class="spinner-border"></div>
+      <p>Loading dashboard...</p>
+    </div>
+
     <!-- Top Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom fixed-top">
       <div class="container-fluid">
@@ -419,8 +425,9 @@ import { Task } from '../../model/todo.model';
                       No team members available
                     </div>
                   </div>
-                  <button type="submit" class="btn btn-primary w-100">
-                    Create Project
+                  <button type="submit" class="btn btn-primary w-100" [disabled]="isSubmitting">
+                    <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-2"></span>
+                    {{isSubmitting ? 'Creating...' : 'Create Project'}}
                   </button>
                 </form>
               </div>
@@ -556,8 +563,9 @@ import { Task } from '../../model/todo.model';
                       </option>
                     </select>
                   </div>
-                  <button type="submit" class="btn btn-primary w-100">
-                    Create Sub-Task
+                  <button type="submit" class="btn btn-primary w-100" [disabled]="isSubmitting">
+                    <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-2"></span>
+                    {{isSubmitting ? 'Creating...' : 'Create Sub-Task'}}
                   </button>
                 </form>
               </div>
@@ -804,8 +812,9 @@ import { Task } from '../../model/todo.model';
                       <option>IN_PROGRESS</option>
                     </select>
                   </div>
-                  <button type="submit" class="btn btn-primary w-100">
-                    Add Personal Task
+                  <button type="submit" class="btn btn-primary w-100" [disabled]="isSubmitting">
+                    <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-2"></span>
+                    {{isSubmitting ? 'Adding...' : 'Add Personal Task'}}
                   </button>
                 </form>
               </div>
@@ -1531,6 +1540,8 @@ export class ManagerDashboard implements OnInit {
   selectedTlUsername: string = '';
   selectedMemberUsernames: string[] = [];
   sidebarOpen = false;
+  isLoading = true;
+  isSubmitting = false;
   taskPriorityFilter: string = '';
   taskStatusFilter: string = '';
   taskDueDateFilter: string = '';
@@ -1554,6 +1565,11 @@ export class ManagerDashboard implements OnInit {
     this.loadDashboardData();
   }
 
+  private loadedCount = 0;
+  private markLoaded(): void {
+    if (++this.loadedCount >= 4) this.isLoading = false;
+  }
+
   loadDashboardData(): void {
     this.loadProjects();
     this.loadPersonalTasks();
@@ -1565,10 +1581,12 @@ export class ManagerDashboard implements OnInit {
     this.projectService.getProjectByLoggedInManager().subscribe({
       next: (projects) => {
         this.projects = projects;
+        this.markLoaded();
       },
       error: (error) => {
         console.error('Error loading projects:', error);
         this.projects = [];
+        this.markLoaded();
       },
     });
   }
@@ -1578,10 +1596,12 @@ export class ManagerDashboard implements OnInit {
       next: (response: any) => {
         this.personalTasks = response.content || [];
         this.personalTasksTotalPages = Math.max(1, response.totalPages || 0);
+        this.markLoaded();
       },
       error: (error) => {
         console.error('Error loading personal tasks:', error);
         this.personalTasks = [];
+        this.markLoaded();
       },
     });
   }
@@ -1606,14 +1626,16 @@ export class ManagerDashboard implements OnInit {
 
     this.projectObj.tlUsername = this.selectedTlUsername;
     this.projectObj.memberUsernames = this.selectedMemberUsernames;
-
+    this.isSubmitting = true;
     this.projectService.createProject(this.projectObj).subscribe({
       next: (project) => {
+        this.isSubmitting = false;
         this.showToastMessage('Project created successfully!');
         this.resetProjectForm();
         this.loadProjects();
       },
       error: (error) => {
+        this.isSubmitting = false;
         this.showToastMessage(
           'Error creating project: ' + (error.error?.error || 'Unknown error'),
           true
@@ -1626,9 +1648,11 @@ export class ManagerDashboard implements OnInit {
     this.projectService.getAllUsers().subscribe({
       next: (users) => {
         this.allUsers = users;
+        this.markLoaded();
       },
       error: (error) => {
         console.error('Error loading users:', error);
+        this.markLoaded();
       },
     });
   }
@@ -1751,14 +1775,17 @@ export class ManagerDashboard implements OnInit {
       return;
     }
 
+    this.isSubmitting = true;
     this.subTaskService.createSubTask(this.subTaskObj).subscribe({
       next: (subtask) => {
+        this.isSubmitting = false;
         this.showToastMessage('Sub-task created successfully!');
         this.resetSubTaskForm();
         this.subTasksCurrentPage = 0;
         this.loadManagerSubTasks();
       },
       error: (error) => {
+        this.isSubmitting = false;
         this.showToastMessage(
           'Error creating sub-task: ' + (error.error?.error || 'Unknown error'),
           true
@@ -1791,14 +1818,17 @@ export class ManagerDashboard implements OnInit {
       return;
     }
 
+    this.isSubmitting = true;
     this.todoService.createTask(this.personalTaskObj).subscribe({
       next: (task) => {
+        this.isSubmitting = false;
         this.showToastMessage('Personal task created successfully!');
         this.resetPersonalTaskForm();
         this.personalTasksPage = 0;
         this.loadPersonalTasks();
       },
       error: (error) => {
+        this.isSubmitting = false;
         this.showToastMessage(
           'Error creating task: ' + (error.error?.error || 'Unknown error'),
           true
@@ -1881,10 +1911,12 @@ export class ManagerDashboard implements OnInit {
     this.subTaskService.getSubTasksByManager(0, 1000).subscribe({
       next: (response) => {
         this.managerSubTasks = response.content || response || [];
+        this.markLoaded();
       },
       error: (error) => {
         console.error('Error loading manager sub-tasks:', error);
         this.managerSubTasks = [];
+        this.markLoaded();
       },
     });
   }

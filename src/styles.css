@@ -373,6 +373,32 @@ h6 { font-size: 14px; }
   color: white !important;
 }
 
+/* Loading Overlay */
+.loading-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.85);
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.loading-overlay .spinner-border {
+  width: 2.5rem;
+  height: 2.5rem;
+  color: #2563eb;
+}
+
+.loading-overlay p {
+  color: #64748b;
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin: 0;
+}
+
 /* Animation */
 @keyframes fadeInUp {
   from {
