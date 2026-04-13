@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 import { Login } from './page/login/login';
-import { Register } from './page/register/register';
+// import { Register } from './page/register/register';
 import { ManagerDashboard } from './page/manager-dashboard/manager-dashboard';
 import { TlDashboard } from './page/tl-dashboard/tl-dashboard';
 import { AdminDashboard } from './page/admin-dashboard/admin-dashboard';
@@ -21,11 +21,11 @@ export const routes: Routes = [
     component: Login,
     canActivate: [GuestGuard],
   },
-  {
-    path: 'register',
-    component: Register,
-    canActivate: [GuestGuard],
-  },
+  // {
+  //   path: 'register',
+  //   component: Register,
+  //   canActivate: [GuestGuard],
+  // },
   {
     path: 'dashboard',
     redirectTo: '/dashboard/member',
